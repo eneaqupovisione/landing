@@ -153,14 +153,15 @@
       position: relative; border-radius: 30px; overflow: hidden; background: var(--bg);
       aspect-ratio: 320 / 680;
     }
-    .device-screen iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .device-screen iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; z-index: 2; }
     /* copre l'iframe: preview non-interattiva che apre la demo intera */
     .device-screen .screen-link { position: absolute; inset: 0; z-index: 3; display: block; }
-    .device-tag {
-      position: absolute; top: 26px; left: 50%; transform: translateX(-50%); z-index: 5;
-      font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
-      color: #d9cdbb; opacity: .0; pointer-events: none;
-    }
+    /* poster di riserva (mostrato se il framing è bloccato) */
+    .device-poster { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; text-align: center; padding: 22px; background: var(--bg-warm); }
+    .device-poster svg { margin: 0 auto 12px; color: var(--wine); }
+    .dp-name { font-family: var(--serif); font-weight: 700; font-size: 18px; }
+    .dp-sub { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+    .dp-open { font-family: var(--mono); font-size: 11px; color: var(--faint); margin-top: 16px; }
     .device-badge {
       position: absolute; right: -18px; bottom: 22px; z-index: 6;
       background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow);
@@ -352,7 +353,7 @@
         <a class="link" href="#prodotto">Cliente &amp; Admin</a>
         <a class="link" href="#valore">Cosa fa</a>
         <a class="link" href="#motore">Il motore</a>
-        <a class="link" href="demo.html">Demo</a>
+        <a class="link" data-demo href="#" target="_blank" rel="noopener">Demo</a>
         <a class="btn btn-primary" href="#contatto" id="navCta">Richiedi una demo <span class="btn-arrow" aria-hidden="true">→</span></a>
       </nav>
     </div>
@@ -370,7 +371,7 @@
 
         <div class="cta-row">
           <a class="btn btn-primary" href="#contatto" id="heroCta">Richiedi una demo <span class="btn-arrow" aria-hidden="true">→</span></a>
-          <a class="btn btn-ghost" href="demo.html">Prova la demo <span class="btn-arrow" aria-hidden="true">→</span></a>
+          <a class="btn btn-ghost" data-demo href="#" target="_blank" rel="noopener">Prova la demo <span class="btn-arrow" aria-hidden="true">→</span></a>
         </div>
 
         <div class="persona-switch" role="group" aria-label="Chi sei?">
@@ -381,13 +382,20 @@
         </div>
       </div>
 
-      <!-- LIVE DEMO: iframe reale della demo (non un mockup) -->
+      <!-- LIVE DEMO: iframe reale della demo (repo separata) -->
       <div class="device-wrap reveal" data-d="2">
         <div class="device">
-          <span class="device-tag" aria-hidden="true">Osteria Vittoria</span>
           <div class="device-screen">
-            <iframe src="demo.html" title="Anteprima dal vivo della carta Cantera" loading="lazy" tabindex="-1" scrolling="no"></iframe>
-            <a class="screen-link" href="demo.html" aria-label="Apri la demo completa"></a>
+            <div class="device-poster" aria-hidden="true">
+              <div>
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8M12 15v7M6 3h12l-1 6a5 5 0 0 1-10 0L6 3z"/></svg>
+                <div class="dp-name">Osteria del Melograno</div>
+                <div class="dp-sub">Carta dei vini · demo</div>
+                <div class="dp-open">Tocca per aprire →</div>
+              </div>
+            </div>
+            <iframe id="demoFrame" title="Anteprima dal vivo della carta Cantera" loading="lazy" tabindex="-1" scrolling="no"></iframe>
+            <a class="screen-link" data-demo href="#" target="_blank" rel="noopener" aria-label="Apri la demo completa"></a>
           </div>
         </div>
         <div class="device-badge" aria-hidden="true">
@@ -453,7 +461,7 @@
               <div><b>Profilo sensoriale</b><span>Ogni vino letto su 10 assi, calcolati dal motore.</span></div>
             </li>
           </ul>
-          <a class="btn btn-ghost w-cta" href="demo.html">Apri la demo cliente <span class="btn-arrow" aria-hidden="true">→</span></a>
+          <a class="btn btn-ghost w-cta" data-demo href="#" target="_blank" rel="noopener">Apri la demo cliente <span class="btn-arrow" aria-hidden="true">→</span></a>
         </article>
 
         <!-- ADMIN -->
@@ -479,7 +487,7 @@
               <div><b>Analisi della cantina</b><span>Fasce di prezzo, composizione, stili, buchi di gamma.</span></div>
             </li>
           </ul>
-          <a class="btn btn-ghost w-cta" href="demo.html">Guarda la gestione <span class="btn-arrow" aria-hidden="true">→</span></a>
+          <a class="btn btn-ghost w-cta" data-demo href="#" target="_blank" rel="noopener">Guarda la gestione <span class="btn-arrow" aria-hidden="true">→</span></a>
         </article>
       </div>
     </div>
@@ -564,7 +572,7 @@
         <p id="ctaLede">Ti mostriamo Cantera sulla tua carta reale. Nessun impegno — solo il tuo vino, come non l'hai mai visto.</p>
         <div class="cta-row">
           <a class="btn btn-primary" href="mailto:eneapesaresi11@gmail.com?subject=Demo%20Cantera" id="ctaBtn">Richiedi una demo <span class="btn-arrow" aria-hidden="true">→</span></a>
-          <a class="btn btn-ghost" href="demo.html">Prova la demo <span class="btn-arrow" aria-hidden="true">→</span></a>
+          <a class="btn btn-ghost" data-demo href="#" target="_blank" rel="noopener">Prova la demo <span class="btn-arrow" aria-hidden="true">→</span></a>
         </div>
       </div>
     </div>
@@ -575,7 +583,7 @@
     <div class="wrap foot">
       <a href="#top" class="brand">Cantera<span class="dot" aria-hidden="true"></span></a>
       <nav class="foot-links" aria-label="Footer">
-        <a href="#prodotto">Cliente &amp; Admin</a><a href="#valore">Cosa fa</a><a href="#motore">Il motore</a><a href="demo.html">Demo</a><a href="#contatto">Contatto</a>
+        <a href="#prodotto">Cliente &amp; Admin</a><a href="#valore">Cosa fa</a><a href="#motore">Il motore</a><a data-demo href="#" target="_blank" rel="noopener">Demo</a><a href="#contatto">Contatto</a>
       </nav>
       <div class="foot-copy">© <span id="year">2026</span> Cantera — carta dei vini digitale per la ristorazione.</div>
     </div>
@@ -614,6 +622,16 @@
     };
     var PERSONAS = ['ristoratore','rappresentante','produttore'];
     var STORE_KEY = 'cantera_persona';
+
+    // ---------- DEMO (repo separata) — punto unico, assemblato a pezzi ----------
+    var DEMO_URL = ['https://', 'eneaqupovisione', '.github.io', '/demo-vini/'].join('');
+    (function wireDemo(){
+      var f = document.getElementById('demoFrame');
+      if(f){ f.setAttribute('src', DEMO_URL); }
+      Array.prototype.forEach.call(document.querySelectorAll('[data-demo]'), function(a){
+        a.setAttribute('href', DEMO_URL);
+      });
+    })();
 
     function checkIcon(){ return '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>'; }
 
