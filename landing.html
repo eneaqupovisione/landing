@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cantera — la carta dei vini che pensa</title>
+  <meta name="description" content="Cantera è la carta dei vini digitale per la ristorazione: elegante per il cliente, potente per il locale, con un cervello enologico che conosce ogni vino." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      /* Palette Cantera (coerente con index.html) */
+      --bg: #faf8f4;
+      --bg-warm: #f4efe6;
+      --surface: #ffffff;
+      --ink: #1a1714;
+      --muted: #7a6f64;
+      --faint: #b0a496;
+      --line: #e8e2d8;
+      --line-strong: #c8bfaf;
+      --accent: #2f5c9e;
+      --accent-soft: #eaf0f8;
+      --wine: #8a1f1a;
+      --wine-soft: #f6e9e7;
+      --gold: #9a7a50;
+      --gold-soft: #f0e9d6;
+
+      /* Colore-persona (cambia con l'ingresso scelto) */
+      --brand: #8a1f1a;
+      --brand-soft: #f6e9e7;
+
+      --radius: 12px;
+      --radius-lg: 18px;
+      --shadow-sm: 0 1px 3px rgba(26,23,20,.06);
+      --shadow: 0 8px 30px rgba(26,23,20,.08);
+      --shadow-lg: 0 24px 60px rgba(26,23,20,.14);
+
+      --serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+      --body: Georgia, 'Times New Roman', serif;
+      --mono: 'SF Mono', ui-monospace, Menlo, monospace;
+
+      --maxw: 1120px;
+      --pad: clamp(20px, 5vw, 48px);
+    }
+    body[data-persona="ristoratore"]   { --brand: #8a1f1a; --brand-soft: #f6e9e7; }
+    body[data-persona="rappresentante"]{ --brand: #2f5c9e; --brand-soft: #eaf0f8; }
+    body[data-persona="produttore"]    { --brand: #a9762a; --brand-soft: #f0e9d6; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+    body {
+      font-family: var(--body);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img, svg { display: block; max-width: 100%; }
+    ::selection { background: var(--gold-soft); }
+    :focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-radius: 4px; }
+
+    .wrap { max-width: var(--maxw); margin-inline: auto; padding-inline: var(--pad); }
+
+    .eyebrow {
+      font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--brand); display: inline-flex; align-items: center; gap: 8px;
+      transition: color .4s ease;
+    }
+    .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--brand); opacity: .7; transition: background .4s ease; }
+
+    h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.08; letter-spacing: -.01em; }
+
+    /* ---------- HEADER ---------- */
+    .site-header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(250,248,244,.82);
+      backdrop-filter: saturate(1.1) blur(10px);
+      -webkit-backdrop-filter: saturate(1.1) blur(10px);
+      border-bottom: 1px solid transparent;
+      transition: border-color .3s ease, box-shadow .3s ease;
+    }
+    .site-header.scrolled { border-bottom-color: var(--line); box-shadow: var(--shadow-sm); }
+    .nav { display: flex; align-items: center; justify-content: space-between; height: 66px; }
+    .brand { display: flex; align-items: baseline; gap: 10px; font-family: var(--serif); font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+    .brand .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--brand); transform: translateY(-2px); transition: background .4s ease; }
+    .nav-links { display: flex; align-items: center; gap: 30px; }
+    .nav-links a.link { font-family: var(--mono); font-size: 13px; letter-spacing: .02em; color: var(--muted); transition: color .2s ease; white-space: nowrap; }
+    .nav-links a.link:hover { color: var(--ink); }
+    @media (max-width: 780px) { .nav-links a.link { display: none; } }
+
+    /* ---------- BUTTONS ---------- */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+      min-height: 46px; padding: 0 22px;
+      font-family: var(--mono); font-size: 13.5px; letter-spacing: .02em;
+      border-radius: 999px; cursor: pointer; border: 1px solid transparent;
+      transition: transform .18s ease, background .2s ease, box-shadow .2s ease, color .2s ease, border-color .2s ease;
+      white-space: nowrap;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: var(--ink); color: #f6f2ea; box-shadow: var(--shadow-sm); }
+    .btn-primary:hover { background: #322b25; box-shadow: var(--shadow); transform: translateY(-1px); }
+    .btn-ghost { background: transparent; color: var(--ink); border-color: var(--line-strong); }
+    .btn-ghost:hover { border-color: var(--ink); background: rgba(26,23,20,.03); }
+    .btn-arrow { transition: transform .2s ease; }
+    .btn:hover .btn-arrow { transform: translateX(3px); }
+
+    /* ---------- PERSONA SWITCH ---------- */
+    .persona-switch { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 30px; }
+    .ps-label { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); margin-right: 4px; }
+    .ps-btn {
+      font-family: var(--mono); font-size: 12.5px; padding: 8px 15px; min-height: 40px;
+      border-radius: 999px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--muted);
+      cursor: pointer; transition: all .2s ease;
+    }
+    .ps-btn:hover { color: var(--ink); border-color: var(--ink); }
+    .ps-btn[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: #fff; box-shadow: var(--shadow-sm); }
+
+    /* ---------- HERO ---------- */
+    .hero { position: relative; padding-top: clamp(48px, 8vw, 92px); padding-bottom: clamp(48px, 8vw, 96px); }
+    .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(32px, 5vw, 72px); align-items: center; }
+    @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 44px; } }
+
+    .hero h1 { font-size: clamp(38px, 6.6vw, 72px); transition: opacity .35s ease; }
+    .hero h1 em { font-style: italic; color: var(--brand); transition: color .4s ease; }
+    .hero .lede { margin-top: 22px; font-size: clamp(17px, 2.2vw, 20px); color: var(--muted); max-width: 34ch; transition: opacity .35s ease; }
+    .hero .cta-row { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 14px; }
+    .swapping .hero h1, .swapping .hero .lede, .swapping #heroBenefits { opacity: 0; }
+
+    #heroBenefits { list-style: none; margin-top: 26px; display: flex; flex-direction: column; gap: 11px; transition: opacity .35s ease; }
+    #heroBenefits li { display: flex; align-items: flex-start; gap: 11px; font-size: 15.5px; color: #3a332d; }
+    #heroBenefits .bic { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--brand-soft); color: var(--brand); display: grid; place-items: center; margin-top: 1px; transition: background .4s ease, color .4s ease; }
+
+    /* Product mock (carta card) */
+    .mock { position: relative; }
+    .mock-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: 26px 26px 22px; position: relative; overflow: hidden; }
+    .mock-card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: linear-gradient(90deg, var(--wine), var(--gold) 60%, var(--accent)); }
+    .mock-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .mock-loc { font-family: var(--serif); font-size: 15px; font-weight: 700; }
+    .mock-loc small { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); font-weight: 400; }
+    .mock-tabs { display: flex; gap: 6px; }
+    .mock-tab { font-family: var(--mono); font-size: 10.5px; padding: 5px 10px; border-radius: 999px; background: var(--bg-warm); color: var(--muted); }
+    .mock-tab.on { background: var(--ink); color: #f6f2ea; }
+    .wine-row { display: flex; gap: 14px; padding: 13px 0; border-top: 1px solid var(--line); }
+    .wine-row:first-of-type { border-top: none; }
+    .wine-thumb { width: 34px; flex: none; border-radius: 6px; background: linear-gradient(160deg, var(--wine-soft), var(--gold-soft)); border: 1px solid var(--line); display: grid; place-items: center; }
+    .wine-thumb span { width: 8px; height: 20px; border-radius: 3px 3px 4px 4px; background: var(--wine); opacity: .85; }
+    .wine-main { flex: 1; min-width: 0; }
+    .wine-name { font-family: var(--serif); font-weight: 700; font-size: 15px; }
+    .wine-meta { font-size: 12.5px; color: var(--muted); }
+    .wine-tags { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+    .wine-tag { font-family: var(--mono); font-size: 9.5px; letter-spacing: .04em; padding: 3px 7px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+    .wine-tag.g { background: var(--gold-soft); color: var(--gold); }
+    .wine-price { font-family: var(--serif); font-weight: 700; font-size: 15px; align-self: center; }
+    .mock-badge { position: absolute; right: -14px; bottom: -14px; z-index: 2; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 12px 14px; display: flex; align-items: center; gap: 11px; max-width: 230px; }
+    .mock-badge b { font-family: var(--serif); font-size: 13px; display: block; }
+    .mock-badge small { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: .02em; }
+    @media (max-width: 460px) { .mock-badge { position: static; margin-top: 16px; max-width: none; } }
+
+    /* ---------- STATS STRIP ---------- */
+    .stats { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--bg-warm); }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+    @media (max-width: 720px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+    .stat { padding: clamp(26px, 4vw, 40px) var(--pad); border-left: 1px solid var(--line); text-align: center; }
+    .stat:first-child { border-left: none; }
+    @media (max-width: 720px) { .stat:nth-child(odd) { border-left: none; } .stat:nth-child(n+3) { border-top: 1px solid var(--line); } }
+    .stat .n { font-family: var(--serif); font-size: clamp(30px, 4.5vw, 44px); font-weight: 700; line-height: 1; }
+    .stat .n .u { color: var(--gold); }
+    .stat .l { margin-top: 10px; font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+
+    /* ---------- SECTIONS ---------- */
+    section { position: relative; }
+    .section-pad { padding-block: clamp(64px, 10vw, 128px); }
+    .section-head { max-width: 640px; margin-bottom: clamp(40px, 6vw, 64px); }
+    .section-head h2 { font-size: clamp(30px, 4.5vw, 48px); margin-top: 16px; }
+    .section-head p { margin-top: 18px; color: var(--muted); font-size: clamp(16px, 2vw, 18.5px); }
+
+    /* ---------- FEATURES ---------- */
+    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    @media (max-width: 860px) { .features { grid-template-columns: 1fr; } }
+    .feature { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 28px 26px 30px; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+    .feature:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--line-strong); }
+    .feature.wide { grid-column: span 3; display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; align-items: center; }
+    @media (max-width: 860px) { .feature.wide { grid-column: auto; grid-template-columns: 1fr; } }
+    .f-icon { width: 44px; height: 44px; border-radius: 11px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); margin-bottom: 18px; }
+    .f-icon.wine { background: var(--wine-soft); color: var(--wine); }
+    .f-icon.gold { background: var(--gold-soft); color: var(--gold); }
+    .feature h3 { font-size: 21px; }
+    .feature p { margin-top: 10px; color: var(--muted); font-size: 15.5px; }
+    .demo-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .demo-chips .q { width: 100%; font-family: var(--mono); font-size: 12px; color: var(--faint); margin-bottom: 4px; }
+    .chip { font-family: var(--mono); font-size: 12px; padding: 8px 13px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+    .chip.on { background: var(--ink); color: #f6f2ea; border-color: var(--ink); }
+
+    /* ---------- DEMO CTA (inline) ---------- */
+    .demo-strip { margin-top: 22px; display: inline-flex; }
+
+    /* ---------- BRAIN ---------- */
+    .brain { background: var(--ink); color: #efe9df; overflow: hidden; }
+    .brain .eyebrow { color: var(--gold); }
+    .brain .eyebrow::before { background: var(--gold); }
+    .brain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(36px, 6vw, 80px); align-items: center; }
+    @media (max-width: 900px) { .brain-grid { grid-template-columns: 1fr; } }
+    .brain h2 { color: #fbf7ef; font-size: clamp(30px, 4.5vw, 48px); margin-top: 16px; }
+    .brain p { margin-top: 18px; color: #b8ad9f; font-size: 17px; }
+    .brain .flow { margin-top: 28px; display: flex; flex-direction: column; gap: 14px; }
+    .flow-step { display: flex; gap: 14px; align-items: flex-start; }
+    .flow-step .k { font-family: var(--mono); font-size: 11px; color: var(--gold); border: 1px solid rgba(154,122,80,.4); border-radius: 8px; padding: 4px 8px; flex: none; margin-top: 2px; }
+    .flow-step b { font-family: var(--serif); font-weight: 600; }
+    .flow-step span { color: #b8ad9f; font-size: 14.5px; }
+    .radar-wrap { display: grid; place-items: center; }
+    .radar-card { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); border-radius: var(--radius-lg); padding: 28px; width: 100%; max-width: 380px; }
+    .radar-card .rt { font-family: var(--serif); font-size: 17px; color: #fbf7ef; }
+    .radar-card .rs { font-family: var(--mono); font-size: 11px; color: var(--gold); letter-spacing: .06em; margin-bottom: 8px; }
+
+    /* ---------- CTA BAND ---------- */
+    .cta-band { text-align: center; }
+    .cta-card { background: linear-gradient(160deg, var(--surface), var(--bg-warm)); border: 1px solid var(--line-strong); border-radius: 26px; padding: clamp(44px, 7vw, 84px) var(--pad); box-shadow: var(--shadow); position: relative; overflow: hidden; }
+    .cta-card::after { content: ""; position: absolute; width: 340px; height: 340px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--brand) 14%, transparent), transparent 70%); top: -130px; right: -90px; transition: background .4s ease; }
+    .cta-card h2 { font-size: clamp(30px, 5vw, 52px); position: relative; }
+    .cta-card p { margin: 18px auto 0; color: var(--muted); max-width: 46ch; font-size: 17px; position: relative; }
+    .cta-card .cta-row { margin-top: 32px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; position: relative; }
+
+    /* ---------- FOOTER ---------- */
+    footer { border-top: 1px solid var(--line); padding-block: 44px; }
+    .foot { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    .foot .brand { font-size: 18px; }
+    .foot-links { display: flex; gap: 24px; font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+    .foot-links a:hover { color: var(--ink); }
+    .foot-copy { font-family: var(--mono); font-size: 11.5px; color: var(--faint); width: 100%; margin-top: 8px; }
+
+    /* ---------- REVEAL ---------- */
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
+    .reveal.in { opacity: 1; transform: none; }
+    .reveal[data-d="1"] { transition-delay: .07s; }
+    .reveal[data-d="2"] { transition-delay: .14s; }
+    .reveal[data-d="3"] { transition-delay: .21s; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1 !important; transform: none !important; transition: none !important; } }
+
+    /* ---------- ENTRY OVERLAY (le tre porte) ---------- */
+    .entry { position: fixed; inset: 0; z-index: 200; background: rgba(26,23,20,.55); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); display: grid; place-items: center; padding: 24px; }
+    .entry[hidden] { display: none; }
+    .entry-inner { animation: entryUp .45s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes entryUp { from { opacity: 0; transform: translateY(20px) scale(.98); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .entry-inner { animation: none; } }
+    .entry-card { background: var(--bg); border-radius: 24px; box-shadow: var(--shadow-lg); max-width: 900px; width: 100%; padding: clamp(28px, 5vw, 52px); max-height: 92vh; overflow-y: auto; }
+    .entry .eyebrow { color: var(--gold); } .entry .eyebrow::before { background: var(--gold); }
+    .entry h2 { font-family: var(--serif); font-size: clamp(26px, 4vw, 42px); margin-top: 14px; }
+    .entry .sub { color: var(--muted); margin-top: 12px; font-size: 16px; max-width: 52ch; }
+    .doors { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 30px; }
+    @media (max-width: 720px) { .doors { grid-template-columns: 1fr; } }
+    .door { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 24px 22px; cursor: pointer; transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; position: relative; overflow: hidden; }
+    .door::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--dc); transform: scaleX(0); transform-origin: left; transition: transform .3s ease; }
+    .door:hover { transform: translateY(-5px); box-shadow: var(--shadow); border-color: var(--line-strong); }
+    .door:hover::before { transform: scaleX(1); }
+    .door .d-ic { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; background: var(--dc-soft); color: var(--dc); margin-bottom: 16px; }
+    .door h3 { font-family: var(--serif); font-size: 20px; font-weight: 700; }
+    .door .d-role { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--dc); margin-bottom: 4px; }
+    .door p { color: var(--muted); font-size: 14px; margin-top: 8px; }
+    .door .d-go { margin-top: 14px; font-family: var(--mono); font-size: 12px; color: var(--ink); display: inline-flex; align-items: center; gap: 6px; }
+    .door .d-go span { transition: transform .2s ease; }
+    .door:hover .d-go span { transform: translateX(4px); }
+    .door-r   { --dc: #8a1f1a; --dc-soft: #f6e9e7; }
+    .door-rap { --dc: #2f5c9e; --dc-soft: #eaf0f8; }
+    .door-p   { --dc: #a9762a; --dc-soft: #f0e9d6; }
+    .entry-skip { margin-top: 24px; background: none; border: none; cursor: pointer; font-family: var(--mono); font-size: 12.5px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+    .entry-skip:hover { color: var(--ink); }
+  </style>
+</head>
+<body data-persona="ristoratore">
+
+  <!-- ENTRY OVERLAY: le tre porte -->
+  <div class="entry" id="entry" hidden>
+    <div class="entry-inner">
+      <div class="entry-card">
+        <span class="eyebrow">Benvenuto in Cantera</span>
+        <h2>Da dove arrivi?</h2>
+        <p class="sub">Cantera parla tre lingue diverse. Dicci chi sei e ti mostriamo la parte che conta per te — puoi cambiare quando vuoi.</p>
+        <div class="doors">
+          <button class="door door-r" data-persona="ristoratore">
+            <div class="d-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5M4 9v11h16V9M4 9h16"/><path d="M9 20v-6h6v6"/></svg></div>
+            <div class="d-role">Ho un locale</div>
+            <h3>Ristoratore</h3>
+            <p>Gestisco carta e stampe, valorizzo i miei vini, offro un'esperienza migliore al tavolo.</p>
+            <span class="d-go">Entra <span aria-hidden="true">→</span></span>
+          </button>
+          <button class="door door-rap" data-persona="rappresentante">
+            <div class="d-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v13H3zM8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 12h18"/></svg></div>
+            <div class="d-role">Vendo vino</div>
+            <h3>Rappresentante</h3>
+            <p>Porto un servizio in più ai miei locali e posiziono meglio i vini del mio portafoglio.</p>
+            <span class="d-go">Entra <span aria-hidden="true">→</span></span>
+          </button>
+          <button class="door door-p" data-persona="produttore">
+            <div class="d-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M8 7h8l-1 4a3 3 0 0 1-6 0L8 7z"/><circle cx="7" cy="17" r="2.4"/><circle cx="12" cy="19" r="2.4"/><circle cx="17" cy="17" r="2.4"/></svg></div>
+            <div class="d-role">Faccio vino</div>
+            <h3>Produttore</h3>
+            <p>Voglio dare visibilità alle mie etichette, con terroir e racconto, dove si sceglie cosa bere.</p>
+            <span class="d-go">Entra <span aria-hidden="true">→</span></span>
+          </button>
+        </div>
+        <button class="entry-skip" id="entrySkip">Esplora liberamente <span aria-hidden="true">→</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="site-header" id="header">
+    <div class="wrap nav">
+      <a href="#top" class="brand">Cantera<span class="dot" aria-hidden="true"></span></a>
+      <nav class="nav-links" aria-label="Principale">
+        <a class="link" href="#prodotto">Il prodotto</a>
+        <a class="link" href="#cervello">Il cervello</a>
+        <a class="link" href="demo.html">Demo</a>
+        <a class="btn btn-primary" href="#contatto" id="navCta">Richiedi una demo <span class="btn-arrow" aria-hidden="true">→</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow" id="heroEyebrow">Per chi ha un locale</span>
+        <h1 id="heroTitle">La carta dei vini<br/>che <em>lavora</em> per te.</h1>
+        <p class="lede" id="heroLede">Gestisci carta e stampe, spingi i vini che ti rendono di più e offri un'esperienza che i clienti ricordano. Consulenza digitale inclusa.</p>
+
+        <ul id="heroBenefits"></ul>
+
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#contatto" id="heroCta">Richiedi una demo <span class="btn-arrow" aria-hidden="true">→</span></a>
+          <a class="btn btn-ghost" href="demo.html">Prova la demo</a>
+        </div>
+
+        <div class="persona-switch" role="group" aria-label="Chi sei?">
+          <span class="ps-label">Sono un…</span>
+          <button class="ps-btn" data-persona="ristoratore" aria-pressed="true">Ristoratore</button>
+          <button class="ps-btn" data-persona="rappresentante" aria-pressed="false">Rappresentante</button>
+          <button class="ps-btn" data-persona="produttore" aria-pressed="false">Produttore</button>
+        </div>
+      </div>
+
+      <!-- PRODUCT MOCK -->
+      <div class="mock reveal" data-d="2" aria-hidden="true">
+        <div class="mock-card">
+          <div class="mock-top">
+            <div class="mock-loc">Sol y Mar<small>Carta dei vini</small></div>
+            <div class="mock-tabs"><span class="mock-tab on">Carta</span><span class="mock-tab">Scopri</span><span class="mock-tab">Mappa</span></div>
+          </div>
+          <div class="wine-row">
+            <div class="wine-thumb"><span></span></div>
+            <div class="wine-main"><div class="wine-name">Barolo del Comune di Serralunga</div><div class="wine-meta">Nebbiolo · Piemonte · 2019</div><div class="wine-tags"><span class="wine-tag">strutturato</span><span class="wine-tag g">tannico</span></div></div>
+            <div class="wine-price">€68</div>
+          </div>
+          <div class="wine-row">
+            <div class="wine-thumb"><span style="background:#c9a24a"></span></div>
+            <div class="wine-main"><div class="wine-name">Etna Bianco Superiore</div><div class="wine-meta">Carricante · Sicilia · 2021</div><div class="wine-tags"><span class="wine-tag">minerale</span><span class="wine-tag g">agrumato</span></div></div>
+            <div class="wine-price">€42</div>
+          </div>
+          <div class="wine-row">
+            <div class="wine-thumb"><span></span></div>
+            <div class="wine-main"><div class="wine-name">Franciacorta Brut</div><div class="wine-meta">Chardonnay · Lombardia · s.a.</div><div class="wine-tags"><span class="wine-tag">fresco</span><span class="wine-tag g">fine</span></div></div>
+            <div class="wine-price">€55</div>
+          </div>
+        </div>
+        <div class="mock-badge">
+          <svg width="46" height="46" viewBox="0 0 46 46" aria-hidden="true">
+            <polygon points="23,4 42,17 35,40 11,40 4,17" fill="none" stroke="#e8e2d8" stroke-width="1"/>
+            <polygon points="23,8 39,19 30,37 15,34 10,19" fill="rgba(138,31,26,.14)" stroke="#8a1f1a" stroke-width="1.5"/>
+          </svg>
+          <div><b>Profilo sensoriale</b><small>10 assi · calcolato, non copiato</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats">
+    <div class="stats-grid">
+      <div class="stat reveal"><div class="n">194</div><div class="l">Vitigni profilati</div></div>
+      <div class="stat reveal" data-d="1"><div class="n">44</div><div class="l">Denominazioni</div></div>
+      <div class="stat reveal" data-d="2"><div class="n">100<span class="u">%</span></div><div class="l">Copertura carta</div></div>
+      <div class="stat reveal" data-d="3"><div class="n">0<span class="u">€</span></div><div class="l">Costo per profilo</div></div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section-pad" id="prodotto">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Un prodotto, due mondi</span>
+        <h2>Bella da sfogliare. Semplice da gestire.</h2>
+        <p>Il cliente vive una carta chiara ed elegante dal proprio telefono. Il locale la aggiorna in un attimo — prezzi, disponibilità, novità — senza ristampare nulla.</p>
+        <a class="btn btn-ghost demo-strip" href="demo.html">Apri la demo cliente <span class="btn-arrow" aria-hidden="true">→</span></a>
+      </div>
+
+      <div class="features">
+        <article class="feature reveal">
+          <div class="f-icon wine"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8M12 15v7M6 3h12l-1 6a5 5 0 0 1-10 0L6 3z"/></svg></div>
+          <h3>Carta cliente elegante</h3>
+          <p>Zero app da scaricare: si apre nel browser. Schede vino chiare, ricerca e filtri, sempre aggiornata in tempo reale.</p>
+        </article>
+        <article class="feature reveal" data-d="1">
+          <div class="f-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></div>
+          <h3>Gestione del locale</h3>
+          <p>Modalità manager e tracker: aggiorni prezzi e giacenze, segui cosa gira, tieni la carta viva senza ristampare.</p>
+        </article>
+        <article class="feature reveal" data-d="2">
+          <div class="f-icon gold"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+          <h3>Multi-locale</h3>
+          <p>Un solo sistema, tante insegne. Il nome del locale non è cablato: ogni carta ha la sua identità.</p>
+        </article>
+        <article class="feature wide reveal">
+          <div>
+            <div class="f-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18"/></svg></div>
+            <h3>Trova il vino a sensazione</h3>
+            <p>Il cliente non deve conoscere le etichette: sceglie per come si sente. Scopri, Swipe, Mappa dei vini — tre modi diversi di lasciarsi guidare.</p>
+          </div>
+          <div class="demo-chips" aria-hidden="true">
+            <span class="q">"Vorrei qualcosa di…"</span>
+            <span class="chip on">fresco</span><span class="chip">strutturato</span><span class="chip on">minerale</span><span class="chip">morbido</span><span class="chip">da tutto pasto</span><span class="chip">bollicine</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- BRAIN -->
+  <section class="brain section-pad" id="cervello">
+    <div class="wrap brain-grid">
+      <div>
+        <span class="eyebrow">La differenza</span>
+        <h2>Non copia le descrizioni. Le calcola.</h2>
+        <p>Dietro Cantera c'è un cervello enologico: dato un vino — uvaggio, tipo, denominazione, terroir — ne ricostruisce il profilo su 10 assi sensoriali. Deterministico, verificabile, a costo zero per profilo.</p>
+        <div class="flow">
+          <div class="flow-step"><span class="k">01</span><div><b>Parti dal vino.</b> <span>Uvaggio, tipologia, denominazione, luogo, annata.</span></div></div>
+          <div class="flow-step"><span class="k">02</span><div><b>Il motore ragiona.</b> <span>194 vitigni profilati, 44 denominazioni, 29 terroir e la grammatica dei modificatori.</span></div></div>
+          <div class="flow-step"><span class="k">03</span><div><b>Ottieni il profilo.</b> <span>Assi, equilibrio, aromi, temperatura di servizio — con un indice di confidenza.</span></div></div>
+        </div>
+      </div>
+      <div class="radar-wrap reveal">
+        <div class="radar-card">
+          <div class="rs">Profilo · confidenza alta</div>
+          <div class="rt" style="margin-bottom:14px">Barolo · Nebbiolo · 2019</div>
+          <svg viewBox="0 0 260 220" width="100%" role="img" aria-label="Grafico radar del profilo sensoriale">
+            <g fill="none" stroke="rgba(255,255,255,.14)" stroke-width="1">
+              <polygon points="130,20 227,75 227,165 130,200 33,165 33,75"/>
+              <polygon points="130,56 195,93 195,148 130,168 65,148 65,93"/>
+              <polygon points="130,92 163,110 163,131 130,137 97,131 97,110"/>
+            </g>
+            <g font-family="'SF Mono',monospace" font-size="10" fill="#b8ad9f">
+              <text x="130" y="12" text-anchor="middle">corpo</text>
+              <text x="234" y="74" text-anchor="start">tannino</text>
+              <text x="234" y="170" text-anchor="start">acidità</text>
+              <text x="130" y="215" text-anchor="middle">dolcezza</text>
+              <text x="26" y="170" text-anchor="end">alcol</text>
+              <text x="26" y="74" text-anchor="end">aroma</text>
+            </g>
+            <polygon points="130,28 210,84 208,150 130,178 70,140 60,92" fill="rgba(154,122,80,.28)" stroke="#c9a24a" stroke-width="2"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section-pad cta-band" id="contatto">
+    <div class="wrap">
+      <div class="cta-card reveal">
+        <span class="eyebrow" style="justify-content:center">Porta Cantera dalla tua parte</span>
+        <h2 id="ctaTitle">La tua carta dei vini,<br/>finalmente viva.</h2>
+        <p id="ctaLede">Ti mostriamo Cantera sulla tua carta reale. Nessun impegno — solo il tuo vino, come non l'hai mai visto.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="mailto:eneapesaresi11@gmail.com?subject=Demo%20Cantera" id="ctaBtn">Richiedi una demo <span class="btn-arrow" aria-hidden="true">→</span></a>
+          <a class="btn btn-ghost" href="demo.html">Prova la demo cliente</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap foot">
+      <a href="#top" class="brand">Cantera<span class="dot" aria-hidden="true"></span></a>
+      <nav class="foot-links" aria-label="Footer">
+        <a href="#prodotto">Il prodotto</a><a href="#cervello">Il cervello</a><a href="demo.html">Demo</a><a href="#contatto">Contatto</a>
+      </nav>
+      <div class="foot-copy">© <span id="year">2026</span> Cantera — carta dei vini digitale per la ristorazione.</div>
+    </div>
+  </footer>
+
+  <script>
+    // ---------- PERSONA CONTENT ----------
+    var PERSONA = {
+      ristoratore: {
+        eyebrow: 'Per chi ha un locale',
+        title: 'La carta dei vini<br>che <em>lavora</em> per te.',
+        lede: 'Gestisci carta e stampe, spingi i vini che ti rendono di più e offri un\'esperienza che i clienti ricordano. Consulenza digitale inclusa.',
+        cta: 'Richiedi una demo',
+        benefits: ['Carta e stampe sempre aggiornate, senza ristampe', 'Metti in evidenza i vini che vuoi valorizzare', 'Impaginazione interattiva + consulenza digitale inclusa'],
+        ctaTitle: 'La tua carta dei vini,<br>finalmente viva.',
+        ctaLede: 'Ti mostriamo Cantera sulla tua carta reale. Nessun impegno — solo il tuo vino, come non l\'hai mai visto.'
+      },
+      rappresentante: {
+        eyebrow: 'Per agenti e distributori',
+        title: 'Un servizio in più<br>da <em>offrire</em>.',
+        lede: 'Porta Cantera nei tuoi locali come valore aggiunto. Rafforzi la relazione, posizioni meglio i vini giusti e apri una nuova leva commerciale.',
+        cta: 'Diventa partner',
+        benefits: ['Un servizio che ti distingue dagli altri agenti', 'Posiziona i vini del tuo portafoglio nelle carte', 'Una nuova leva di vendita e di relazione'],
+        ctaTitle: 'Offri qualcosa<br>che nessuno offre.',
+        ctaLede: 'Ti mostriamo come proporre Cantera ai tuoi locali come servizio a valore aggiunto. Parliamone.'
+      },
+      produttore: {
+        eyebrow: 'Per cantine e produttori',
+        title: 'I tuoi vini,<br>sotto <em>i riflettori</em>.',
+        lede: 'Entra nelle carte con la storia giusta: terroir, profilo, racconto. Dai visibilità alle tue etichette dove si decide davvero cosa bere.',
+        cta: 'Promuovi i tuoi vini',
+        benefits: ['Visibilità delle tue etichette nelle carte digitali', 'Racconta terroir e profilo, non solo il nome', 'Posizionamento sui vini che vuoi spingere'],
+        ctaTitle: 'Dove si sceglie<br>cosa bere, ci sei.',
+        ctaLede: 'Ti mostriamo come dare ai tuoi vini il palcoscenico che meritano dentro le carte dei locali.'
+      }
+    };
+    var PERSONAS = ['ristoratore','rappresentante','produttore'];
+    var STORE_KEY = 'cantera_persona';
+
+    function checkIcon(){ return '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>'; }
+
+    function applyPersona(p, animate){
+      if(PERSONAS.indexOf(p) < 0) p = 'ristoratore';
+      var data = PERSONA[p];
+      document.body.setAttribute('data-persona', p);
+
+      function paint(){
+        document.getElementById('heroEyebrow').textContent = data.eyebrow;
+        document.getElementById('heroTitle').innerHTML = data.title;
+        document.getElementById('heroLede').textContent = data.lede;
+        document.getElementById('heroCta').innerHTML = data.cta + ' <span class="btn-arrow" aria-hidden="true">→</span>';
+        document.getElementById('navCta').innerHTML = data.cta + ' <span class="btn-arrow" aria-hidden="true">→</span>';
+        document.getElementById('ctaBtn').innerHTML = data.cta + ' <span class="btn-arrow" aria-hidden="true">→</span>';
+        document.getElementById('ctaTitle').innerHTML = data.ctaTitle;
+        document.getElementById('ctaLede').textContent = data.ctaLede;
+        document.getElementById('heroBenefits').innerHTML = data.benefits.map(function(b){
+          return '<li><span class="bic" aria-hidden="true">'+checkIcon()+'</span><span>'+b+'</span></li>';
+        }).join('');
+      }
+
+      if(animate){
+        document.body.classList.add('swapping');
+        setTimeout(function(){ paint(); document.body.classList.remove('swapping'); }, 220);
+      } else { paint(); }
+
+      // switcher state
+      Array.prototype.forEach.call(document.querySelectorAll('.ps-btn'), function(b){
+        b.setAttribute('aria-pressed', b.getAttribute('data-persona')===p ? 'true':'false');
+      });
+      try { localStorage.setItem(STORE_KEY, p); } catch(e){}
+      try {
+        var u = new URL(window.location.href); u.searchParams.set('p', p);
+        window.history.replaceState(null, '', u);
+      } catch(e){}
+    }
+
+    // ---------- ENTRY OVERLAY ----------
+    var entry = document.getElementById('entry');
+    function closeEntry(){ entry.setAttribute('hidden',''); }
+    function openEntry(){ entry.removeAttribute('hidden'); }
+
+    (function initPersona(){
+      var params = new URLSearchParams(window.location.search);
+      var fromUrl = params.get('p');
+      var stored = null; try { stored = localStorage.getItem(STORE_KEY); } catch(e){}
+
+      if(fromUrl && PERSONAS.indexOf(fromUrl) >= 0){
+        applyPersona(fromUrl, false); closeEntry();
+      } else if(stored && PERSONAS.indexOf(stored) >= 0){
+        applyPersona(stored, false); closeEntry();
+      } else {
+        applyPersona('ristoratore', false); openEntry(); // prima visita → mostra le porte
+      }
+    })();
+
+    // doors
+    Array.prototype.forEach.call(document.querySelectorAll('.door'), function(d){
+      d.addEventListener('click', function(){ applyPersona(d.getAttribute('data-persona'), false); closeEntry(); });
+    });
+    document.getElementById('entrySkip').addEventListener('click', function(){ closeEntry(); });
+    entry.addEventListener('click', function(e){ if(e.target===entry) closeEntry(); });
+
+    // switcher
+    Array.prototype.forEach.call(document.querySelectorAll('.ps-btn'), function(b){
+      b.addEventListener('click', function(){ applyPersona(b.getAttribute('data-persona'), true); });
+    });
+
+    // ---------- HEADER + REVEAL ----------
+    var header = document.getElementById('header');
+    var onScroll = function(){ header.classList.toggle('scrolled', window.scrollY > 8); };
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    try { document.getElementById('year').textContent = new Date().getFullYear(); } catch(e){}
+
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var reveals = document.querySelectorAll('.reveal');
+    if(reduce || !('IntersectionObserver' in window)){
+      reveals.forEach(function(el){ el.classList.add('in'); });
+    } else {
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      reveals.forEach(function(el){ io.observe(el); });
+    }
+  </script>
+</body>
+</html>
