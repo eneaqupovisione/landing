@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
   <style>
     :root {
-      /* Palette Cantera (coerente con index.html) */
       --bg: #faf8f4;
       --bg-warm: #f4efe6;
       --surface: #ffffff;
@@ -26,7 +25,6 @@
       --gold: #9a7a50;
       --gold-soft: #f0e9d6;
 
-      /* Colore-persona (cambia con l'ingresso scelto) */
       --brand: #8a1f1a;
       --brand-soft: #f6e9e7;
 
@@ -92,7 +90,7 @@
     .nav-links { display: flex; align-items: center; gap: 30px; }
     .nav-links a.link { font-family: var(--mono); font-size: 13px; letter-spacing: .02em; color: var(--muted); transition: color .2s ease; white-space: nowrap; }
     .nav-links a.link:hover { color: var(--ink); }
-    @media (max-width: 780px) { .nav-links a.link { display: none; } }
+    @media (max-width: 820px) { .nav-links a.link { display: none; } }
 
     /* ---------- BUTTONS ---------- */
     .btn {
@@ -111,98 +109,70 @@
     .btn-arrow { transition: transform .2s ease; }
     .btn:hover .btn-arrow { transform: translateX(3px); }
 
-    /* ---------- PERSONA SWITCH ---------- */
-    .persona-switch { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 30px; }
-    .ps-label { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); margin-right: 4px; }
-    .ps-btn {
-      font-family: var(--mono); font-size: 12.5px; padding: 8px 15px; min-height: 40px;
-      border-radius: 999px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--muted);
-      cursor: pointer; transition: all .2s ease;
-    }
-    .ps-btn:hover { color: var(--ink); border-color: var(--ink); }
-    .ps-btn[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: #fff; box-shadow: var(--shadow-sm); }
-
-    /* ---------- HERO ---------- */
-    .hero { position: relative; padding-top: clamp(44px, 7vw, 84px); padding-bottom: clamp(48px, 8vw, 96px); }
-    .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(32px, 5vw, 72px); align-items: center; }
-    @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 52px; } }
-
-    .hero h1 { font-size: clamp(38px, 6.6vw, 72px); transition: opacity .35s ease; }
+    /* ---------- HERO (universale, centrato, spazioso) ---------- */
+    .hero { position: relative; text-align: center; padding-top: clamp(56px, 9vw, 110px); padding-bottom: clamp(56px, 9vw, 110px); }
+    .hero-inner { max-width: 880px; margin-inline: auto; }
+    .hero h1 { font-size: clamp(40px, 7.4vw, 82px); margin-top: 20px; }
     .hero h1 em { font-style: italic; color: var(--brand); transition: color .4s ease; }
-    .hero .lede { margin-top: 22px; font-size: clamp(17px, 2.2vw, 20px); color: var(--muted); max-width: 36ch; transition: opacity .35s ease; }
-    .hero .cta-row { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 14px; }
-    .swapping .hero h1, .swapping .hero .lede, .swapping #heroBenefits { opacity: 0; }
+    .hero .lede { margin: 26px auto 0; max-width: 60ch; font-size: clamp(17px, 2.2vw, 21px); color: var(--muted); }
+    .hero .cta-row { margin-top: 36px; display: flex; gap: 22px; justify-content: center; align-items: center; flex-wrap: wrap; }
+    .hero-link { font-family: var(--mono); font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--line-strong); padding-bottom: 2px; transition: color .2s ease, border-color .2s ease; }
+    .hero-link:hover { color: var(--ink); border-color: var(--ink); }
 
-    #heroBenefits { list-style: none; margin-top: 26px; display: flex; flex-direction: column; gap: 11px; transition: opacity .35s ease; }
-    #heroBenefits li { display: flex; align-items: flex-start; gap: 11px; font-size: 15.5px; color: #3a332d; }
-    #heroBenefits .bic { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--brand-soft); color: var(--brand); display: grid; place-items: center; margin-top: 1px; transition: background .4s ease, color .4s ease; }
-
-    /* ---------- LIVE DEMO DEVICE (iframe reale della demo) ---------- */
-    .device-wrap { position: relative; display: flex; justify-content: center; }
-    .device {
-      position: relative; width: min(340px, 84vw); flex: none;
-      border-radius: 42px; padding: 12px;
-      background: linear-gradient(158deg, #2b2622, #131110);
-      box-shadow: var(--shadow-lg), inset 0 0 0 1px rgba(255,255,255,.06);
-    }
-    .device::after { /* notch */
-      content: ""; position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
-      width: 116px; height: 26px; background: #131110; border-radius: 0 0 16px 16px; z-index: 4;
-    }
-    .device-screen {
-      position: relative; border-radius: 30px; overflow: hidden; background: var(--bg);
-      aspect-ratio: 320 / 680;
-    }
-    .device-screen iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; z-index: 2; }
-    /* copre l'iframe: preview non-interattiva che apre la demo intera */
-    .device-screen .screen-link { position: absolute; inset: 0; z-index: 3; display: block; }
-    /* poster di riserva (mostrato se il framing è bloccato) */
-    .device-poster { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; text-align: center; padding: 22px; background: var(--bg-warm); }
-    .device-poster svg { margin: 0 auto 12px; color: var(--wine); }
-    .dp-name { font-family: var(--serif); font-weight: 700; font-size: 18px; }
-    .dp-sub { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
-    .dp-open { font-family: var(--mono); font-size: 11px; color: var(--faint); margin-top: 16px; }
-    .device-badge {
-      position: absolute; right: -18px; bottom: 22px; z-index: 6;
-      background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow);
-      padding: 11px 14px; display: flex; align-items: center; gap: 11px; max-width: 236px;
-    }
-    .device-badge .db-dot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: #3a9a5a; box-shadow: 0 0 0 4px rgba(58,154,90,.16); }
-    .device-badge b { font-family: var(--serif); font-size: 13px; display: block; }
-    .device-badge small { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: .02em; }
-    @media (max-width: 460px) { .device-badge { position: static; margin: 16px auto 0; max-width: none; } .device-wrap { flex-direction: column; } }
-
-    /* ---------- BENEFIT RIBBON (sostituisce le vanity-stat) ---------- */
+    /* ---------- BENEFIT RIBBON ---------- */
     .ribbon { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--bg-warm); }
     .ribbon-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
     @media (max-width: 720px) { .ribbon-grid { grid-template-columns: 1fr; } }
-    .rib {
-      display: flex; align-items: flex-start; gap: 14px;
-      padding: clamp(22px, 3.4vw, 32px) var(--pad); border-left: 1px solid var(--line);
-    }
+    .rib { display: flex; align-items: flex-start; gap: 14px; padding: clamp(22px, 3.4vw, 32px) var(--pad); border-left: 1px solid var(--line); }
     .rib:first-child { border-left: none; }
     @media (max-width: 720px) { .rib { border-left: none; border-top: 1px solid var(--line); } .rib:first-child { border-top: none; } }
     .rib .ri { flex: none; width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; background: var(--surface); border: 1px solid var(--line); color: var(--brand); }
     .rib b { font-family: var(--serif); font-size: 17px; font-weight: 700; display: block; }
     .rib span { font-size: 14px; color: var(--muted); }
 
+    /* ---------- POUR (vino versato allo scroll) ---------- */
+    .pour { position: relative; background: #1c0a14; }
+    .pour-track { position: relative; height: 360vh; }
+    .pour-stage { position: sticky; top: 0; height: 100vh; overflow: hidden; display: grid; place-items: center; background: radial-gradient(130% 90% at 50% -10%, #3a1120, #1c0a14 68%); }
+    /* liquido che sale, con superficie a onde sinuose che scorrono */
+    /* un unico corpo di vino a sfumatura continua; l'onda è solo la maschera del bordo alto */
+    .pour-liquid {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      height: calc(var(--fill, 0) * 120%);
+      --wl: 384px; pointer-events: none; will-change: height;
+      background: linear-gradient(180deg, #7d1638 0%, #611130 24%, #45091f 62%, #300718 100%);
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 100' preserveAspectRatio='none'%3E%3Cpath d='M0,50 C20,4.7 30,4.7 50,50 C70,79.3 80,79.3 100,50 C120,23.3 130,23.3 150,50 C170,90 180,90 200,50 C220,-3.3 230,-3.3 250,50 C270,74 280,74 300,50 L300,100 L0,100 Z' fill='%23ffffff'/%3E%3C/svg%3E"), linear-gradient(#fff, #fff);
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 100' preserveAspectRatio='none'%3E%3Cpath d='M0,50 C20,4.7 30,4.7 50,50 C70,79.3 80,79.3 100,50 C120,23.3 130,23.3 150,50 C170,90 180,90 200,50 C220,-3.3 230,-3.3 250,50 C270,74 280,74 300,50 L300,100 L0,100 Z' fill='%23ffffff'/%3E%3C/svg%3E"), linear-gradient(#fff, #fff);
+      -webkit-mask-repeat: repeat-x, no-repeat;
+      mask-repeat: repeat-x, no-repeat;
+      -webkit-mask-size: calc(var(--wl) * 3) 132px, 100% max(0px, calc(100% - 130px));
+      mask-size: calc(var(--wl) * 3) 132px, 100% max(0px, calc(100% - 130px));
+      -webkit-mask-position: calc(var(--fill, 0) * -900px) top, left bottom;
+      mask-position: calc(var(--fill, 0) * -900px) top, left bottom;
+    }
+
+    .pour-content { position: relative; z-index: 2; text-align: center; max-width: 760px; padding: 0 24px; }
+    .pour-eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+    .pour-lines { margin-top: 26px; display: flex; flex-direction: column; gap: clamp(14px, 2.4vw, 26px); }
+    .pl { font-family: var(--serif); font-weight: 600; font-size: clamp(22px, 3.6vw, 40px); line-height: 1.18; color: rgba(255,255,255,.13); opacity: .5; transform: translateY(16px); transition: color .7s ease, opacity .7s ease, transform .7s ease; }
+    .pl.lit { color: #fff; opacity: 1; transform: none; }
+    .pl-final { font-family: var(--serif); font-style: italic; font-size: clamp(24px, 4.2vw, 48px); }
+    .pour-hint { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); z-index: 2; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: rgba(255,255,255,.42); transition: opacity .4s ease; }
+    .pour-hint::after { content: ""; display: block; width: 1px; height: 26px; margin: 8px auto 0; background: linear-gradient(rgba(255,255,255,.5), transparent); }
+
     /* ---------- SECTIONS ---------- */
     section { position: relative; }
-    .section-pad { padding-block: clamp(64px, 10vw, 128px); }
-    .section-head { max-width: 660px; margin-bottom: clamp(40px, 6vw, 60px); }
+    .section-pad { padding-block: clamp(72px, 11vw, 140px); }
+    .section-head { max-width: 680px; margin-bottom: clamp(44px, 6vw, 64px); }
     .section-head.center { margin-inline: auto; text-align: center; }
     .section-head.center .eyebrow { justify-content: center; }
     .section-head h2 { font-size: clamp(30px, 4.5vw, 48px); margin-top: 16px; }
     .section-head p { margin-top: 18px; color: var(--muted); font-size: clamp(16px, 2vw, 18.5px); }
 
-    /* ---------- DUE MONDI: CLIENTE vs ADMIN ---------- */
+    /* ---------- DUE MONDI ---------- */
     .worlds { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     @media (max-width: 880px) { .worlds { grid-template-columns: 1fr; } }
-    .world {
-      background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
-      padding: clamp(26px, 3vw, 36px) clamp(24px, 3vw, 34px); position: relative; overflow: hidden;
-      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
-    }
+    .world { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(28px, 3.2vw, 40px) clamp(26px, 3.2vw, 38px); position: relative; overflow: hidden; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
     .world:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--line-strong); }
     .world::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--wc); }
     .world.cliente { --wc: var(--accent); }
@@ -210,18 +180,17 @@
     .w-side { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--wc); display: inline-flex; align-items: center; gap: 9px; }
     .w-side .wdot { width: 8px; height: 8px; border-radius: 50%; background: var(--wc); }
     .world h3 { font-size: clamp(22px, 3vw, 27px); margin-top: 12px; }
-    .world > p { color: var(--muted); font-size: 15px; margin-top: 8px; }
-    .w-list { list-style: none; margin-top: 20px; }
-    .w-item { display: flex; gap: 13px; padding: 14px 0; border-top: 1px solid var(--line); }
+    .world > p { color: var(--muted); font-size: 15.5px; margin-top: 10px; }
+    .w-list { list-style: none; margin-top: 22px; }
+    .w-item { display: flex; gap: 13px; padding: 15px 0; border-top: 1px solid var(--line); }
     .w-item .wi { flex: none; width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; background: color-mix(in srgb, var(--wc) 10%, transparent); color: var(--wc); }
     .w-item b { font-family: var(--serif); font-weight: 700; font-size: 15.5px; }
     .w-item span { display: block; font-size: 13.5px; color: var(--muted); margin-top: 1px; }
-    .w-cta { margin-top: 22px; }
 
-    /* ---------- PILASTRI (3 card valore) ---------- */
+    /* ---------- PILASTRI ---------- */
     .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
     @media (max-width: 900px) { .pillars { grid-template-columns: 1fr; } }
-    .pillar { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 30px 28px 32px; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+    .pillar { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 32px 30px 34px; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
     .pillar:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--line-strong); }
     .p-icon { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); margin-bottom: 18px; }
     .p-icon.wine { background: var(--wine-soft); color: var(--wine); }
@@ -231,7 +200,7 @@
     .p-tags { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 6px; }
     .p-tags span { font-family: var(--mono); font-size: 11px; padding: 4px 10px; border-radius: 999px; background: var(--bg-warm); color: var(--muted); border: 1px solid var(--line); }
 
-    /* ---------- BRAIN (il motore) ---------- */
+    /* ---------- BRAIN ---------- */
     .brain { background: var(--ink); color: #efe9df; overflow: hidden; }
     .brain .eyebrow { color: var(--gold); }
     .brain .eyebrow::before { background: var(--gold); }
@@ -248,11 +217,51 @@
     .radar-card { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); border-radius: var(--radius-lg); padding: 28px; width: 100%; max-width: 380px; }
     .radar-card .rt { font-family: var(--serif); font-size: 17px; color: #fbf7ef; }
     .radar-card .rs { font-family: var(--mono); font-size: 11px; color: var(--gold); letter-spacing: .06em; margin-bottom: 8px; }
-    .radar-poly { transition: none; }
-    @media (prefers-reduced-motion: no-preference) {
-      .radar-poly { animation: radarPulse 5.5s ease-in-out infinite; transform-origin: 130px 110px; }
-    }
+    @media (prefers-reduced-motion: no-preference) { .radar-poly { animation: radarPulse 5.5s ease-in-out infinite; transform-origin: 130px 110px; } }
     @keyframes radarPulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: .82; } }
+
+    /* ---------- DEMO BOX (separato) ---------- */
+    .demo-box { display: grid; grid-template-columns: .92fr 1.08fr; gap: clamp(30px, 5vw, 64px); align-items: center; }
+    @media (max-width: 860px) { .demo-box { grid-template-columns: 1fr; } }
+    .demo-copy h2 { font-size: clamp(28px, 4vw, 46px); margin-top: 14px; }
+    .demo-copy p { margin-top: 16px; color: var(--muted); font-size: 16.5px; max-width: 44ch; }
+    .demo-copy .btn { margin-top: 26px; }
+    .demo-preview { display: flex; justify-content: center; }
+    .demo-frame { width: min(320px, 82vw); background: var(--surface); border: 1px solid var(--line-strong); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-lg); }
+    .demo-bar { display: flex; align-items: center; gap: 7px; padding: 11px 14px; background: var(--bg-warm); border-bottom: 1px solid var(--line); }
+    .demo-bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--line-strong); display: block; }
+    .demo-bar em { font-family: var(--mono); font-style: normal; font-size: 10.5px; color: var(--faint); margin-left: 8px; letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .demo-screen { position: relative; aspect-ratio: 320 / 600; background: var(--bg); }
+    .demo-screen iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; z-index: 2; }
+    .demo-screen .screen-link { position: absolute; inset: 0; z-index: 3; display: block; }
+    .demo-poster { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; text-align: center; padding: 22px; background: var(--bg-warm); }
+    .demo-poster svg { margin: 0 auto 12px; color: var(--wine); }
+    .dp-name { font-family: var(--serif); font-weight: 700; font-size: 18px; }
+    .dp-sub { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+    .dp-open { font-family: var(--mono); font-size: 11px; color: var(--faint); margin-top: 16px; }
+
+    /* ---------- PERCORSO (scelta persona, non bloccante) ---------- */
+    .doors { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 720px) { .doors { grid-template-columns: 1fr; } }
+    .doors-inline { max-width: 940px; margin-inline: auto; }
+    .door { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 24px 22px; cursor: pointer; transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; position: relative; overflow: hidden; }
+    .door::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--dc); transform: scaleX(0); transform-origin: left; transition: transform .3s ease; }
+    .door:hover { transform: translateY(-5px); box-shadow: var(--shadow); border-color: var(--line-strong); }
+    .door:hover::before, .door[aria-pressed="true"]::before { transform: scaleX(1); }
+    .door[aria-pressed="true"] { border-color: var(--dc); box-shadow: var(--shadow); }
+    .door .d-ic { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; background: var(--dc-soft); color: var(--dc); margin-bottom: 16px; }
+    .door h3 { font-family: var(--serif); font-size: 20px; font-weight: 700; }
+    .door .d-role { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--dc); margin-bottom: 4px; }
+    .door p { color: var(--muted); font-size: 14px; margin-top: 8px; }
+    .door-r   { --dc: #8a1f1a; --dc-soft: #f6e9e7; }
+    .door-rap { --dc: #2f5c9e; --dc-soft: #eaf0f8; }
+    .door-p   { --dc: #a9762a; --dc-soft: #f0e9d6; }
+    .persona-benefits { max-width: 940px; margin: 26px auto 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(24px, 3vw, 34px); box-shadow: var(--shadow-sm); }
+    .pb-head { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--brand); transition: color .4s ease; }
+    .pb-list { list-style: none; margin-top: 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 720px) { .pb-list { grid-template-columns: 1fr; } }
+    .pb-list li { display: flex; gap: 11px; align-items: flex-start; font-size: 15px; color: #3a332d; }
+    .pb-list .pb-ic { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--brand-soft); color: var(--brand); display: grid; place-items: center; margin-top: 1px; transition: background .4s ease, color .4s ease; }
 
     /* ---------- CTA BAND ---------- */
     .cta-band { text-align: center; }
@@ -277,83 +286,19 @@
     .reveal[data-d="2"] { transition-delay: .14s; }
     .reveal[data-d="3"] { transition-delay: .21s; }
     @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1 !important; transform: none !important; transition: none !important; } }
-
-    /* ---------- ENTRY OVERLAY (le tre porte) ---------- */
-    .entry { position: fixed; inset: 0; z-index: 200; background: rgba(26,23,20,.55); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); display: grid; place-items: center; padding: 24px; }
-    .entry[hidden] { display: none; }
-    .entry-inner { animation: entryUp .45s cubic-bezier(.2,.8,.2,1) both; }
-    @keyframes entryUp { from { opacity: 0; transform: translateY(20px) scale(.98); } to { opacity: 1; transform: none; } }
-    @media (prefers-reduced-motion: reduce) { .entry-inner { animation: none; } }
-    .entry-card { background: var(--bg); border-radius: 24px; box-shadow: var(--shadow-lg); max-width: 900px; width: 100%; padding: clamp(28px, 5vw, 52px); max-height: 92vh; overflow-y: auto; }
-    .entry .eyebrow { color: var(--gold); } .entry .eyebrow::before { background: var(--gold); }
-    .entry h2 { font-family: var(--serif); font-size: clamp(26px, 4vw, 42px); margin-top: 14px; }
-    .entry .sub { color: var(--muted); margin-top: 12px; font-size: 16px; max-width: 52ch; }
-    .doors { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 30px; }
-    @media (max-width: 720px) { .doors { grid-template-columns: 1fr; } }
-    .door { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 24px 22px; cursor: pointer; transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; position: relative; overflow: hidden; }
-    .door::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--dc); transform: scaleX(0); transform-origin: left; transition: transform .3s ease; }
-    .door:hover { transform: translateY(-5px); box-shadow: var(--shadow); border-color: var(--line-strong); }
-    .door:hover::before { transform: scaleX(1); }
-    .door .d-ic { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; background: var(--dc-soft); color: var(--dc); margin-bottom: 16px; }
-    .door h3 { font-family: var(--serif); font-size: 20px; font-weight: 700; }
-    .door .d-role { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--dc); margin-bottom: 4px; }
-    .door p { color: var(--muted); font-size: 14px; margin-top: 8px; }
-    .door .d-go { margin-top: 14px; font-family: var(--mono); font-size: 12px; color: var(--ink); display: inline-flex; align-items: center; gap: 6px; }
-    .door .d-go span { transition: transform .2s ease; }
-    .door:hover .d-go span { transform: translateX(4px); }
-    .door-r   { --dc: #8a1f1a; --dc-soft: #f6e9e7; }
-    .door-rap { --dc: #2f5c9e; --dc-soft: #eaf0f8; }
-    .door-p   { --dc: #a9762a; --dc-soft: #f0e9d6; }
-    .entry-skip { margin-top: 24px; background: none; border: none; cursor: pointer; font-family: var(--mono); font-size: 12.5px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
-    .entry-skip:hover { color: var(--ink); }
   </style>
 </head>
 <body data-persona="ristoratore">
-
-  <!-- ENTRY OVERLAY: le tre porte -->
-  <div class="entry" id="entry" hidden>
-    <div class="entry-inner">
-      <div class="entry-card">
-        <span class="eyebrow">Benvenuto in Cantera</span>
-        <h2>Da dove arrivi?</h2>
-        <p class="sub">Cantera parla tre lingue diverse. Dicci chi sei e ti mostriamo la parte che conta per te — puoi cambiare quando vuoi.</p>
-        <div class="doors">
-          <button class="door door-r" data-persona="ristoratore">
-            <div class="d-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5M4 9v11h16V9M4 9h16"/><path d="M9 20v-6h6v6"/></svg></div>
-            <div class="d-role">Ho un locale</div>
-            <h3>Ristoratore</h3>
-            <p>Gestisco carta, scorte e stampe, valorizzo i miei vini e offro un'esperienza migliore al tavolo.</p>
-            <span class="d-go">Entra <span aria-hidden="true">→</span></span>
-          </button>
-          <button class="door door-rap" data-persona="rappresentante">
-            <div class="d-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v13H3zM8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 12h18"/></svg></div>
-            <div class="d-role">Vendo vino</div>
-            <h3>Rappresentante</h3>
-            <p>Porto un servizio in più ai miei locali e posiziono meglio i vini del mio portafoglio.</p>
-            <span class="d-go">Entra <span aria-hidden="true">→</span></span>
-          </button>
-          <button class="door door-p" data-persona="produttore">
-            <div class="d-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M8 7h8l-1 4a3 3 0 0 1-6 0L8 7z"/><circle cx="7" cy="17" r="2.4"/><circle cx="12" cy="19" r="2.4"/><circle cx="17" cy="17" r="2.4"/></svg></div>
-            <div class="d-role">Faccio vino</div>
-            <h3>Produttore</h3>
-            <p>Voglio dare visibilità alle mie etichette, con terroir e racconto, dove si sceglie cosa bere.</p>
-            <span class="d-go">Entra <span aria-hidden="true">→</span></span>
-          </button>
-        </div>
-        <button class="entry-skip" id="entrySkip">Esplora liberamente <span aria-hidden="true">→</span></button>
-      </div>
-    </div>
-  </div>
 
   <!-- HEADER -->
   <header class="site-header" id="header">
     <div class="wrap nav">
       <a href="#top" class="brand">Cantera<span class="dot" aria-hidden="true"></span></a>
       <nav class="nav-links" aria-label="Principale">
+        <a class="link" href="#perche">Perché</a>
         <a class="link" href="#prodotto">Cliente &amp; Admin</a>
-        <a class="link" href="#valore">Cosa fa</a>
         <a class="link" href="#motore">Il motore</a>
-        <a class="link" data-demo href="#" target="_blank" rel="noopener">Demo</a>
+        <a class="link" href="#demo">Demo</a>
         <a class="btn btn-primary" href="#contatto" id="navCta">Richiedi una demo <span class="btn-arrow" aria-hidden="true">→</span></a>
       </nav>
     </div>
@@ -361,47 +306,13 @@
 
   <!-- HERO -->
   <section class="hero" id="top">
-    <div class="wrap hero-grid">
-      <div class="hero-copy">
-        <span class="eyebrow" id="heroEyebrow">Per chi ha un locale</span>
-        <h1 id="heroTitle">La carta dei vini<br/>che <em>lavora</em> per te.</h1>
-        <p class="lede" id="heroLede">Scorte, prezzi e anagrafiche sotto controllo. La carta — web e PDF — si aggiorna da sola. E l'app conosce i tuoi vini abbastanza da darti una consulenza.</p>
-
-        <ul id="heroBenefits"></ul>
-
-        <div class="cta-row">
-          <a class="btn btn-primary" href="#contatto" id="heroCta">Richiedi una demo <span class="btn-arrow" aria-hidden="true">→</span></a>
-          <a class="btn btn-ghost" data-demo href="#" target="_blank" rel="noopener">Prova la demo <span class="btn-arrow" aria-hidden="true">→</span></a>
-        </div>
-
-        <div class="persona-switch" role="group" aria-label="Chi sei?">
-          <span class="ps-label">Sono un…</span>
-          <button class="ps-btn" data-persona="ristoratore" aria-pressed="true">Ristoratore</button>
-          <button class="ps-btn" data-persona="rappresentante" aria-pressed="false">Rappresentante</button>
-          <button class="ps-btn" data-persona="produttore" aria-pressed="false">Produttore</button>
-        </div>
-      </div>
-
-      <!-- LIVE DEMO: iframe reale della demo (repo separata) -->
-      <div class="device-wrap reveal" data-d="2">
-        <div class="device">
-          <div class="device-screen">
-            <div class="device-poster" aria-hidden="true">
-              <div>
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8M12 15v7M6 3h12l-1 6a5 5 0 0 1-10 0L6 3z"/></svg>
-                <div class="dp-name">Osteria del Melograno</div>
-                <div class="dp-sub">Carta dei vini · demo</div>
-                <div class="dp-open">Tocca per aprire →</div>
-              </div>
-            </div>
-            <iframe id="demoFrame" title="Anteprima dal vivo della carta Cantera" loading="lazy" tabindex="-1" scrolling="no"></iframe>
-            <a class="screen-link" data-demo href="#" target="_blank" rel="noopener" aria-label="Apri la demo completa"></a>
-          </div>
-        </div>
-        <div class="device-badge" aria-hidden="true">
-          <span class="db-dot"></span>
-          <div><b>Anteprima dal vivo</b><small>è la demo reale, non un'immagine</small></div>
-        </div>
+    <div class="wrap hero-inner">
+      <span class="eyebrow">Carta dei vini digitale · per la ristorazione</span>
+      <h1>Una carta dei vini<br/>che <em>lavora</em>. Per tutti.</h1>
+      <p class="lede">Elegante per chi la sfoglia, potente per chi la gestisce, con un motore che conosce ogni vino. Cantera vive nel telefono del cliente e nel retro del locale: sempre aggiornata, mai ristampata.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#contatto">Richiedi una demo <span class="btn-arrow" aria-hidden="true">→</span></a>
+        <a class="hero-link" href="#demo">Guarda com'è dal vivo →</a>
       </div>
     </div>
   </section>
@@ -410,7 +321,7 @@
   <section class="ribbon" aria-label="In sintesi">
     <div class="ribbon-grid">
       <div class="rib reveal">
-        <div class="ri" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="9"/></svg></div>
+        <div class="ri" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M7 12h10"/></svg></div>
         <div><b>Zero app da scaricare</b><span>Si apre nel browser, dal telefono del cliente.</span></div>
       </div>
       <div class="rib reveal" data-d="1">
@@ -424,17 +335,36 @@
     </div>
   </section>
 
+  <!-- POUR: il vino versato (perché Cantera) -->
+  <section class="pour" id="perche" aria-label="Perché Cantera">
+    <div class="pour-track">
+      <div class="pour-stage">
+        <div class="pour-liquid" aria-hidden="true"></div>
+        <div class="pour-content">
+          <span class="pour-eyebrow">Perché Cantera</span>
+          <div class="pour-lines">
+            <p class="pl" data-at="0.14">Una carta stampata invecchia il giorno dopo.</p>
+            <p class="pl" data-at="0.34">Il cliente ordina meglio quando capisce cosa sta bevendo.</p>
+            <p class="pl" data-at="0.54">Segnare un esaurito o ritoccare un prezzo è un tap, non una ristampa.</p>
+            <p class="pl" data-at="0.72">E la tua carta racconta chi sei: merita di essere viva.</p>
+            <p class="pl pl-final" data-at="0.9">Ecco perché esiste Cantera.</p>
+          </div>
+        </div>
+        <div class="pour-hint" id="pourHint" aria-hidden="true">scorri</div>
+      </div>
+    </div>
+  </section>
+
   <!-- DUE MONDI: CLIENTE vs ADMIN -->
   <section class="section-pad" id="prodotto">
     <div class="wrap">
       <div class="section-head reveal">
         <span class="eyebrow">Un prodotto, due lati</span>
         <h2>Il lato del cliente e il lato di chi gestisce.</h2>
-        <p>La stessa app, due esperienze. Al tavolo il cliente vive una carta elegante e interattiva; nel retro tu governi tutto — scorte, prezzi, stampe — senza mai ristampare.</p>
+        <p>La stessa app, due esperienze distinte. Al tavolo il cliente vive una carta elegante e interattiva, dal suo telefono. Nel retro tu governi tutto — vini, scorte, prezzi, stampe — e ogni modifica arriva subito, senza ristampare nulla.</p>
       </div>
 
       <div class="worlds">
-        <!-- CLIENTE -->
         <article class="world cliente reveal">
           <div class="w-side"><span class="wdot"></span>Per il tuo cliente</div>
           <h3>Sceglie il vino, come si sente.</h3>
@@ -461,10 +391,8 @@
               <div><b>Profilo sensoriale</b><span>Ogni vino letto su 10 assi, calcolati dal motore.</span></div>
             </li>
           </ul>
-          <a class="btn btn-ghost w-cta" data-demo href="#" target="_blank" rel="noopener">Apri la demo cliente <span class="btn-arrow" aria-hidden="true">→</span></a>
         </article>
 
-        <!-- ADMIN -->
         <article class="world admin reveal" data-d="1">
           <div class="w-side"><span class="wdot"></span>Per te che gestisci</div>
           <h3>Due modalità: Manager e Tracker.</h3>
@@ -487,7 +415,6 @@
               <div><b>Analisi della cantina</b><span>Fasce di prezzo, composizione, stili, buchi di gamma.</span></div>
             </li>
           </ul>
-          <a class="btn btn-ghost w-cta" data-demo href="#" target="_blank" rel="noopener">Guarda la gestione <span class="btn-arrow" aria-hidden="true">→</span></a>
         </article>
       </div>
     </div>
@@ -563,6 +490,69 @@
     </div>
   </section>
 
+  <!-- DEMO BOX (separato) -->
+  <section class="section-pad" id="demo">
+    <div class="wrap">
+      <div class="demo-box reveal">
+        <div class="demo-copy">
+          <span class="eyebrow">Guardala dal vivo</span>
+          <h2>La demo è già aperta.</h2>
+          <p>La carta del cliente, la ricerca a sensazione, la gestione del locale: è l'app vera, con una cantina di esempio. Nessuna registrazione, niente da installare.</p>
+          <a class="btn btn-primary" data-demo href="#" target="_blank" rel="noopener">Prova la demo <span class="btn-arrow" aria-hidden="true">→</span></a>
+        </div>
+        <div class="demo-preview">
+          <div class="demo-frame">
+            <div class="demo-bar" aria-hidden="true"><i></i><i></i><i></i><em>osteria del melograno · carta dei vini</em></div>
+            <div class="demo-screen">
+              <div class="demo-poster" aria-hidden="true">
+                <div>
+                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8M12 15v7M6 3h12l-1 6a5 5 0 0 1-10 0L6 3z"/></svg>
+                  <div class="dp-name">Osteria del Melograno</div>
+                  <div class="dp-sub">Carta dei vini · demo</div>
+                  <div class="dp-open">Tocca per aprire →</div>
+                </div>
+              </div>
+              <iframe id="demoFrame" title="Anteprima dal vivo della carta Cantera" loading="lazy" tabindex="-1" scrolling="no"></iframe>
+              <a class="screen-link" data-demo href="#" target="_blank" rel="noopener" aria-label="Apri la demo completa"></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PERCORSO: scelta persona (non bloccante) -->
+  <section class="section-pad" id="percorso" style="background:var(--bg-warm); border-block:1px solid var(--line);">
+    <div class="wrap">
+      <div class="section-head center reveal">
+        <span class="eyebrow">Fatta per te</span>
+        <h2>Da dove arrivi?</h2>
+        <p>Cantera parla tre lingue. Scegli la tua e ti diciamo, in concreto, perché conviene proprio a te.</p>
+      </div>
+      <div class="doors doors-inline reveal">
+        <button class="door door-r" data-persona="ristoratore" aria-pressed="true">
+          <div class="d-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5M4 9v11h16V9M4 9h16"/><path d="M9 20v-6h6v6"/></svg></div>
+          <div class="d-role">Ho un locale</div>
+          <h3>Ristoratore</h3>
+          <p>Gestisco carta, scorte e stampe, valorizzo i miei vini e offro un'esperienza migliore al tavolo.</p>
+        </button>
+        <button class="door door-rap" data-persona="rappresentante" aria-pressed="false">
+          <div class="d-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v13H3zM8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 12h18"/></svg></div>
+          <div class="d-role">Vendo vino</div>
+          <h3>Rappresentante</h3>
+          <p>Porto un servizio in più ai miei locali e posiziono meglio i vini del mio portafoglio.</p>
+        </button>
+        <button class="door door-p" data-persona="produttore" aria-pressed="false">
+          <div class="d-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M8 7h8l-1 4a3 3 0 0 1-6 0L8 7z"/><circle cx="7" cy="17" r="2.4"/><circle cx="12" cy="19" r="2.4"/><circle cx="17" cy="17" r="2.4"/></svg></div>
+          <div class="d-role">Faccio vino</div>
+          <h3>Produttore</h3>
+          <p>Voglio dare visibilità alle mie etichette, con terroir e racconto, dove si sceglie cosa bere.</p>
+        </button>
+      </div>
+      <div class="persona-benefits reveal" id="personaBenefits"></div>
+    </div>
+  </section>
+
   <!-- CTA -->
   <section class="section-pad cta-band" id="contatto">
     <div class="wrap">
@@ -572,7 +562,6 @@
         <p id="ctaLede">Ti mostriamo Cantera sulla tua carta reale. Nessun impegno — solo il tuo vino, come non l'hai mai visto.</p>
         <div class="cta-row">
           <a class="btn btn-primary" href="mailto:eneapesaresi11@gmail.com?subject=Demo%20Cantera" id="ctaBtn">Richiedi una demo <span class="btn-arrow" aria-hidden="true">→</span></a>
-          <a class="btn btn-ghost" data-demo href="#" target="_blank" rel="noopener">Prova la demo <span class="btn-arrow" aria-hidden="true">→</span></a>
         </div>
       </div>
     </div>
@@ -583,131 +572,112 @@
     <div class="wrap foot">
       <a href="#top" class="brand">Cantera<span class="dot" aria-hidden="true"></span></a>
       <nav class="foot-links" aria-label="Footer">
-        <a href="#prodotto">Cliente &amp; Admin</a><a href="#valore">Cosa fa</a><a href="#motore">Il motore</a><a data-demo href="#" target="_blank" rel="noopener">Demo</a><a href="#contatto">Contatto</a>
+        <a href="#perche">Perché</a><a href="#prodotto">Cliente &amp; Admin</a><a href="#motore">Il motore</a><a href="#demo">Demo</a><a href="#contatto">Contatto</a>
       </nav>
       <div class="foot-copy">© <span id="year">2026</span> Cantera — carta dei vini digitale per la ristorazione.</div>
     </div>
   </footer>
 
   <script>
-    // ---------- PERSONA CONTENT ----------
-    var PERSONA = {
-      ristoratore: {
-        eyebrow: 'Per chi ha un locale',
-        title: 'La carta dei vini<br>che <em>lavora</em> per te.',
-        lede: 'Scorte, prezzi e anagrafiche sotto controllo. La carta — web e PDF — si aggiorna da sola. E l\'app conosce i tuoi vini abbastanza da darti una consulenza.',
-        cta: 'Richiedi una demo',
-        benefits: ['Scorte, prezzi e anagrafiche sempre sotto controllo', 'Carta sempre aggiornata: web interattiva + PDF da stampare', 'Consulenza sulla carta: fasce di prezzo, stili, buchi di gamma'],
-        ctaTitle: 'La tua carta dei vini,<br>finalmente viva.',
-        ctaLede: 'Ti mostriamo Cantera sulla tua carta reale. Nessun impegno — solo il tuo vino, come non l\'hai mai visto.'
-      },
-      rappresentante: {
-        eyebrow: 'Per agenti e distributori',
-        title: 'Un servizio in più<br>da <em>offrire</em>.',
-        lede: 'Porta Cantera nei tuoi locali come valore aggiunto. Rafforzi la relazione, posizioni meglio i vini giusti e apri una nuova leva commerciale.',
-        cta: 'Diventa partner',
-        benefits: ['Un servizio che ti distingue dagli altri agenti', 'Posiziona i vini del tuo portafoglio nelle carte', 'Una nuova leva di vendita e di relazione'],
-        ctaTitle: 'Offri qualcosa<br>che nessuno offre.',
-        ctaLede: 'Ti mostriamo come proporre Cantera ai tuoi locali come servizio a valore aggiunto. Parliamone.'
-      },
-      produttore: {
-        eyebrow: 'Per cantine e produttori',
-        title: 'I tuoi vini,<br>sotto <em>i riflettori</em>.',
-        lede: 'Entra nelle carte con la storia giusta: terroir, profilo, racconto. Dai visibilità alle tue etichette dove si decide davvero cosa bere.',
-        cta: 'Promuovi i tuoi vini',
-        benefits: ['Visibilità delle tue etichette nelle carte digitali', 'Racconta terroir e profilo, non solo il nome', 'Posizionamento sui vini che vuoi spingere'],
-        ctaTitle: 'Dove si sceglie<br>cosa bere, ci sei.',
-        ctaLede: 'Ti mostriamo come dare ai tuoi vini il palcoscenico che meritano dentro le carte dei locali.'
-      }
-    };
-    var PERSONAS = ['ristoratore','rappresentante','produttore'];
-    var STORE_KEY = 'cantera_persona';
-
     // ---------- DEMO (repo separata) — punto unico, assemblato a pezzi ----------
     var DEMO_URL = ['https://', 'eneaqupovisione', '.github.io', '/demo-vini/'].join('');
     (function wireDemo(){
       var f = document.getElementById('demoFrame');
       if(f){ f.setAttribute('src', DEMO_URL); }
-      Array.prototype.forEach.call(document.querySelectorAll('[data-demo]'), function(a){
-        a.setAttribute('href', DEMO_URL);
-      });
+      Array.prototype.forEach.call(document.querySelectorAll('[data-demo]'), function(a){ a.setAttribute('href', DEMO_URL); });
     })();
+
+    // ---------- PERSONA (scelta non bloccante: personalizza benefici + CTA) ----------
+    var PERSONA = {
+      ristoratore: {
+        label: 'Se hai un locale',
+        benefits: ['Scorte, prezzi e anagrafiche sempre sotto controllo', 'Carta sempre aggiornata: web interattiva + PDF da stampare', 'Consulenza sulla carta: fasce di prezzo, stili, buchi di gamma'],
+        cta: 'Richiedi una demo',
+        ctaTitle: 'La tua carta dei vini,<br>finalmente viva.',
+        ctaLede: 'Ti mostriamo Cantera sulla tua carta reale. Nessun impegno — solo il tuo vino, come non l\'hai mai visto.'
+      },
+      rappresentante: {
+        label: 'Se vendi vino',
+        benefits: ['Un servizio che ti distingue dagli altri agenti', 'Posiziona i vini del tuo portafoglio nelle carte', 'Una nuova leva di vendita e di relazione'],
+        cta: 'Diventa partner',
+        ctaTitle: 'Offri qualcosa<br>che nessuno offre.',
+        ctaLede: 'Ti mostriamo come proporre Cantera ai tuoi locali come servizio a valore aggiunto. Parliamone.'
+      },
+      produttore: {
+        label: 'Se fai vino',
+        benefits: ['Visibilità delle tue etichette nelle carte digitali', 'Racconta terroir e profilo, non solo il nome', 'Posizionamento sui vini che vuoi spingere'],
+        cta: 'Promuovi i tuoi vini',
+        ctaTitle: 'Dove si sceglie<br>cosa bere, ci sei.',
+        ctaLede: 'Ti mostriamo come dare ai tuoi vini il palcoscenico che meritano dentro le carte dei locali.'
+      }
+    };
+    var PERSONAS = ['ristoratore','rappresentante','produttore'];
 
     function checkIcon(){ return '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>'; }
 
-    function applyPersona(p, animate){
+    function setPersona(p){
       if(PERSONAS.indexOf(p) < 0) p = 'ristoratore';
       var data = PERSONA[p];
       document.body.setAttribute('data-persona', p);
-
-      function paint(){
-        document.getElementById('heroEyebrow').textContent = data.eyebrow;
-        document.getElementById('heroTitle').innerHTML = data.title;
-        document.getElementById('heroLede').textContent = data.lede;
-        document.getElementById('heroCta').innerHTML = data.cta + ' <span class="btn-arrow" aria-hidden="true">→</span>';
-        document.getElementById('navCta').innerHTML = data.cta + ' <span class="btn-arrow" aria-hidden="true">→</span>';
-        document.getElementById('ctaBtn').innerHTML = data.cta + ' <span class="btn-arrow" aria-hidden="true">→</span>';
-        document.getElementById('ctaTitle').innerHTML = data.ctaTitle;
-        document.getElementById('ctaLede').textContent = data.ctaLede;
-        document.getElementById('heroBenefits').innerHTML = data.benefits.map(function(b){
-          return '<li><span class="bic" aria-hidden="true">'+checkIcon()+'</span><span>'+b+'</span></li>';
-        }).join('');
-      }
-
-      if(animate){
-        document.body.classList.add('swapping');
-        setTimeout(function(){ paint(); document.body.classList.remove('swapping'); }, 220);
-      } else { paint(); }
-
-      // switcher state
-      Array.prototype.forEach.call(document.querySelectorAll('.ps-btn'), function(b){
+      Array.prototype.forEach.call(document.querySelectorAll('.door'), function(b){
         b.setAttribute('aria-pressed', b.getAttribute('data-persona')===p ? 'true':'false');
       });
-      try { localStorage.setItem(STORE_KEY, p); } catch(e){}
-      try {
-        var u = new URL(window.location.href); u.searchParams.set('p', p);
-        window.history.replaceState(null, '', u);
-      } catch(e){}
-    }
-
-    // ---------- ENTRY OVERLAY ----------
-    var entry = document.getElementById('entry');
-    function closeEntry(){ entry.setAttribute('hidden',''); }
-    function openEntry(){ entry.removeAttribute('hidden'); }
-
-    (function initPersona(){
-      var params = new URLSearchParams(window.location.search);
-      var fromUrl = params.get('p');
-      var stored = null; try { stored = localStorage.getItem(STORE_KEY); } catch(e){}
-
-      if(fromUrl && PERSONAS.indexOf(fromUrl) >= 0){
-        applyPersona(fromUrl, false); closeEntry();
-      } else if(stored && PERSONAS.indexOf(stored) >= 0){
-        applyPersona(stored, false); closeEntry();
-      } else {
-        applyPersona('ristoratore', false); openEntry(); // prima visita → mostra le porte
+      var pb = document.getElementById('personaBenefits');
+      if(pb){
+        pb.innerHTML = '<div class="pb-head">'+data.label+'</div>' +
+          '<ul class="pb-list">' + data.benefits.map(function(b){
+            return '<li><span class="pb-ic" aria-hidden="true">'+checkIcon()+'</span><span>'+b+'</span></li>';
+          }).join('') + '</ul>';
       }
+      var t = document.getElementById('ctaTitle'); if(t) t.innerHTML = data.ctaTitle;
+      var l = document.getElementById('ctaLede'); if(l) l.textContent = data.ctaLede;
+      var cb = document.getElementById('ctaBtn'); if(cb) cb.innerHTML = data.cta + ' <span class="btn-arrow" aria-hidden="true">→</span>';
+      var nb = document.getElementById('navCta'); if(nb) nb.innerHTML = data.cta + ' <span class="btn-arrow" aria-hidden="true">→</span>';
+    }
+    Array.prototype.forEach.call(document.querySelectorAll('.door'), function(d){
+      d.addEventListener('click', function(){ setPersona(d.getAttribute('data-persona')); });
+    });
+    setPersona('ristoratore');
+
+    // ---------- POUR: riempimento allo scroll ----------
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    (function pourInit(){
+      var track = document.querySelector('.pour-track');
+      var stage = document.querySelector('.pour-stage');
+      if(!track || !stage) return;
+      var lines = Array.prototype.slice.call(track.querySelectorAll('.pl'));
+      var hint = document.getElementById('pourHint');
+      if(reduce){
+        stage.style.setProperty('--fill', '1');
+        lines.forEach(function(l){ l.classList.add('lit'); });
+        if(hint) hint.style.display = 'none';
+        return;
+      }
+      var MIN_FILL = 0.15; // vino già presente appena si vede lo sfondo
+      var ticking = false;
+      function update(){
+        ticking = false;
+        var r = track.getBoundingClientRect();
+        var vh = window.innerHeight;
+        // parte ancora prima (head-start di 0.15 viewport) e con range compresso, così ingrana subito
+        var p = r.height > 0 ? (vh * 1.15 - r.top) / (r.height * 0.72) : 0;
+        p = Math.max(0, Math.min(1, p));
+        stage.style.setProperty('--fill', (MIN_FILL + (1 - MIN_FILL) * p).toFixed(4));
+        lines.forEach(function(l){ l.classList.toggle('lit', p >= parseFloat(l.getAttribute('data-at'))); });
+        if(hint) hint.style.opacity = p > 0.05 ? '0' : '1';
+      }
+      function onScroll(){ if(!ticking){ ticking = true; requestAnimationFrame(update); } }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      update();
     })();
 
-    // doors
-    Array.prototype.forEach.call(document.querySelectorAll('.door'), function(d){
-      d.addEventListener('click', function(){ applyPersona(d.getAttribute('data-persona'), false); closeEntry(); });
-    });
-    document.getElementById('entrySkip').addEventListener('click', function(){ closeEntry(); });
-    entry.addEventListener('click', function(e){ if(e.target===entry) closeEntry(); });
-
-    // switcher
-    Array.prototype.forEach.call(document.querySelectorAll('.ps-btn'), function(b){
-      b.addEventListener('click', function(){ applyPersona(b.getAttribute('data-persona'), true); });
-    });
-
-    // ---------- HEADER + REVEAL ----------
+    // ---------- HEADER + REVEAL + anno ----------
     var header = document.getElementById('header');
-    var onScroll = function(){ header.classList.toggle('scrolled', window.scrollY > 8); };
-    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    var onHdr = function(){ header.classList.toggle('scrolled', window.scrollY > 8); };
+    onHdr(); window.addEventListener('scroll', onHdr, { passive: true });
     try { document.getElementById('year').textContent = new Date().getFullYear(); } catch(e){}
 
-    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var reveals = document.querySelectorAll('.reveal');
     if(reduce || !('IntersectionObserver' in window)){
       reveals.forEach(function(el){ el.classList.add('in'); });
