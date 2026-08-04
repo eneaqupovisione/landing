@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cantera — la carta dei vini che pensa</title>
-  <meta name="description" content="Cantera è la carta dei vini digitale per la ristorazione: elegante per il cliente, potente da gestire, con un motore enologico che conosce ogni vino." />
+  <title>Cantera — Il vino, facile. Carta dei vini digitale per la ristorazione</title>
+  <meta name="description" content="Cantera è la carta dei vini digitale che si aggiorna da sola: elegante per chi la sfoglia, potente per chi la gestisce, con un motore enologico che conosce ogni vino." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
@@ -86,6 +86,9 @@
     .site-header.scrolled { border-bottom-color: var(--line); box-shadow: var(--shadow-sm); }
     .nav { display: flex; align-items: center; justify-content: space-between; height: 66px; }
     .brand { display: flex; align-items: baseline; gap: 10px; font-family: var(--serif); font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+    .brand .pay { font-family: var(--mono); font-size: 11.5px; font-weight: 400; letter-spacing: .04em; color: var(--muted); white-space: nowrap; }
+    .foot .brand .pay { font-size: 11px; }
+    @media (max-width: 900px) { .site-header .brand .pay { display: none; } }
     .brand .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--brand); transform: translateY(-2px); transition: background .4s ease; }
     .nav-links { display: flex; align-items: center; gap: 30px; }
     .nav-links a.link { font-family: var(--mono); font-size: 13px; letter-spacing: .02em; color: var(--muted); transition: color .2s ease; white-space: nowrap; }
@@ -141,8 +144,8 @@
       height: calc(var(--fill, 0) * 120%);
       --wl: 384px; pointer-events: none; will-change: height;
       background: linear-gradient(180deg, #7d1638 0%, #611130 24%, #45091f 62%, #300718 100%);
-      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 100' preserveAspectRatio='none'%3E%3Cpath d='M0,50 C20,4.7 30,4.7 50,50 C70,79.3 80,79.3 100,50 C120,23.3 130,23.3 150,50 C170,90 180,90 200,50 C220,-3.3 230,-3.3 250,50 C270,74 280,74 300,50 L300,100 L0,100 Z' fill='%23ffffff'/%3E%3C/svg%3E"), linear-gradient(#fff, #fff);
-      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 100' preserveAspectRatio='none'%3E%3Cpath d='M0,50 C20,4.7 30,4.7 50,50 C70,79.3 80,79.3 100,50 C120,23.3 130,23.3 150,50 C170,90 180,90 200,50 C220,-3.3 230,-3.3 250,50 C270,74 280,74 300,50 L300,100 L0,100 Z' fill='%23ffffff'/%3E%3C/svg%3E"), linear-gradient(#fff, #fff);
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 100' preserveAspectRatio='none'%3E%3Cpath d='M0,41.74 C4.17,31.11 8.33,24 12.5,22.61 C16.67,21.21 20.83,25.02 25,30.11 C29.17,35.2 33.33,41.14 37.5,46.86 C41.67,52.58 45.83,58.6 50,65.2 C54.17,71.79 58.33,78.91 62.5,83.4 C66.67,87.9 70.83,89.23 75,87.04 C79.17,84.84 83.33,79.55 87.5,75 C91.67,70.46 95.83,67.09 100,64.7 C104.17,62.31 108.33,60.29 112.5,56.49 C116.67,52.69 120.83,47.01 125,42.67 C129.17,38.33 133.33,36.07 137.5,38.44 C141.67,40.81 145.83,47.67 150,55.36 C154.17,63.05 158.33,70.99 162.5,76.61 C166.67,82.23 170.83,85.87 175,87.95 C179.17,90.03 183.33,90.7 187.5,87.92 C191.67,85.15 195.83,78.29 200,67.47 C204.17,56.65 208.33,42.09 212.5,30.42 C216.67,18.76 220.83,10.81 225,10.07 C229.17,9.32 233.33,15.45 237.5,24.22 C241.67,32.98 245.83,43.81 250,53.36 C254.17,62.92 258.33,71.55 262.5,78.3 C266.67,85.04 270.83,89.88 275,90 C279.17,90.11 283.33,84.92 287.5,75.38 C291.67,65.85 295.83,52.38 300,41.74 L300,100 L0,100 Z' fill='%23ffffff'/%3E%3C/svg%3E"), linear-gradient(#fff, #fff);
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 100' preserveAspectRatio='none'%3E%3Cpath d='M0,41.74 C4.17,31.11 8.33,24 12.5,22.61 C16.67,21.21 20.83,25.02 25,30.11 C29.17,35.2 33.33,41.14 37.5,46.86 C41.67,52.58 45.83,58.6 50,65.2 C54.17,71.79 58.33,78.91 62.5,83.4 C66.67,87.9 70.83,89.23 75,87.04 C79.17,84.84 83.33,79.55 87.5,75 C91.67,70.46 95.83,67.09 100,64.7 C104.17,62.31 108.33,60.29 112.5,56.49 C116.67,52.69 120.83,47.01 125,42.67 C129.17,38.33 133.33,36.07 137.5,38.44 C141.67,40.81 145.83,47.67 150,55.36 C154.17,63.05 158.33,70.99 162.5,76.61 C166.67,82.23 170.83,85.87 175,87.95 C179.17,90.03 183.33,90.7 187.5,87.92 C191.67,85.15 195.83,78.29 200,67.47 C204.17,56.65 208.33,42.09 212.5,30.42 C216.67,18.76 220.83,10.81 225,10.07 C229.17,9.32 233.33,15.45 237.5,24.22 C241.67,32.98 245.83,43.81 250,53.36 C254.17,62.92 258.33,71.55 262.5,78.3 C266.67,85.04 270.83,89.88 275,90 C279.17,90.11 283.33,84.92 287.5,75.38 C291.67,65.85 295.83,52.38 300,41.74 L300,100 L0,100 Z' fill='%23ffffff'/%3E%3C/svg%3E"), linear-gradient(#fff, #fff);
       -webkit-mask-repeat: repeat-x, no-repeat;
       mask-repeat: repeat-x, no-repeat;
       -webkit-mask-size: calc(var(--wl) * 3) 132px, 100% max(0px, calc(100% - 130px));
@@ -293,7 +296,7 @@
   <!-- HEADER -->
   <header class="site-header" id="header">
     <div class="wrap nav">
-      <a href="#top" class="brand">Cantera<span class="dot" aria-hidden="true"></span></a>
+      <a href="#top" class="brand">Cantera<span class="dot" aria-hidden="true"></span><span class="pay">Il vino, facile.</span></a>
       <nav class="nav-links" aria-label="Principale">
         <a class="link" href="#perche">Perché</a>
         <a class="link" href="#prodotto">Cliente &amp; Admin</a>
@@ -561,7 +564,7 @@
         <h2 id="ctaTitle">La tua carta dei vini,<br/>finalmente viva.</h2>
         <p id="ctaLede">Ti mostriamo Cantera sulla tua carta reale. Nessun impegno — solo il tuo vino, come non l'hai mai visto.</p>
         <div class="cta-row">
-          <a class="btn btn-primary" href="mailto:eneapesaresi11@gmail.com?subject=Demo%20Cantera" id="ctaBtn">Richiedi una demo <span class="btn-arrow" aria-hidden="true">→</span></a>
+          <a class="btn btn-primary" href="#demo" id="ctaBtn">Richiedi una demo <span class="btn-arrow" aria-hidden="true">→</span></a>
         </div>
       </div>
     </div>
@@ -570,7 +573,7 @@
   <!-- FOOTER -->
   <footer>
     <div class="wrap foot">
-      <a href="#top" class="brand">Cantera<span class="dot" aria-hidden="true"></span></a>
+      <a href="#top" class="brand">Cantera<span class="dot" aria-hidden="true"></span><span class="pay">Il vino, facile.</span></a>
       <nav class="foot-links" aria-label="Footer">
         <a href="#perche">Perché</a><a href="#prodotto">Cliente &amp; Admin</a><a href="#motore">Il motore</a><a href="#demo">Demo</a><a href="#contatto">Contatto</a>
       </nav>
@@ -580,7 +583,7 @@
 
   <script>
     // ---------- DEMO (repo separata) — punto unico, assemblato a pezzi ----------
-    var DEMO_URL = ['https://', 'eneaqupovisione', '.github.io', '/demo-vini/'].join('');
+    var DEMO_URL = 'https://roaring-kheer-b0b39e.netlify.app/';
     (function wireDemo(){
       var f = document.getElementById('demoFrame');
       if(f){ f.setAttribute('src', DEMO_URL); }
