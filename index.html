@@ -301,7 +301,11 @@
     .chip:hover { border-color: var(--ink); color: var(--ink); }
     .chip:active { transform: translateY(1px); }
     .chip.is-on { background: var(--ink); color: #f6f2ea; border-color: var(--ink); }
-    .stage .demo-screen iframe { transition: opacity .25s ease; }
+    .stage-view { position: relative; width: 100%; max-width: 430px; margin-inline: auto; height: min(70vh, 640px); border: 1px solid var(--line-strong); border-radius: 18px; overflow: hidden; box-shadow: var(--shadow-lg); background: var(--bg); }
+    .stage-view iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; z-index: 2; transition: opacity .2s ease; }
+    .stage-view .screen-link { position: absolute; inset: 0; z-index: 3; display: block; }
+    .stage-view .demo-poster { border-radius: 18px; }
+    @media (max-width: 560px) { .stage-view { max-width: none; height: min(76vh, 600px); border-radius: 14px; } .stage-view .demo-poster { border-radius: 14px; } }
     .stage-foot { display: flex; align-items: center; gap: 16px 20px; flex-wrap: wrap; justify-content: center; text-align: center; }
     .stage-hint { font-family: var(--mono); font-size: 12.5px; color: var(--muted); max-width: 34ch; }
 
@@ -454,7 +458,7 @@
         <div class="section-head center" style="margin-bottom: 4px;">
           <span class="eyebrow">Provala, non solo leggerla</span>
           <h2 style="font-size: clamp(26px, 3.6vw, 38px);">Tocca una funzione, vedila dal vivo.</h2>
-          <p style="max-width: 52ch;">Le voci qui sopra non sono una lista: sono l'app vera. Scegline una — o usa i tasti qui sotto — e il telefono ci salta dentro, con una cantina di esempio.</p>
+          <p style="max-width: 52ch;">Le voci qui sopra non sono una lista: sono l'app vera. Scegline una — o usa i tasti qui sotto — e l'anteprima ci salta dentro, con una cantina di esempio.</p>
         </div>
         <div class="stage-chips" role="tablist" aria-label="Sezioni della demo">
           <button class="chip" data-sec="lista"  role="tab" aria-selected="false"><span aria-hidden="true">📖</span> Carta</button>
@@ -462,20 +466,17 @@
           <button class="chip" data-sec="mappa"  role="tab" aria-selected="false"><span aria-hidden="true">🗺️</span> Mappa</button>
           <button class="chip" data-sec="scelte" role="tab" aria-selected="false"><span aria-hidden="true">✨</span> Scelte</button>
         </div>
-        <div class="demo-frame">
-          <div class="demo-bar" aria-hidden="true"><i></i><i></i><i></i><em id="demoBarLabel">osteria del melograno · scopri</em></div>
-          <div class="demo-screen">
-            <div class="demo-poster" aria-hidden="true">
-              <div>
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8M12 15v7M6 3h12l-1 6a5 5 0 0 1-10 0L6 3z"/></svg>
-                <div class="dp-name">Osteria del Melograno</div>
-                <div class="dp-sub">Carta dei vini · demo</div>
-                <div class="dp-open">Caricamento…</div>
-              </div>
+        <div class="stage-view">
+          <div class="demo-poster" aria-hidden="true">
+            <div>
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8M12 15v7M6 3h12l-1 6a5 5 0 0 1-10 0L6 3z"/></svg>
+              <div class="dp-name">Osteria del Melograno</div>
+              <div class="dp-sub">Carta dei vini · demo</div>
+              <div class="dp-open">Caricamento…</div>
             </div>
-            <iframe id="demoFrame" title="Anteprima dal vivo della carta Cantera" loading="lazy" tabindex="-1" scrolling="no"></iframe>
-            <a class="screen-link" data-demo-full href="demo/" target="_blank" rel="noopener" aria-label="Apri la demo completa in una nuova scheda"></a>
           </div>
+          <iframe id="demoFrame" title="Anteprima dal vivo della carta Cantera" loading="lazy" tabindex="-1" scrolling="no"></iframe>
+          <a class="screen-link" data-demo-full href="demo/" target="_blank" rel="noopener" aria-label="Apri la demo completa in una nuova scheda"></a>
         </div>
         <div class="stage-foot">
           <a class="btn btn-primary" data-demo-full href="demo/" target="_blank" rel="noopener">Apri la demo intera <span class="btn-arrow" aria-hidden="true">→</span></a>
