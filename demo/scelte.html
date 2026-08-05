@@ -2,6 +2,32 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
+<script id="demo-data-shim">
+/* DEMO — serve la stessa carta finta (carta-demo.json) al posto di Supabase,
+   cosi' Scopri/Mappa/Scelte mostrano gli STESSI vini della Carta. */
+(function(){
+  var _fetch = window.fetch ? window.fetch.bind(window) : null;
+  var _cache = null;
+  function resp(data){ return { ok:true, status:200,
+    json:function(){ return Promise.resolve(data); },
+    text:function(){ return Promise.resolve(JSON.stringify(data)); },
+    headers:{ get:function(){ return null; } } }; }
+  function load(){
+    if(_cache) return Promise.resolve(_cache);
+    return _fetch('carta-demo.json').then(function(r){ return r.json(); })
+      .then(function(d){ _cache = d || {}; return _cache; })
+      .catch(function(){ _cache = {}; return _cache; });
+  }
+  window.fetch = function(input, init){
+    var url = (typeof input === 'string') ? input : (input && input.url) || '';
+    if(url.indexOf('/rest/v1/carta_vini') >= 0)     return load().then(function(d){ return resp(d.carta_vini || []); });
+    if(url.indexOf('/rest/v1/carta_settings') >= 0) return load().then(function(d){ return resp(d.carta_settings || []); });
+    if(url.indexOf('demo.invalid') >= 0 || url.indexOf('/rest/v1/') >= 0) return Promise.resolve(resp([]));
+    return _fetch ? _fetch(input, init) : Promise.reject(new Error('offline'));
+  };
+})();
+</script>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Osteria del Melograno — Scelte rapide</title>
 <style>
