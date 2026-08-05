@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Osteria del Melograno — Trova il tuo vino</title>
+<style>
+  :root{
+    --ink:#0b1620; --ink-2:#0f1e2b; --paper:#e9dcc3; --paper-dim:#b7a888;
+    --gold:#c9a24b; --gold-soft:#e3c988; --yes:#3aa066; --no:#c04a5a; --super:#c26aa0; --dis:#dd8a3c;
+    /* superfici tematiche */
+    --bg-a:#16293a; --bg-b:#1a1220;
+    --card-1:#183042; --card-2:#0e1e2b;
+    --surface:#0e1d29; --border:#2c4256; --border-soft:#253d4f;
+    --track:#1c2f3f; --hint:#5f7183;
+    --title:#e9dcc3;
+  }
+  body.light{
+    --ink:#f4ece0; --ink-2:#efe6d6; --paper:#3a2e22; --paper-dim:#8a7860;
+    --gold:#a9762a; --gold-soft:#8a5f1e; --yes:#2f8a56; --no:#b23a4a; --super:#b0568f; --dis:#c47a2a;
+    --bg-a:#faf3e6; --bg-b:#f0e3d0;
+    --card-1:#ffffff; --card-2:#f6efe3;
+    --surface:#ffffff; --border:#e0d3bf; --border-soft:#eaddc9;
+    --track:#e6dcc9; --hint:#a89a80;
+    --title:#3a2e22;
+  }
+  .theme-toggle{position:fixed;top:16px;right:16px;z-index:50;width:42px;height:42px;border-radius:50%;
+    border:1px solid var(--border);background:var(--surface);color:var(--gold);cursor:pointer;
+    display:grid;place-items:center;font-size:18px;transition:.2s;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+  .theme-toggle:hover{border-color:var(--gold);transform:scale(1.06)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden}
+  body{background:
+      radial-gradient(1000px 700px at 30% -10%, var(--bg-a) 0%, transparent 60%),
+      radial-gradient(800px 600px at 100% 120%, var(--bg-b) 0%, transparent 55%),
+      var(--ink);
+    color:var(--paper);font-family:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+    -webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;touch-action:none;
+    transition:background .4s, color .4s}
+  .wrap{position:relative;width:100vw;height:100vh;display:flex;flex-direction:column;align-items:center}
+  .top{width:100%;padding:18px 24px 6px;text-align:center;z-index:5}
+  .eyebrow{font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;letter-spacing:.42em;
+    text-transform:uppercase;color:var(--gold);opacity:.85;font-weight:600}
+  .title{font-size:clamp(19px,2.5vw,28px);font-weight:500;margin-top:4px}
+  .title em{font-style:italic;color:var(--gold-soft)}
+  /* barra di avanzamento: elegante, si riempie per step fino al 100% */
+  .progress{position:relative;width:min(300px,72vw);height:7px;background:var(--track);
+    border-radius:20px;margin:14px auto 0;overflow:hidden;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
+  .progress-fill{position:absolute;left:0;top:0;height:100%;width:0%;border-radius:20px;
+    background:linear-gradient(90deg,var(--gold),var(--gold-soft));
+    box-shadow:0 0 10px color-mix(in srgb,var(--gold) 55%,transparent);
+    transition:width .55s cubic-bezier(.22,.61,.36,1)}
+  /* riflesso che scorre sul riempimento, come la superficie di un vino */
+  .progress-fill::after{content:'';position:absolute;inset:0;border-radius:20px;
+    background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.45) 50%,transparent 100%);
+    transform:translateX(-100%);animation:sheen 2.6s ease-in-out infinite}
+  @keyframes sheen{0%{transform:translateX(-100%)}60%,100%{transform:translateX(220%)}}
+  /* "ci siamo quasi": la barra pulsa dolcemente d'oro per non far mollare */
+  .progress.almost{animation:almostPulse 1.5s ease-in-out infinite}
+  @keyframes almostPulse{0%,100%{box-shadow:inset 0 1px 2px rgba(0,0,0,.12), 0 0 6px color-mix(in srgb,var(--gold) 18%,transparent)}
+    50%{box-shadow:inset 0 1px 2px rgba(0,0,0,.12), 0 0 16px color-mix(in srgb,var(--gold) 55%,transparent)}}
+  .quip{font-family:'Iowan Old Style',Palatino,Georgia,serif;font-style:italic;font-size:15px;
+    color:var(--gold-soft);margin-top:12px;min-height:20px;opacity:0;transition:opacity .5s;
+    max-width:32ch;margin-left:auto;margin-right:auto;line-height:1.35}
+  .quip.show{opacity:1}
+
+  .deck{position:relative;flex:1;width:min(420px,92vw);margin:6px 0;display:flex;align-items:center;justify-content:center}
+  .qcard{position:absolute;width:100%;height:min(480px,60vh);border-radius:24px;
+    background:linear-gradient(165deg,var(--card-1),var(--card-2));border:1px solid var(--border);
+    box-shadow:0 24px 70px rgba(0,0,0,.55);overflow:hidden;display:flex;flex-direction:column;
+    cursor:grab;will-change:transform;user-select:none;-webkit-user-select:none}
+  .qcard:active{cursor:grabbing}
+  .qcard .scene{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;text-align:center;padding:30px;gap:16px}
+  .qkind{position:absolute;top:18px;left:0;right:0;text-align:center;font-family:'Helvetica Neue',Arial,sans-serif;
+    font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);opacity:.7}
+  .qcard .emoji-row{font-size:60px;line-height:1;display:flex;gap:12px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
+  .qcard .qtext{font-size:32px;font-weight:600;line-height:1.1;max-width:13ch;letter-spacing:-.01em}
+  .qcard .qhint{font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:var(--paper-dim);
+    line-height:1.4;max-width:26ch}
+  .swipe-labels{position:absolute;bottom:20px;left:0;right:0;display:flex;justify-content:space-between;
+    padding:0 24px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:var(--hint);font-weight:600}
+  .swipe-labels .l::before{content:'←  '} .swipe-labels .r::after{content:'  →'}
+  .qcard .tint{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .1s}
+  .stamp{position:absolute;top:52px;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:800;
+    font-size:24px;letter-spacing:.06em;padding:7px 15px;border-radius:12px;border:3px solid;opacity:0;text-transform:uppercase}
+  .stamp.yes{left:22px;color:var(--yes);border-color:var(--yes);transform:rotate(-12deg)}
+  .stamp.no{right:22px;color:var(--dis);border-color:var(--dis);transform:rotate(12deg)}
+  .stamp.super{left:50%;top:18px;transform:translateX(-50%);color:var(--super);border-color:var(--super)}
+  .stamp.superno{left:50%;bottom:16px;top:auto;transform:translateX(-50%);color:var(--dis);border-color:var(--dis)}
+
+  .foot{width:min(420px,92vw);display:flex;gap:12px;justify-content:center;align-items:center;padding:4px 0 24px;z-index:5}
+  .fbtn{border-radius:50%;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:grid;
+    place-items:center;transition:.18s;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+  .fbtn.no{width:58px;height:58px;font-size:26px} .fbtn.no .g{color:var(--dis)}
+  .fbtn.yes{width:58px;height:58px;font-size:26px} .fbtn.yes .g{color:var(--yes)}
+  .fbtn.super{width:52px;height:52px;font-size:23px} .fbtn.super .g{color:var(--super)}
+  .fbtn.superno{width:52px;height:52px;font-size:22px} .fbtn.superno .g{color:var(--dis)}
+  .fbtn.superno:hover{border-color:var(--dis);transform:scale(1.1)}
+  .fbtn.no:hover{border-color:var(--dis);transform:scale(1.08)}
+  .fbtn.yes:hover{border-color:var(--yes);transform:scale(1.08)}
+  .fbtn.super:hover{border-color:var(--super);transform:scale(1.1)}
+  .fbtn.skip{width:44px;height:44px;font-size:11px;color:var(--paper-dim);font-family:'Helvetica Neue',Arial,sans-serif}
+  .fbtn.skip:hover{border-color:var(--gold);color:var(--paper)}
+  .fbtn.back{width:42px;height:42px;font-size:15px;color:var(--paper-dim)}
+  .fbtn.back:hover{border-color:var(--gold);color:var(--paper)}
+  .fbtn.back:disabled{opacity:.28;cursor:default}
+
+  /* suspense con animazione versaggio */
+  .suspense{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:22px;opacity:0;pointer-events:none;transition:opacity .25s}
+  .suspense.show{opacity:1;pointer-events:auto}
+  #pourCv{width:210px;height:290px;z-index:1}
+  /* MATCH: bagliore dorato a schermo pieno, sa di festa, dura ~1s */
+  .match-flash{position:absolute;inset:0;pointer-events:none;opacity:0;
+    background:radial-gradient(circle at 50% 44%, color-mix(in srgb,var(--gold) 60%, transparent) 0%,
+      color-mix(in srgb,var(--gold-soft) 30%, transparent) 26%, transparent 60%)}
+  .match-flash.go{animation:matchBloom 1s cubic-bezier(.22,.61,.36,1)}
+  @keyframes matchBloom{0%{opacity:0;transform:scale(.5)}22%{opacity:.95}60%{opacity:.5}100%{opacity:0;transform:scale(1.7)}}
+  .suspense .stext{font-family:'Iowan Old Style',Palatino,Georgia,serif;font-style:italic;
+    font-size:20px;color:var(--gold-soft);text-align:center;max-width:24ch;line-height:1.4}
+
+  .result{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;
+    justify-content:flex-start;padding:26px 20px 30px;opacity:0;pointer-events:none;transition:opacity .5s;overflow-y:auto;
+    background:
+      radial-gradient(1000px 700px at 30% -10%, var(--bg-a) 0%, transparent 60%),
+      radial-gradient(800px 600px at 100% 120%, var(--bg-b) 0%, transparent 55%),
+      var(--ink)}
+  .result.show{opacity:1;pointer-events:auto}
+  .result > *{flex-shrink:0}   /* evita che il layout flex schiacci hero/alternative */
+  .result .r-eyebrow{font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:6px;margin-top:8px}
+  .result h2{font-size:24px;font-weight:500;margin-bottom:4px;text-align:center}
+  .r-profile{color:var(--gold-soft);font-style:italic;font-size:15px;margin-bottom:4px;text-align:center;max-width:30ch}
+  .r-sub{color:var(--paper-dim);font-size:13px;margin-bottom:18px;text-align:center;
+    font-family:'Helvetica Neue',Arial,sans-serif;max-width:34ch;line-height:1.4}
+  /* HERO = la proposta principale: la star. Grande, dorata, con più respiro. */
+  .hero{width:min(440px,94vw);position:relative;overflow:hidden;
+    background:
+      radial-gradient(130% 80% at 50% -15%, color-mix(in srgb,var(--gold) 24%, transparent) 0%, transparent 62%),
+      linear-gradient(165deg,var(--card-1),var(--card-2));
+    border:1.5px solid var(--gold);border-radius:22px;padding:24px 24px 22px 28px;
+    box-shadow:0 16px 54px color-mix(in srgb,var(--gold) 34%, transparent), 0 5px 20px rgba(0,0,0,.18);
+    opacity:0;transform:scale(.88) translateY(6px);
+    animation:heroIn .62s cubic-bezier(.22,.61,.36,1) forwards}
+  @keyframes heroIn{0%{opacity:0;transform:scale(.86) translateY(8px)}58%{opacity:1;transform:scale(1.035)}100%{opacity:1;transform:none}}
+  .hero-glow{position:absolute;left:0;top:0;bottom:0;width:6px}
+  .hero-eyebrow{font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--gold);font-weight:800;margin-bottom:9px}
+  .hero-prod{font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--paper-dim)}
+  .hero-name{font-size:30px;font-weight:500;margin-top:5px;line-height:1.03;letter-spacing:-.01em;max-width:15ch}
+  .hero-why{font-size:14px;color:var(--paper);margin-top:10px;line-height:1.5;font-style:italic}
+  .hero-read{font-family:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+    font-size:15px;line-height:1.62;color:var(--paper);margin-top:16px;
+    padding-top:15px;border-top:1px solid var(--border-soft)}
+  .hero-read .lead{display:block;font-family:'Helvetica Neue',Arial,sans-serif;font-size:10.5px;
+    letter-spacing:.22em;text-transform:uppercase;color:var(--gold);opacity:.85;margin-bottom:7px;font-weight:600}
+  .hero-read em{font-style:italic;color:var(--gold-soft);font-weight:500}
+  /* parola-chiave della lettura legata a una tua scelta: discreta, immersa nel testo */
+  .hero-read .rk{color:var(--gold-soft);font-weight:700;
+    border-bottom:1px solid color-mix(in srgb,var(--gold) 35%,transparent)}
+  .hero-sens{margin-top:14px;display:flex;gap:9px;flex-wrap:wrap}
+  .hero-sens .e{font-size:22px;line-height:1}
+  .hero-price{font-family:'Helvetica Neue',Arial,sans-serif;font-size:23px;font-weight:800;color:var(--gold-soft);margin-top:14px}
+  /* riga positiva in cima + cella "vino matchato" (come una cella della carta) */
+  .r-cheer{font-family:'Iowan Old Style',Palatino,Georgia,serif;font-style:italic;font-size:16px;
+    color:var(--gold-soft);text-align:center;margin-bottom:2px}
+  .mc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+  .mc-id{flex:1;min-width:0}
+  .mc-head .hero-name{max-width:none}
+  .mc-head .hero-price{margin-top:2px;white-space:nowrap}
+  .mc-den{font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:var(--paper-dim);margin-top:5px;line-height:1.3}
+  .mc-carat{display:flex;flex-wrap:wrap;gap:6px;margin-top:13px}
+  .mc-tag{font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+    font-weight:700;color:var(--gold-soft);border:1px solid color-mix(in srgb,var(--gold) 40%,transparent);
+    background:color-mix(in srgb,var(--gold) 8%,transparent);border-radius:6px;padding:3px 8px}
+  .alts-label{font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--paper-dim);margin:22px 0 10px}
+  .refine-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:min(420px,92vw);margin-top:14px}
+  .refine-chip{font-family:'Helvetica Neue',Arial,sans-serif;font-size:12.5px;color:var(--paper);
+    background:var(--surface);border:1px solid var(--border);border-radius:30px;padding:9px 15px;cursor:pointer;transition:.18s}
+  .refine-chip:hover{border-color:var(--gold);color:var(--gold-soft);transform:translateY(-1px)}
+  /* ALTERNATIVE = secondarie: più piccole e sobrie, così l'hero domina */
+  .alts{width:min(410px,90vw);display:flex;flex-direction:column;gap:9px}
+  .alt{background:var(--surface);border:1px solid var(--border-soft);border-radius:13px;
+    padding:11px 14px 11px 16px;position:relative;overflow:hidden;display:flex;justify-content:space-between;
+    align-items:center;gap:12px;opacity:0;transform:translateY(12px);animation:rise .5s ease forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .alt-glow{position:absolute;left:0;top:0;bottom:0;width:3px}
+  .alt-lean{display:inline-block;font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--gold-soft);font-weight:700;
+    border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);border-radius:20px;
+    padding:2px 9px;margin-bottom:6px}
+  .alt-prod{font-family:'Helvetica Neue',Arial,sans-serif;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--paper-dim)}
+  .alt-name{font-size:15px;margin-top:2px}
+  .alt-sens{font-size:13px;margin-top:3px;opacity:.9}
+  .alt-price{font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;font-weight:700;color:var(--gold-soft);white-space:nowrap}
+  /* CTA: porta il profilo nella carta */
+  .r-browse{display:block;width:min(410px,90vw);margin:22px auto 4px;cursor:pointer;
+    font-family:'Helvetica Neue',Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:.01em;
+    color:#1a1206;background:linear-gradient(180deg,var(--gold-soft),var(--gold));
+    border:none;border-radius:16px;padding:15px 18px;
+    box-shadow:0 8px 24px color-mix(in srgb,var(--gold) 40%,transparent);transition:.18s}
+  .r-browse:hover{filter:brightness(1.05);transform:translateY(-1px)}
+  .r-browse small{display:block;font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:500;opacity:.72;margin-top:3px}
+  .r-actions{display:flex;gap:12px;margin:18px 0 10px;flex-wrap:wrap;justify-content:center}
+  .r-btn{font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;border-radius:30px;padding:12px 22px;
+    cursor:pointer;transition:.2s;border:1px solid #34506a;background:transparent;color:var(--paper)}
+  .r-btn:hover{border-color:var(--gold)}
+  .r-btn.primary{background:var(--gold);color:#1a1206;border-color:var(--gold);font-weight:600}
+  .r-btn.primary:hover{filter:brightness(1.08)}
+  .r-btn small{display:block;font-size:10.5px;opacity:.7;margin-top:2px}
+  /* "L'ho scelto perché…" — bottone + scheda a comparsa */
+  .why-btn{margin-top:14px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12.5px;
+    color:var(--gold-soft);background:none;border:none;cursor:pointer;padding:2px 0;
+    display:inline-flex;align-items:center;gap:6px;transition:color .2s}
+  .why-btn:hover{color:var(--gold)}
+  .why-caret{display:inline-block;transition:transform .25s}
+  .why-btn.open .why-caret{transform:rotate(180deg)}
+  .why-sheet{width:min(420px,92vw);margin:12px auto 0;background:var(--card-2);
+    border:1px solid var(--border-soft);border-radius:14px;padding:15px 18px;
+    display:flex;flex-direction:column;gap:9px;animation:whyIn .3s ease;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+  .why-sheet[hidden]{display:none}   /* rispetta l'attributo hidden (specificità) */
+  .why-lead{font-family:'Helvetica Neue',Arial,sans-serif;font-size:10.5px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--gold);opacity:.9;margin-bottom:2px;font-weight:600}
+  @keyframes whyIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .why-row{display:flex;justify-content:space-between;align-items:baseline;gap:14px;
+    font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px}
+  .why-topic{color:var(--paper)}
+  .why-val{color:var(--paper-dim);font-weight:600;white-space:nowrap}
+  .why-row.strong .why-topic{color:var(--gold-soft)}
+  .why-row.strong .why-val{color:var(--gold-soft);font-weight:800}
+  /* focus visibile per navigazione da tastiera */
+  .fbtn:focus-visible,.theme-toggle:focus-visible,.r-btn:focus-visible,.refine-chip:focus-visible{
+    outline:2px solid var(--gold);outline-offset:2px}
+  /* riduzione movimento: fermo le animazioni non essenziali */
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.08s!important}
+    .hero,.alt{opacity:1!important;transform:none!important}
+  }
+</style>
+</head>
+<body class="light">
+<div class="wrap">
+  <button class="theme-toggle" id="themeToggle" title="Cambia tema">☀️</button>
+  <div class="top">
+    <div class="eyebrow">Osteria del Melograno · Cantina</div>
+    <div class="title">Trova il tuo <em>vino</em></div>
+    <div class="progress" aria-hidden="true"><div class="progress-fill" id="barFill"></div></div>
+    <div class="quip" id="quip"></div>
+  </div>
+  <div class="deck" id="deck"></div>
+  <div class="foot" id="foot">
+    <button class="fbtn superno" id="supernoBtn" aria-label="Per niente, non c'entra" title="Per niente — non c'entra"><span class="g">😅</span></button>
+    <button class="fbtn no" id="noBtn" aria-label="Meglio di no" title="Meglio di no"><span class="g">💔</span></button>
+    <button class="fbtn yes" id="yesBtn" aria-label="Mi piace" title="Mi piace"><span class="g">❤️</span></button>
+    <button class="fbtn super" id="superBtn" aria-label="Adoro" title="Adoro"><span class="g">🤩</span></button>
+  </div>
+  <div class="suspense" id="suspense">
+    <div class="match-flash" id="matchFlash"></div>
+    <canvas id="pourCv" width="252" height="348"></canvas>
+    <div class="stext" id="stext">Sto pescando in cantina…</div>
+  </div>
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+const VOCAB=[{"famiglia": "Aromi (naso)", "tag": [{"id": "agrumato", "label": "Agrumato", "emoji": "🍋", "descrizione": "Limone, lime, pompelmo; freschezza agrumata."}, {"id": "fruttato", "label": "Fruttato", "emoji": "🍏", "descrizione": "Frutta bianca e gialla: mela, pera, pesca."}, {"id": "esotico", "label": "Esotico", "emoji": "🍍", "descrizione": "Frutta tropicale: ananas, frutto della passione, mango."}, {"id": "floreale", "label": "Floreale", "emoji": "🌸", "descrizione": "Fiori bianchi, glicine, rosa, violetta."}, {"id": "aromatico", "label": "Aromatico", "emoji": "💐", "descrizione": "Molto profumato e riconoscibile (moscato, gewurztraminer, malvasia)."}, {"id": "erbe_aromatiche", "label": "Erbe aromatiche", "emoji": "🌿", "descrizione": "Macchia mediterranea, salvia, timo, note erbacee."}, {"id": "speziato", "label": "Speziato", "emoji": "🌶️", "descrizione": "Pepe e spezie."}, {"id": "mandorlato", "label": "Mandorlato", "emoji": "🥜", "descrizione": "Tipica chiusura di mandorla (Verdicchio, Vermentino, Vernaccia)."}, {"id": "frutta_rossa", "label": "Frutta rossa", "emoji": "🍒", "descrizione": "Ciliegia, fragola, lampone, melograno (rosati e frizzanti rossi)."}, {"id": "crosta_di_pane", "label": "Crosta di pane", "emoji": "🍞", "descrizione": "Lievito, pane, nocciola: i grandi metodo classico maturi."}, {"id": "evoluto", "label": "Evoluto", "emoji": "🍯", "descrizione": "Note mature di miele e frutta secca (vini affinati o evoluti)."}]}, {"famiglia": "Corpo", "tag": [{"id": "leggero", "label": "Leggero", "emoji": "🪶", "descrizione": "Corpo esile, di facile beva."}, {"id": "strutturato", "label": "Strutturato", "emoji": "🍷", "descrizione": "Pieno e importante, da bicchiere ampio."}]}, {"famiglia": "Carattere in bocca", "tag": [{"id": "fresco", "label": "Fresco", "emoji": "💧", "descrizione": "Acidita' viva ed equilibrata, dissetante."}, {"id": "teso", "label": "Teso", "emoji": "⚡", "descrizione": "Acidita' spiccata, verticale, nervoso."}, {"id": "vivace", "label": "Vivace", "emoji": "✨", "descrizione": "Fresco e scattante."}, {"id": "morbido", "label": "Morbido", "emoji": "☁️", "descrizione": "Rotondo e avvolgente, poca acidita'."}]}, {"famiglia": "Sapidita' / mineralita'", "tag": [{"id": "sapido", "label": "Sapido", "emoji": "🧂", "descrizione": "Salino, gastronomico, invita a bere."}, {"id": "minerale", "label": "Minerale", "emoji": "🪨", "descrizione": "Pietra focaia, roccia, suoli vulcanici/calcarei."}, {"id": "salmastro", "label": "Salmastro", "emoji": "🌊", "descrizione": "Iodio, mare, ostrica."}]}, {"famiglia": "Stile", "tag": [{"id": "bollicine_fini", "label": "Bollicine fini", "emoji": "🥂", "descrizione": "Perlage fine e cremoso (metodo classico)."}, {"id": "bollicine_fresche", "label": "Bollicine fresche", "emoji": "🫧", "descrizione": "Bollicina immediata e fruttata (Prosecco/Charmat)."}, {"id": "velato", "label": "Velato", "emoji": "🌫️", "descrizione": "Rifermentato in bottiglia, col fondo, leggermente torbido (ancestrale/pet-nat)."}, {"id": "macerato", "label": "Macerato", "emoji": "🟠", "descrizione": "Orange: contatto con le bucce, colore dorato/ambrato."}, {"id": "rosato", "label": "Rosato", "emoji": "🌷", "descrizione": "Rosato fresco e fruttato."}, {"id": "cerasuolo", "label": "Cerasuolo", "emoji": "🌹", "descrizione": "Rosato intenso color ciliegia, piu' strutturato di un rosato pallido."}, {"id": "cremoso", "label": "Cremoso", "emoji": "🥛", "descrizione": "Saten: bollicina delicata e vellutata."}]}, {"famiglia": "Tannino", "tag": [{"id": "lieve_tannino", "label": "Lieve tannino", "emoji": "🍇", "descrizione": "Leggera trama tannica da macerazione (orange)."}, {"id": "tannico", "label": "Tannico", "emoji": "🍇", "descrizione": "Trama tannica evidente."}]}, {"famiglia": "Dolcezza (solo eccezione)", "tag": [{"id": "abboccato", "label": "Abboccato", "emoji": "🍬", "descrizione": "Residuo zuccherino percepibile."}, {"id": "dolce", "label": "Dolce", "emoji": "🍬", "descrizione": "Vino dolce / passito."}]}];
+const TAGMAP={}; VOCAB.forEach(f=>f.tag.forEach(t=>TAGMAP[t.id]={...t,fam:f.famiglia}));
+const FAM_HUE={'Aromi (naso)':42,'Corpo':18,'Carattere in bocca':182,
+  "Sapidita' / mineralita'":205,'Stile':280,'Tannino':350,'Dolcezza (solo eccezione)':320};
+const emo=id=>TAGMAP[id]?.emoji||'•';
+function sensColor(id,l){const h=FAM_HUE[TAGMAP[id]?.fam]||42;return `hsl(${h} 70% ${l||60}%)`;}
+
+/* vini con zona geografica (DATI DEMO: usati solo come ripiego se il database
+   non è raggiungibile; a runtime VINI viene sostituito coi vini reali di carta_vini) */
+let VINI=[
+  {name:'Franciacorta Dosaggio Zero',prod:'Arcari + Danesi',price:42,tipo:'Spumante',colore:'bianco',zona:'nord',estero:false,sens:['crosta_di_pane','teso','sapido','bollicine_fini','minerale']},
+  {name:'Coro delle Monache',prod:'Arcari + Danesi',price:50,tipo:'Spumante',colore:'bianco',zona:'nord',estero:false,sens:['crosta_di_pane','frutta_rossa','strutturato','bollicine_fini']},
+  {name:'Lugana I Frati',prod:"Ca' dei Frati",price:28,tipo:'Fermo',colore:'bianco',zona:'nord',estero:false,sens:['agrumato','floreale','fresco','minerale']},
+  {name:'Barolo Cannubi',prod:'Brezza',price:88,tipo:'Fermo',colore:'rosso',zona:'nord',estero:false,sens:['frutta_rossa','speziato','strutturato','tannico','evoluto']},
+  {name:'Langhe Nebbiolo',prod:'G.D. Vajra',price:34,tipo:'Fermo',colore:'rosso',zona:'nord',estero:false,sens:['frutta_rossa','floreale','lieve_tannino','fresco']},
+  {name:'Timorasso Derthona',prod:'Vigneti Massa',price:48,tipo:'Fermo',colore:'bianco',zona:'nord',estero:false,sens:['agrumato','mandorlato','minerale','strutturato','sapido']},
+  {name:'Trento Riserva',prod:'Ferrari',price:55,tipo:'Spumante',colore:'bianco',zona:'nord',estero:false,sens:['crosta_di_pane','agrumato','bollicine_fini','teso']},
+  {name:'Gewürztraminer',prod:'Elena Walch',price:32,tipo:'Fermo',colore:'bianco',zona:'nord',estero:false,sens:['aromatico','esotico','floreale','morbido']},
+  {name:'Lagrein Riserva',prod:'Muri-Gries',price:44,tipo:'Fermo',colore:'rosso',zona:'nord',estero:false,sens:['frutta_rossa','speziato','strutturato','tannico']},
+  {name:'Soave Classico',prod:'Pieropan',price:30,tipo:'Fermo',colore:'bianco',zona:'nord',estero:false,sens:['floreale','mandorlato','fresco','minerale']},
+  {name:'Amarone',prod:'Zýmē',price:82,tipo:'Fermo',colore:'rosso',zona:'nord',estero:false,sens:['frutta_rossa','speziato','strutturato','evoluto','morbido','tannico']},
+  {name:'Ribolla Gialla Anfora',prod:'Radikon',price:70,tipo:'Fermo',colore:'orange',zona:'nord',estero:false,sens:['erbe_aromatiche','evoluto','macerato','lieve_tannino','sapido']},
+  {name:'Vitovska',prod:'Zidarich',price:52,tipo:'Fermo',colore:'orange',zona:'nord',estero:false,sens:['erbe_aromatiche','salmastro','macerato','minerale','teso']},
+  {name:'Ysola Metodo Classico',prod:'Terre della Rocca',price:42,tipo:'Spumante',colore:'bianco',zona:'centro',estero:false,sens:['agrumato','crosta_di_pane','teso','bollicine_fini']},
+  {name:'Lambrusco di Sorbara',prod:'Cantina della Volta',price:26,tipo:'Spumante',colore:'rosso',zona:'centro',estero:false,sens:['frutta_rossa','vivace','fresco','bollicine_fresche']},
+  {name:'Chianti Classico',prod:'Montevertine',price:56,tipo:'Fermo',colore:'rosso',zona:'centro',estero:false,sens:['frutta_rossa','erbe_aromatiche','strutturato','tannico']},
+  {name:'Brunello di Montalcino',prod:'Le Chiuse',price:78,tipo:'Fermo',colore:'rosso',zona:'centro',estero:false,sens:['frutta_rossa','speziato','evoluto','strutturato','tannico']},
+  {name:'Verdicchio di Matelica',prod:'Collestefano',price:24,tipo:'Fermo',colore:'bianco',zona:'centro',estero:false,sens:['agrumato','mandorlato','fresco','minerale','sapido']},
+  {name:"Trebbiano d'Abruzzo",prod:'Valentini',price:120,tipo:'Fermo',colore:'bianco',zona:'centro',estero:false,sens:['floreale','mandorlato','minerale','strutturato','evoluto']},
+  {name:'Cerasuolo',prod:'Tiberio',price:30,tipo:'Fermo',colore:'rosato',zona:'centro',estero:false,sens:['frutta_rossa','floreale','fresco','cerasuolo','sapido']},
+  {name:'Fiano di Avellino',prod:'Ciro Picariello',price:38,tipo:'Fermo',colore:'bianco',zona:'sud',estero:false,sens:['agrumato','erbe_aromatiche','minerale','teso']},
+  {name:'Taurasi',prod:'Guastaferro',price:52,tipo:'Fermo',colore:'rosso',zona:'sud',estero:false,sens:['frutta_rossa','speziato','strutturato','tannico','evoluto']},
+  {name:'Etna Bianco Superiore',prod:'Benanti',price:44,tipo:'Fermo',colore:'bianco',zona:'sud',estero:false,sens:['agrumato','minerale','salmastro','teso','sapido']},
+  {name:'Frappato',prod:'Arianna Occhipinti',price:46,tipo:'Fermo',colore:'rosso',zona:'sud',estero:false,sens:['frutta_rossa','floreale','leggero','fresco','vivace']},
+  {name:'Vermentino di Gallura',prod:'Capichera',price:42,tipo:'Fermo',colore:'bianco',zona:'sud',estero:false,sens:['agrumato','mandorlato','salmastro','sapido']},
+  {name:'Cannonau Riserva',prod:'Giuseppe Sedilesu',price:36,tipo:'Fermo',colore:'rosso',zona:'sud',estero:false,sens:['frutta_rossa','erbe_aromatiche','speziato','morbido','lieve_tannino']},
+  {name:'Champagne Blanc de Blancs',prod:'Agrapart',price:95,tipo:'Spumante',colore:'bianco',zona:'estero',estero:true,sens:['agrumato','crosta_di_pane','teso','minerale','bollicine_fini']},
+  {name:'Riesling Kabinett',prod:'J.J. Prüm',price:46,tipo:'Fermo',colore:'bianco',zona:'estero',estero:true,sens:['agrumato','esotico','floreale','abboccato','teso']},
+  {name:'Grüner Veltliner',prod:'F.X. Pichler',price:60,tipo:'Fermo',colore:'bianco',zona:'estero',estero:true,sens:['agrumato','erbe_aromatiche','speziato','minerale','strutturato']},
+  {name:'Rebula Selekcija',prod:'Movia',price:58,tipo:'Fermo',colore:'orange',zona:'estero',estero:true,sens:['esotico','evoluto','macerato','lieve_tannino','sapido']},
+  {name:'Petite Arvine',prod:'Grosjean',price:36,tipo:'Fermo',colore:'bianco',zona:'nord',estero:false,sens:['agrumato','floreale','salmastro','fresco','minerale']},
+  {name:'Pigato',prod:'Punta Crena',price:34,tipo:'Fermo',colore:'bianco',zona:'nord',estero:false,sens:['erbe_aromatiche','mandorlato','salmastro','fresco']},
+];
+
+/* ===== ARRICCHIMENTO da schema-carta reale =====
+   La carta vera (carta_vini) espone: tipo, cat, carat[] (Bio, Biodinamico, Triple A,
+   Anfora, Pét-Nat, Metodo classico, Col fondo, Metodo ancestrale…), uvaggio[], region.
+   Qui, sul demo, derivo gli stessi segnali dai campi già presenti così le nuove domande
+   sono testabili subito. Al collegamento con la carta vera basterà leggere w.carat/w.cat. */
+const _NATURALI=new Set(['Radikon','Zidarich','Arianna Occhipinti','Movia','Punta Crena','Cantina della Volta','Vigneti Massa','G.D. Vajra','Collestefano','Tiberio','Grosjean']); // produttori naturali/artigianali del demo
+const _CHAMPAGNE_PROD=new Set(['Agrapart']);
+VINI.forEach(w=>{
+  const c=[];
+  if(w.tipo==='Spumante' && w.sens.some(s=>['crosta_di_pane','bollicine_fini'].includes(s))) c.push('Metodo classico');
+  if(w.sens.includes('bollicine_fresche')) c.push('Charmat');
+  if(w.colore==='orange'||w.sens.includes('macerato')) c.push('Macerato');
+  if(_NATURALI.has(w.prod)) c.push('Bio');
+  if(w.sens.includes('macerato')||w.prod==='Radikon') c.push('Anfora');
+  w.carat=c;
+  w.champagne = _CHAMPAGNE_PROD.has(w.prod) || /champagne/i.test(w.name);
+  // artigianale/naturale: bio-proxy, macerati, orange, col fondo/ancestrale
+  w.artigianale = _NATURALI.has(w.prod) || w.colore==='orange' ||
+                  w.sens.includes('macerato') || w.sens.includes('velato');
+  // sorprendente = fuori dagli schemi: orange/macerato/velato + alcuni vitigni insoliti
+  w.sorprendente = w.colore==='orange' || w.sens.includes('macerato') ||
+                   w.sens.includes('velato') || w.sens.includes('esotico') ||
+                   (w.artigianale && w.tipo!=='Spumante');
+});
+
+/* ===== DOMANDE =====
+   weight: quanto la domanda è DECISIVA (colore/bolla alto, aromi basso) -> pesa nel ranking
+   labelYes/labelNo: etichetta breve leggibile per il riepilogo del "riprova"
+   variants: formulazioni multiple (ne pesco una non usata)
+   dim, axis, minTurn, flip come prima */
+const DOMANDE=[
+  {id:'colore', dim:'colore', kind:'Il tipo', axis:{corpo:.5}, weight:3,
+   labelYes:'rosso', labelNo:'non rosso',
+   variants:[
+     {emoji:['🍷'], text:'Stasera ti chiama il rosso?', yes:'Sì, rosso', no:'No, altro', hint:'Un rosso, o preferisci restare sul bianco/rosato?'},
+     {emoji:['🥂'], text:'Più voglia di bianco?', yes:'Sì, bianco', no:'No, un rosso', hint:'Un bianco (o rosato), o punti sul rosso?', flip:true},
+   ], test:w=>w.colore==='rosso'},
+  {id:'bolla', dim:'bolla', kind:'Il tipo', axis:{}, weight:3,
+   labelYes:'con bollicine', labelNo:'fermo',
+   variants:[
+     {emoji:['🫧'], text:'Hai voglia di far festa?', yes:'Sì, bollicine', no:'No, fermo', hint:'Una bollicina, o un vino fermo?'},
+     {emoji:['🍾'], text:'Qualcosa che frizza?', yes:'Sì', no:'No, fermo', hint:'Da brindisi, o un vino fermo?'},
+   ], test:w=>w.tipo==='Spumante'},
+  {id:'champagne', dim:'champagne', kind:'Il tipo', axis:{avventura:.2}, weight:2.2, minTurn:2,
+   labelYes:'uno Champagne', labelNo:'no Champagne',
+   variants:[
+     {emoji:['🍾'], text:'Stasera è da Champagne?', yes:'Sì, Champagne', no:'No', hint:'Uno Champagne vero, dalla Marna'},
+     {emoji:['🥂'], text:'Ti tenta uno Champagne?', yes:'Sì', no:'No', hint:'La bollicina francese per eccellenza'},
+   ], test:w=>w.champagne===true},
+  {id:'rosato', dim:'rosato', kind:'Il tipo', axis:{}, weight:2.4,
+   labelYes:'un rosato', labelNo:'no rosato',
+   variants:[
+     {emoji:['🌷'], text:'Ti va qualcosa di rosa?', yes:'Sì, rosato', no:'No', hint:'Un rosato, fresco e spensierato'},
+     {emoji:['🌸'], text:'Voglia di un rosato?', yes:'Sì', no:'No', hint:'Rosa, leggero, disinvolto'},
+   ], test:w=>w.colore==='rosato'},
+  {id:'territorio', dim:'luogo', kind:'Il territorio', axis:{avventura:.4}, weight:1.4,
+   labelYes:'dall\'estero', labelNo:'italiano',
+   variants:[
+     {emoji:['🌍'], text:'Ti porto oltreconfine?', yes:'Sì, andiamo', no:'Resto in Italia', hint:'Un vino estero, o restiamo su un italiano?'},
+     {emoji:['🇮🇹'], text:'Meglio giocare in casa?', yes:'Sì, Italia', no:'No, estero', hint:'Di casa nostra, o guardiamo oltreconfine?', flip:true},
+   ], test:w=>w.estero===true},
+  {id:'clima', dim:'clima', kind:'Lo stile', axis:{corpo:.3}, weight:1.2,
+   labelYes:'caldo e morbido', labelNo:'fresco e agile',
+   variants:[
+     {emoji:['☀️'], text:'Caldo e avvolgente, o fresco e leggero?', yes:'Caldo', no:'Fresco', hint:'Vini "di sole", più maturi e morbidi — oppure freschi e scattanti'},
+     {emoji:['🌡️'], text:'Un vino che scalda o che rinfresca?', yes:'Che scalda', no:'Che rinfresca', hint:'Morbido e generoso, o fresco e beverino: scegli la sensazione, non la cartina'},
+   ], test:w=>w.zona==='sud'},
+  {id:'occasione', dim:'prezzo', kind:'Il momento', axis:{avventura:.3}, minTurn:2, weight:1.6,
+   labelYes:'da occasione', labelNo:'accessibile',
+   variants:[
+     {emoji:['✨'], text:'È una sera che conta?', yes:'Sì, coccolami', no:'No, sera normale', hint:'Ci sta una bottiglia da ricordare, o una beva tranquilla?'},
+     {emoji:['🥂'], text:'Vuoi toglierti uno sfizio?', yes:'Sì', no:'No, tengo il conto', hint:'Un\'occasione da celebrare, o una serata leggera?'},
+   ], test:w=>w.price>=55},
+  {id:'crudo', dim:'piatto', kind:'A tavola', axis:{}, weight:1.5,
+   labelYes:'da crudi/mare', labelNo:'piatti decisi',
+   variants:[
+     {emoji:['🦪'], text:'Si comincia dal mare?', yes:'Sì, crudo', no:'No, sapori decisi', hint:'Ostriche, tartare, carpacci: cose fini e delicate'},
+     {emoji:['🐟'], text:'Il piatto è delicato?', yes:'Sì, delicato', no:'No, saporito', hint:'Crudi e cose leggere, o cucina più decisa?'},
+   ], test:w=>w.sens.filter(s=>['salmastro','minerale','teso','agrumato'].includes(s)).length>=2},
+  {id:'saporito', dim:'intensita_piatto', kind:'A tavola', axis:{corpo:.4}, weight:1.4,
+   labelYes:'per piatti ricchi', labelNo:'per piatti leggeri',
+   variants:[
+     {emoji:['🍲'], text:'Il piatto ha carattere?', yes:'Sì, ricco', no:'No, leggero', hint:'Zuppe, fritti, sughi importanti: roba che riempie'},
+     {emoji:['🔥'], text:'Ti serve un vino con le spalle?', yes:'Sì', no:'No', hint:'Piatti ricchi che vogliono un vino robusto'},
+   ], test:w=>w.sens.filter(s=>['strutturato','morbido','speziato','evoluto'].includes(s)).length>=1},
+  {id:'aperitivo', dim:'momento', kind:'Il momento', axis:{corpo:-.5}, weight:1.3,
+   labelYes:'da aperitivo', labelNo:'da pasto',
+   variants:[
+     {emoji:['🍸'], text:'È solo per aprire la sera?', yes:'Sì, si parte', no:'No, a tavola', hint:'Un calice che apre, o da accompagnare i piatti?'},
+     {emoji:['🌅'], text:'Un calice per chiacchierare?', yes:'Sì, leggero', no:'No, col pasto', hint:'Qualcosa di sciolto da aperitivo, o da tutto pasto?'},
+   ], test:w=>w.sens.some(s=>['leggero','fresco','vivace','bollicine_fresche'].includes(s))},
+  {id:'fruttato', dim:'frutto', kind:'Al naso', axis:{complessita:-.7}, weight:0.8,
+   labelYes:'fruttato', labelNo:'non troppo fruttato',
+   variants:[
+     {emoji:['🍓'], text:'Un sorso che piace subito?', yes:'Sì', no:'No, cerco altro', hint:'Frutta riconoscibile, immediato e godibile'},
+     {emoji:['🍑'], text:'Ti va qualcosa di goloso?', yes:'Sì', no:'No', hint:'Diretto e piacevole, senza troppi giri'},
+   ], test:w=>w.sens.some(s=>['fruttato','frutta_rossa','floreale'].includes(s))},
+  {id:'agrumi', dim:'freschezza', kind:'Al naso', axis:{corpo:-.3}, weight:0.9,
+   labelYes:'fresco', labelNo:'non troppo fresco',
+   variants:[
+     {emoji:['🍋'], text:'Ti serve una sveglia?', yes:'Sì, fresco', no:'No', hint:'Agrumi ed erbe, un\'acidità che rinfresca'},
+     {emoji:['🌿'], text:'Meglio teso o morbido?', yes:'Teso e fresco', no:'Più morbido', hint:'Un sorso scattante, o qualcosa di più rotondo?'},
+   ], test:w=>w.sens.filter(s=>['agrumato','erbe_aromatiche','teso'].includes(s)).length>=1},
+  {id:'struttura', dim:'corpo', kind:'In bocca', axis:{corpo:1}, weight:1.1,
+   labelYes:'strutturato', labelNo:'leggero',
+   variants:[
+     {emoji:['💪'], text:'Ti va qualcosa di deciso?', yes:'Sì, corposo', no:'No, più agile', hint:'Corpo pieno e presenza, o qualcosa di più snello?'},
+     {emoji:['🍷'], text:'Vuoi un vino con la stoffa?', yes:'Sì', no:'No, più leggero', hint:'Struttura e carattere, o qualcosa di più fine?'},
+   ], test:w=>w.sens.filter(s=>['strutturato','tannico','evoluto'].includes(s)).length>=2},
+  {id:'artigianale', dim:'artigianale', kind:'Lo spirito', axis:{avventura:.6}, weight:1.5,
+   labelYes:'artigianale', labelNo:'più classico',
+   variants:[
+     {emoji:['🌾'], text:'Ti va qualcosa di artigianale?', yes:'Sì, di vignaiolo', no:'No, più classico', hint:'Vini bio e di piccoli vignaioli, fatti come una volta'},
+     {emoji:['✋'], text:'Preferisci il vino di chi lo fa a mano?', yes:'Sì', no:'Indifferente', hint:'Piccole cantine, lavoro artigianale in vigna'},
+   ], test:w=>w.artigianale===true},
+  {id:'sorprendente', dim:'strano', kind:'Lo spirito', axis:{avventura:1}, weight:1.6,
+   variants:[
+     {emoji:['🎲'], text:'Sicuro o sorprendente?', yes:'Sorprendimi', no:'Vado sul sicuro', hint:'Qualcosa fuori dagli schemi, o un vino rassicurante?'},
+     {emoji:['🧭'], text:'Ti fidi se ti spiazzo un po\'?', yes:'Sì, spiazzami', no:'No, sul sicuro', hint:'Un vino insolito da raccontare, o territorio noto?'},
+   ], labelYes:'qualcosa di sorprendente', labelNo:'sul sicuro',
+   test:w=>w.sorprendente===true||w.colore==='orange'},
+  {id:'orange', dim:'orange_esplicito', kind:'Qualcosa in più', axis:{avventura:1}, weight:1.8,
+   labelYes:'un orange', labelNo:'niente orange',
+   variants:[
+     {emoji:['🟠'], text:'Hai voglia di osare?', yes:'Sì, osiamo', no:'No, classico', hint:'Un orange: bianco macerato sulle bucce, fuori dagli schemi'},
+     {emoji:['🧡'], text:'Ti incuriosisce qualcosa di insolito?', yes:'Sì', no:'No', hint:'Un orange wine, un vino un po\' controcorrente'},
+   ], test:w=>w.colore==='orange'},
+  {id:'evoluto', dim:'complessita', kind:'Carattere', axis:{complessita:1,avventura:.3}, weight:0.9,
+   labelYes:'complesso', labelNo:'schietto',
+   variants:[
+     {emoji:['🍯'], text:'Vuoi qualcosa su cui riflettere?', yes:'Sì, da meditare', no:'No, più diretto', hint:'Un vino con sfumature, da assaporare piano'},
+     {emoji:['📜'], text:'Cerchi profondità o immediatezza?', yes:'Profondità', no:'Immediatezza', hint:'Note mature ed evolute, o qualcosa di più schietto?'},
+   ], test:w=>w.sens.includes('evoluto')},
+];
+
+/* ===== APERTURE evocative "di momento" =====
+   La PRIMA carta è sempre una di queste, a rotazione tra sessioni.
+   soft:true -> filtro MORBIDO: orienta forte il profilo (axis) ma taglia il pool
+   solo se resta abbastanza capiente; così non stringe troppo presto.
+   Hanno dim propri per non collidere con le domande "vere" (occasione/aperitivo). */
+const APERTURE=[
+  {id:'ap_festa', dim:'ap_momento', kind:'Il momento', axis:{avventura:.3}, weight:1.2, soft:true,
+   labelYes:'per festeggiare', labelNo:'senza occasione',
+   variants:[
+     {emoji:['🎉'], text:'Si brinda a qualcosa?', yes:'Sì, si brinda', no:'No, cena normale', hint:'Un compleanno, una ricorrenza… o una cena senza occasione particolare?'},
+     {emoji:['🥳'], text:'C\'è una ricorrenza stasera?', yes:'Sì', no:'No', hint:'Qualcosa da celebrare, o una serata come tante?'},
+   ], test:w=>w.tipo==='Spumante'||w.price>=55},
+  {id:'ap_spesa', dim:'ap_momento', kind:'Il momento', axis:{avventura:.3,corpo:.2}, weight:1.2, soft:true,
+   labelYes:'senza badare al conto', labelNo:'occhio al conto',
+   variants:[
+     {emoji:['✨'], text:'Ci si vuole viziare?', yes:'Sì, viziamoci', no:'No, restiamo comodi', hint:'Una bottiglia importante, o qualcosa di più tranquillo sul prezzo?'},
+     {emoji:['💎'], text:'Bottiglia importante o comoda?', yes:'Importante', no:'Comoda', hint:'Ci scappa la spesa per qualcosa di speciale, o meglio restare leggeri?'},
+   ], test:w=>w.price>=55},
+  {id:'ap_pasto', dim:'ap_momento', kind:'Il momento', axis:{corpo:-.4}, weight:1.2, soft:true,
+   labelYes:'solo un calice', labelNo:'per tutta la cena',
+   variants:[
+     {emoji:['🍸'], text:'Un calice o una cena intera?', yes:'Solo un calice', no:'Tutta la cena', hint:'Qualcosa da sorseggiare ora, o un vino da accompagnare i piatti?'},
+     {emoji:['🥂'], text:'Si beve prima di mangiare?', yes:'Sì, si apre', no:'No, si è a tavola', hint:'Un aperitivo che apre la sera, o siamo già a tavola?'},
+   ], test:w=>w.sens.some(s=>['leggero','fresco','vivace','bollicine_fresche'].includes(s))},
+  {id:'ap_convivio', dim:'ap_momento', kind:'Il momento', axis:{}, weight:1.1, soft:true,
+   labelYes:'in compagnia', labelNo:'in pochi',
+   variants:[
+     {emoji:['👥'], text:'Siete in tanti a tavola?', yes:'Sì, bella tavolata', no:'No, siamo in pochi', hint:'Una bottiglia che mette d\'accordo tutti, o una scelta più personale?'},
+     {emoji:['🍽️'], text:'Tavolata o cena a due?', yes:'Tavolata', no:'In pochi', hint:'Un vino che piace a tutti, o qualcosa di più ricercato?'},
+   ], test:w=>w.tipo==='Spumante'||w.sens.some(s=>['fruttato','frutta_rossa','fresco','vivace'].includes(s))},
+];
+// le aperture entrano nel pool domande generale (per varianti/chips/ranking) ma sono gestite a parte all'avvio
+DOMANDE.push(...APERTURE);
+const APERTURA_IDS=APERTURE.map(a=>a.id);
+let usedAperture=[];  // aperture già mostrate (per rotazione tra round)
+
+/* le domande "decisive" (tipo/colore) aprono sempre */
+const OPENERS=['colore','bolla','rosato'];
+
+/* ===== STATO ===== */
+let pool, asked, history, priorProfile, roundNo, usedDims, usedVariants;
+function initFull(){ pool=[...VINI]; asked=[]; history=[]; priorProfile=null; roundNo=1; usedDims=new Set(); usedVariants={}; usedAperture=[]; }
+initFull();
+
+const BIG_KINDS=['Il tipo','Il momento','A tavola','Il territorio'];
+function splitScore(q){ const yes=pool.filter(w=>q.test(w)).length,no=pool.length-yes;
+  if(yes===0||no===0)return null; return Math.abs(yes-no); }
+function pickQuestion(){
+  // PRIMA CARTA: sempre un'apertura evocativa "di momento", a rotazione tra sessioni.
+  if(asked.length===0){
+    const fresh=APERTURE.filter(a=>!usedAperture.includes(a.id) && splitScore(a)!=null);
+    const pickList = fresh.length? fresh : APERTURE.filter(a=>splitScore(a)!=null);
+    if(pickList.length){
+      const ap=pickList[Math.floor(Math.random()*pickList.length)];
+      usedAperture.push(ap.id);
+      return ap;
+    }
+    // se nessuna apertura divide il pool, proseguo con la logica normale
+  }
+  // esclusioni "tematiche": evito coppie ridondanti (sorprendente <-> orange, artigianale <-> sorprendente)
+  const askedIds=new Set(asked.map(a=>a.q.id));
+  const blocked=new Set();
+  if(askedIds.has('sorprendente')){ blocked.add('orange'); }
+  if(askedIds.has('orange')){ blocked.add('sorprendente'); }
+  // se ho aperto con festa/spesa importante, evito di richiedere subito "occasione" (stesso tema prezzo/festa)
+  if(askedIds.has('ap_festa')||askedIds.has('ap_spesa')){ blocked.add('occasione'); }
+  // se ho aperto con "un calice / si apre la sera", evito il doppione "aperitivo"
+  if(askedIds.has('ap_pasto')){ blocked.add('aperitivo'); }
+  const avail=DOMANDE.filter(q=>!asked.some(a=>a.q.id===q.id))
+    .filter(q=>!APERTURA_IDS.includes(q.id))   // le aperture solo come prima carta
+    .filter(q=>!blocked.has(q.id))
+    .filter(q=>!usedDims.has(q.dim))
+    .filter(q=>!q.minTurn || asked.length>=q.minTurn-1);
+  const phase=pool.length>18?'wide':pool.length>7?'mid':'fine';
+  // nei primi due turni, se c'è un opener utile (tipo/colore) che divide, lo preferisco nettamente
+  const earlyOpeners = asked.length<2
+    ? avail.filter(q=>OPENERS.includes(q.id) && splitScore(q)!=null) : [];
+  const pointsFrom = earlyOpeners.length? earlyOpeners : avail;
+  let best=null,bs=1e9;
+  for(const q of pointsFrom){
+    const s=splitScore(q); if(s==null)continue;
+    let sc=s; const isBig=BIG_KINDS.includes(q.kind);
+    if(phase==='wide'){sc=isBig?sc-14:sc+6;}
+    else if(phase==='mid'){sc=isBig?sc-4:sc;}
+    else{sc=isBig?sc+4:sc-2;}
+    if(sc<bs){bs=sc;best=q;}
+  }
+  return best;
+}
+/* scelgo una VARIANTE non ancora usata per quella domanda */
+function pickVariant(q){
+  const used=usedVariants[q.id]||[];
+  const fresh=q.variants.map((v,i)=>i).filter(i=>!used.includes(i));
+  const idx = fresh.length? fresh[Math.floor(Math.random()*fresh.length)]
+                          : Math.floor(Math.random()*q.variants.length); // se finite, riuso
+  usedVariants[q.id]=[...used,idx];
+  return {v:q.variants[idx], idx};
+}
+function applyAnswer(q,ans,variant){
+  history.push({pool:[...pool],asked:JSON.parse(JSON.stringify(asked)),usedDims:new Set(usedDims)});
+  asked.push({q,ans,variant});
+  usedDims.add(q.dim);
+  if(ans==='skip')return;
+  const yesLike=(ans==='yes'||ans==='super');
+  const flip=variant&&variant.flip;
+  const wantTest = flip? !yesLike : yesLike;
+  const next=wantTest? pool.filter(w=>q.test(w)) : pool.filter(w=>!q.test(w));
+  // FILTRO MORBIDO (aperture): orientano il profilo (via axis, in currentProfile) ma
+  // tagliano il pool solo se resta abbastanza capiente. Così l'apertura dà atmosfera
+  // e direzione senza strozzare la scelta al primo colpo.
+  if(q.soft){
+    const SOFT_FLOOR=Math.max(8, Math.round(pool.length*0.45)); // non scendere sotto ~45% o 8 vini
+    if(next.length>=SOFT_FLOOR){ pool=next; }
+    // altrimenti NON taglio: l'apertura resta solo orientamento di profilo (non marco ignored,
+    // così l'axis pesa comunque nel ranking finale)
+    return;
+  }
+  // Se il filtro azzererebbe il pool, NON lo applico ma lo dico all'utente:
+  if(next.length>0){ pool=next; }
+  else { asked[asked.length-1].ignored=true;
+    flashQuip('In cantina non ho un vino così: proseguo con quelli rimasti.'); }
+}
+function currentProfile(){
+  const p={avventura:0,corpo:0,complessita:0};
+  asked.forEach(a=>{
+    // super=+2, yes=+1, superno=-2, no=0 (il no non sposta il profilo, esclude e basta)
+    const w=(a.ans==='super')?2:(a.ans==='yes')?1:(a.ans==='superno')?-2:0;
+    if(w!==0&&a.q.axis)for(const k in a.q.axis)p[k]+=a.q.axis[k]*w; });
+  if(priorProfile)for(const k in p)p[k]+=priorProfile[k]*0.4;
+  return p;
+}
+function shouldStop(){
+  // mi fermo se: non ci sono più domande utili, OPPURE ho già chiesto abbastanza,
+  // OPPURE il pool è davvero piccolo MA solo dopo un minimo di domande (per coprire più assi).
+  const MIN_Q=4, MAX_Q=7;
+  if(!pickQuestion()) return true;          // niente più domande che dividano
+  if(asked.length>=MAX_Q) return true;      // cap superiore
+  // FINE ANTICIPATA: se restano 3 vini o meno e ho già fatto più di 3 domande,
+  // le domande sono di fatto finite → presento subito hero + alternative.
+  if(asked.length>3 && pool.length<=3) return true;
+  if(asked.length<MIN_Q) return false;      // altrimenti garantisco almeno MIN_Q domande
+  if(pool.length<=2) return true;
+  return false;
+}
+function wineAxes(w){ let a={avventura:0,corpo:0,complessita:0};const has=id=>w.sens.includes(id);
+  if(has('macerato')||w.colore==='orange')a.avventura+=1;
+  if(has('evoluto')){a.avventura+=.4;a.complessita+=1;}
+  if(has('speziato')||has('erbe_aromatiche'))a.complessita+=.4;
+  if(has('fruttato')||has('frutta_rossa')||has('floreale'))a.complessita-=.5;
+  if(has('agrumato')||has('fresco')||has('vivace')||has('leggero')){a.complessita-=.4;a.corpo-=.5;}
+  if(has('strutturato')||has('tannico'))a.corpo+=1;
+  if(has('morbido'))a.corpo+=.3; if(has('lieve_tannino'))a.corpo+=.3; return a; }
+function finalRanking(){ return rankWines(pool); }
+function rankWines(list){
+  const prof=currentProfile();
+  const scored=list.map(w=>{let s=0;
+    asked.forEach(a=>{
+      if(a.ignored||a.ans==='skip')return;         // risposte senza effetto: non pesano
+      const wgt=a.q.weight||1;                     // quanto è decisiva la domanda
+      const flip=a.variant&&a.variant.flip;
+      const yesLike=(a.ans==='yes'||a.ans==='super');
+      const wt=flip?!yesLike:yesLike;              // il vino sta dalla parte scelta?
+      const match=a.q.test(w);
+      // I SUPER-VOTI sono decisivi: pesano molto più di un like/dislike normale.
+      if(a.ans==='super'){ if(wt===match) s+=5*wgt; else s-=3*wgt; }       // super like: lo voglio proprio
+      else if(a.ans==='superno'){ if(match) s-=6*wgt; else s+=1.5*wgt; }   // super dislike: non lo voglio per niente
+      else if(a.ans==='yes'){ if(wt===match) s+=1*wgt; }
+      else if(a.ans==='no'){ if(!match) s+=0.5*wgt; }
+    });
+    const wa=wineAxes(w); let al=0;
+    for(const k in prof)al+=Math.sign(prof[k])*Math.sign(wa[k])*Math.min(Math.abs(prof[k]),1)*0.6;
+    return {w,s:s+al}; });
+  scored.sort((a,b)=>b.s-a.s); return scored.map(x=>x.w);
+}
+function profileLabel(p){const parts=[];
+  if(p.complessita>0.6)parts.push('un palato che ama la complessità'); else if(p.complessita<-0.6)parts.push('il piacere diretto e schietto');
+  if(p.avventura>0.5)parts.push('lo spirito d\'avventura');
+  if(p.corpo>0.5)parts.push('i vini di carattere'); else if(p.corpo<-0.5)parts.push('la freschezza');
+  if(!parts.length)return 'un gusto equilibrato'; return parts.slice(0,2).join(' e '); }
+function midQuip(){const p=currentProfile();const o=[];
+  if(p.avventura>0.5)o.push('Un palato d\'avventura, qui… 👀');
+  if(p.complessita>0.7)o.push('Cerchi profondità. Interessante.');
+  if(p.complessita<-0.6)o.push('Dritto al piacere, mi piace.');
+  if(p.corpo>0.7)o.push('Non hai paura dei vini importanti.');
+  if(p.corpo<-0.6)o.push('Freschezza e leggerezza: ottimo.');
+  if(pool.length<=4)o.push('Ci siamo quasi…');
+  if(!o.length)o.push(['Comincio a capirti…','Andiamo avanti…','Il quadro si delinea…'][asked.length%3]);
+  return o[Math.floor(Math.random()*o.length)]; }
+const SUSPENSE_LINES=['Sto pescando in cantina…','Sento cosa fa per te…','Ci siamo…'];
+
+/* ===== UI ===== */
+const deck=document.getElementById('deck');
+let currentQ=null, currentVar=null, cardEl=null;
+// PROGRESSO a step: non mostra più quanti vini restano. Si riempie in base allo
+// step corrente e arriva al 100% all'ultima domanda.
+const PROGRESS_TARGET=6;
+function setProgress(done){
+  const el=document.getElementById('barFill'); if(!el) return;
+  if(done){ el.style.width='100%'; return; }
+  // Avanza SEMPRE ma non rivela mai "quanto manca": curva che si avvicina al ~90%
+  // senza toccarlo, così il cliente non sa quando arriverà il match (sorpresa).
+  const n=asked.length;                         // risposte date finora
+  const pct = 12 + 78*(1 - Math.pow(0.74, n));  // 0→12%, sale e satura ~90%
+  el.style.width=Math.round(pct)+'%';
+}
+function updateTop(){ setProgress(false); }
+function flashQuip(t){const q=document.getElementById('quip');q.classList.remove('show');
+  setTimeout(()=>{q.textContent=t;q.classList.add('show');},200);}
+
+/* ===== FRASETTE DI RINFORZO =====
+   Dopo ogni risposta appare una frase catchy, quasi "innegabile", legata alla
+   scelta appena fatta: stimola il cliente e alleggerisce l'attesa. */
+const REINFORCE={
+  bolla:{yes:'La bollicina non sbaglia un colpo. 🥂', no:'Un fermo, con calma: ottimo.'},
+  colore:{yes:'Un rosso di carattere. 🍷', no:'Restiamo sul chiaro, gran gusto.'},
+  champagne:{yes:'Champagne: nessuno se n\'è mai pentito. 🍾'},
+  rosato:{yes:'Il rosa è sempre una buona idea. 🌷'},
+  orange_esplicito:{yes:'Gli orange stupiscono sempre. 🟠'},
+  strano:{yes:'Chi osa, beve meglio. 😏', no:'Andare sul sicuro è saggio.'},
+  luogo:{yes:'Un piccolo viaggio nel calice. 🌍', no:'Casa nostra non delude. 🇮🇹'},
+  clima:{yes:'Caldo e avvolgente, promosso.', no:'Fresco e scattante, ottima idea.'},
+  prezzo:{yes:'Certe sere se lo meritano. ✨', no:'Buono e furbo: si può.'},
+  piatto:{yes:'Perfetto per partire col mare. 🦪'},
+  intensita_piatto:{yes:'Un vino con le spalle larghe. 💪'},
+  corpo:{yes:'Corpo e presenza: promosso.', no:'Agile e bevibile, gran cosa.'},
+  momento:{yes:'Un calice che apre le danze. 🍸'},
+  freschezza:{yes:'Freschezza che disseta. 💧'},
+  frutto:{yes:'Frutto pieno, piacere immediato. 🍓'},
+  artigianale:{yes:'I vignaioli raccontano storie. 🌾'},
+  complessita:{yes:'Un vino su cui riflettere. 📜', no:'Diretto e schietto: che liberazione.'},
+  ap_momento:{yes:'Ottimo, così ti inquadro. ✨', no:'Chiaro, niente fronzoli.'}
+};
+const GEN_YES=['Buona scelta.','Ci siamo capiti. 😉','Mi piace dove stiamo andando.','Interessante…'];
+const GEN_NO=['Ok, tolto.','Capito, andiamo oltre.','Va bene così.'];
+const SUPER_PRE=['Sì!','Adorato.','Gran gusto.'];
+const SUPERNO_R=['Ricevuto: quello proprio no. 🙅','Ok, lo cancelliamo del tutto.','Chiaro, quello non lo vuoi.'];
+const ALMOST=['Ci siamo quasi… 🍷','Ancora un attimo e ci sei… ✨'];
+// frasi positive/rinforzanti in cima al risultato (al posto di "Ho colto…")
+const POSITIVE_CHEER=['Ce l\'ho — e ti somiglia.','Gran gusto il tuo.','Occhio fino: questo è per te.','Che scelta stai per fare…','Mi piace come ragioni.'];
+function reinforce(a){
+  if(!a || a.ans==='skip' || a.ignored) return '';
+  if(a.ans==='superno') return SUPERNO_R[Math.floor(Math.random()*SUPERNO_R.length)];
+  const flip=a.variant&&a.variant.flip;
+  const yesLike=(a.ans==='yes'||a.ans==='super');
+  const wantYes=flip?!yesLike:yesLike;
+  const R=REINFORCE[a.q.dim];
+  let phrase = R ? (wantYes ? (R.yes||'') : (R.no||'')) : '';
+  if(!phrase){ const g=wantYes?GEN_YES:GEN_NO; phrase=g[Math.floor(Math.random()*g.length)]; }
+  if(a.ans==='super') phrase = SUPER_PRE[Math.floor(Math.random()*SUPER_PRE.length)]+' '+phrase;
+  return phrase;
+}
+function showQuestion(){
+  updateTop();
+  if(shouldStop()){ runSuspense(); return; }
+  currentQ=pickQuestion(); if(!currentQ){runSuspense();return;}
+  const pv=pickVariant(currentQ); currentVar=pv.v;
+  // "Ci siamo quasi": quando siamo vicini alla fine (già ≥3 risposte e poca pool,
+  // oppure ≥4 risposte) incoraggio + faccio pulsare la barra, così il cliente non
+  // molla proprio sul più bello.
+  const nearEnd = asked.length>=3 && (asked.length>=4 || pool.length<=6);
+  const prog=document.querySelector('.progress');
+  if(prog) prog.classList.toggle('almost', nearEnd);
+  if(asked.length>=1){
+    const q = nearEnd ? ALMOST[asked.length%ALMOST.length] : reinforce(asked[asked.length-1]);
+    if(q) flashQuip(q);
+  }
+  const q=currentQ, v=currentVar;
+  const card=document.createElement('div'); card.className='qcard';
+  const hue=['Al naso','In bocca','Carattere'].includes(q.kind)?42:200;
+  card.innerHTML=`
+    <div class="tint" style="background:radial-gradient(circle at 50% 40%, hsla(${hue},70%,50%,.30), transparent 70%)"></div>
+    <div class="qkind">${q.kind||''}</div>
+    <div class="stamp yes">${v.yes||'Sì'}</div><div class="stamp no">${v.no||'No'}</div>
+    <div class="stamp super">🤩 Adoro</div>
+    <div class="stamp superno">😅 Per niente</div>
+    <div class="scene">
+      <div class="emoji-row">${v.emoji.join('')}</div>
+      <div class="qtext">${v.text}</div>
+      <div class="qhint">${v.hint||''}</div>
+    </div>
+    <div class="swipe-labels"><span class="l">${v.no||'No'}</span><span class="r">${v.yes||'Sì'}</span></div>`;
+  deck.appendChild(card); cardEl=card; bindDrag(card);
+}
+function answer(ans){
+  if(!currentQ||!cardEl)return; const card=cardEl; cardEl=null;
+  buzz(ans==='super'||ans==='superno'?[10,30,10]:14);
+  card.style.transition='transform .45s ease, opacity .45s ease';
+  if(ans==='yes')card.style.transform='translateX(600px) rotate(22deg)';
+  else if(ans==='no')card.style.transform='translateX(-600px) rotate(-22deg)';
+  else if(ans==='super')card.style.transform='translateY(-560px) scale(1.05)';
+  else if(ans==='superno')card.style.transform='translateY(560px) scale(.9)';
+  else card.style.transform='translateY(-460px) scale(.9)';
+  card.style.opacity='0';
+  applyAnswer(currentQ,ans,currentVar);
+  setTimeout(()=>{card.remove();showQuestion();},330);
+}
+/* feedback aptico leggero (mobile) */
+function buzz(ms){ try{ navigator.vibrate && navigator.vibrate(ms); }catch(e){} }
+/* stato drag condiviso: un SOLO listener globale su pointerup, così non si accumulano su ogni carta */
+let dragState=null;
+function bindDrag(card){
+  const ys=card.querySelector('.stamp.yes'),ns=card.querySelector('.stamp.no'),
+        ss=card.querySelector('.stamp.super'),sns=card.querySelector('.stamp.superno'),tint=card.querySelector('.tint');
+  const clearStamps=()=>{ys.style.opacity=0;ns.style.opacity=0;ss.style.opacity=0;if(sns)sns.style.opacity=0;tint.style.opacity=0;};
+  const down=e=>{dragState={card,ys,ns,ss,sns,tint,clearStamps,sx:e.clientX,sy:e.clientY,dx:0,dy:0,armed:null};
+    card.style.transition='none';card.setPointerCapture?.(e.pointerId);};
+  const move=e=>{const s=dragState;if(!s||s.card!==card)return;
+    s.dx=e.clientX-s.sx;s.dy=e.clientY-s.sy;const{dx,dy}=s;
+    card.style.transform=`translate(${dx}px,${dy}px) rotate(${dx/18}deg)`;
+    let armed=null;
+    if(dy<-70&&Math.abs(dx)<80){ss.style.opacity=Math.min(1,(-dy-70)/70);ys.style.opacity=0;ns.style.opacity=0;if(sns)sns.style.opacity=0;tint.style.opacity=0;armed='super';}
+    else if(dy>70&&Math.abs(dx)<80){if(sns)sns.style.opacity=Math.min(1,(dy-70)/70);ys.style.opacity=0;ns.style.opacity=0;ss.style.opacity=0;tint.style.opacity=0;armed='superno';}
+    else{const k=Math.min(1,Math.abs(dx)/120);
+      if(dx>0){ys.style.opacity=k;ns.style.opacity=0;tint.style.opacity=k*.6;if(Math.abs(dx)>110)armed='yes';}
+      else{ns.style.opacity=k;ys.style.opacity=0;tint.style.opacity=0;if(Math.abs(dx)>110)armed='no';}
+      ss.style.opacity=0;if(sns)sns.style.opacity=0;}
+    // micro-vibrazione quando si "arma" una scelta (una sola volta per soglia)
+    if(armed && armed!==s.armed) buzz(8);
+    s.armed=armed;};
+  card.addEventListener('pointerdown',down);card.addEventListener('pointermove',move);
+}
+/* un unico handler globale gestisce il rilascio della carta attiva */
+window.addEventListener('pointerup',()=>{
+  const s=dragState;if(!s)return;dragState=null;
+  const{dx,dy,card,clearStamps}=s;
+  if(dy<-90&&Math.abs(dx)<90)answer('super');
+  else if(dy>90&&Math.abs(dx)<90)answer('superno');
+  else if(Math.abs(dx)>110)answer(dx>0?'yes':'no');
+  else{card.style.transition='transform .3s ease';card.style.transform='';clearStamps();}
+});
+
+document.getElementById('yesBtn').addEventListener('click',()=>answer('yes'));
+document.getElementById('noBtn').addEventListener('click',()=>answer('no'));
+document.getElementById('superBtn').addEventListener('click',()=>answer('super'));
+document.getElementById('supernoBtn').addEventListener('click',()=>answer('superno'));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight')answer('yes'); if(e.key==='ArrowLeft')answer('no');
+  if(e.key==='ArrowUp')answer('super'); if(e.key==='ArrowDown')answer('superno');});
+
+/* ===== ANIMAZIONE VERSAGGIO FLUIDA (getto a particelle + pozza a livello) ===== */
+let pourAnim=null;
+function startPour(wineRGB, bubbles){
+  const cv=document.getElementById('pourCv'), ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height;
+  const buf=document.createElement('canvas'); buf.width=W; buf.height=H; const bx=buf.getContext('2d');
+  const CX=W/2, bowlTop=118, bowlBot=250, bowlHalf=62;
+  const halfAt=y=>{ if(y<bowlTop)return bowlHalf; if(y>bowlBot)return 0;
+    const t=(y-bowlTop)/(bowlBot-bowlTop); return bowlHalf*(1-t*t*0.6); };
+  let drops=[], ripples=[], bubs=[], tears=[], volume=0, t=0, spawnAcc=0;
+  const G=0.42, TARGET_FILL=0.72, capacity=(bowlBot-bowlTop)*TARGET_FILL*0.9;
+  let level=bowlBot;
+  const WINE=wineRGB;
+  cancelAnimationFrame(pourAnim);
+  const spawn=()=>drops.push({x:CX+(Math.random()-.5)*4,y:26,vx:(Math.random()-.5)*0.4,vy:4.6+Math.random()*0.9,r:5+Math.random()*2.2});
+  function surfaceY(x){ let y=level; y+=Math.sin(x*0.05+t*0.08)*1.1;
+    for(const r of ripples){ const d=Math.abs(x-r.x); y+=Math.cos(d*0.14-r.t*6)*r.a*Math.exp(-d*0.02);} return y; }
+  function frame(){
+    t++;
+    const pouring=t<80 && volume<capacity;   // versaggio più rapido (~1s)
+    if(pouring){ spawn(); spawn(); spawn(); }
+    for(let i=drops.length-1;i>=0;i--){ const p=drops[i]; p.vy+=G; p.x+=p.vx; p.y+=p.vy;
+      if(p.y>bowlTop){ const h=halfAt(p.y);
+        if(p.x<CX-h){p.x=CX-h;p.vx=Math.abs(p.vx)*0.3;} if(p.x>CX+h){p.x=CX+h;p.vx=-Math.abs(p.vx)*0.3;} }
+      if(p.y>=level-2){ volume+=p.r*0.9; drops.splice(i,1); ripples.push({x:p.x,a:2.2,t:0});
+        // spruzzo di lacrime sul vetro all'impatto
+        if(volume>capacity*0.3 && Math.random()<0.3) tears.push({x:CX+(Math.random()<.5?-1:1)*(bowlHalf-4+Math.random()*3), y:level-2, v:0}); } }
+    const fillFrac=Math.min(1,volume/capacity);
+    level=bowlBot-(bowlBot-bowlTop)*TARGET_FILL*fillFrac;
+    for(let i=ripples.length-1;i>=0;i--){ const r=ripples[i]; r.t+=0.06; r.a*=0.94; if(r.a<0.1)ripples.splice(i,1); }
+
+    ctx.clearRect(0,0,W,H);
+    // pozza liquida
+    if(volume>0){
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(CX-bowlHalf+3,bowlTop);
+      ctx.bezierCurveTo(CX-bowlHalf+3,bowlBot-5,CX-18,bowlBot-2,CX,bowlBot-2);
+      ctx.bezierCurveTo(CX+18,bowlBot-2,CX+bowlHalf-3,bowlBot-5,CX+bowlHalf-3,bowlTop);
+      ctx.closePath(); ctx.clip();
+      ctx.beginPath(); ctx.moveTo(CX-bowlHalf,surfaceY(CX-bowlHalf));
+      for(let x=-bowlHalf;x<=bowlHalf;x+=3){const xx=CX+x;ctx.lineTo(xx,surfaceY(xx));}
+      ctx.lineTo(CX+bowlHalf,bowlBot); ctx.lineTo(CX-bowlHalf,bowlBot); ctx.closePath();
+      const grd=ctx.createLinearGradient(0,level,0,bowlBot);
+      grd.addColorStop(0,`rgba(${WINE[0]+40},${WINE[1]+22},${WINE[2]+18},.95)`);
+      grd.addColorStop(1,`rgba(${WINE[0]-18},${WINE[1]},${WINE[2]},.98)`);
+      ctx.fillStyle=grd; ctx.fill();
+      ctx.beginPath(); ctx.moveTo(CX-bowlHalf,surfaceY(CX-bowlHalf));
+      for(let x=-bowlHalf;x<=bowlHalf;x+=3){const xx=CX+x;ctx.lineTo(xx,surfaceY(xx));}
+      ctx.strokeStyle=`rgba(${WINE[0]+70},${WINE[1]+40},${WINE[2]+40},.6)`; ctx.lineWidth=1.4; ctx.stroke();
+      // BOLLICINE (solo spumante): salgono dal fondo e scompaiono in superficie
+      if(bubbles && volume>capacity*0.15){
+        if(t%4===0 && bubs.length<70) bubs.push({x:CX+(Math.random()-.5)*bowlHalf*1.2, y:bowlBot-4, r:0.8+Math.random()*1.4, v:0.5+Math.random()*0.7});
+        ctx.fillStyle='rgba(255,250,230,.5)';
+        for(let i=bubs.length-1;i>=0;i--){ const bu=bubs[i]; bu.y-=bu.v; bu.x+=Math.sin(bu.y*0.2+i)*0.15;
+          if(bu.y<=surfaceY(bu.x)+1){ bubs.splice(i,1); ripples.push({x:bu.x,a:0.5,t:0}); continue; }
+          ctx.beginPath(); ctx.arc(bu.x,bu.y,bu.r,0,6.29); ctx.fill(); }
+      }
+      // RIFLESSO vivo che scivola sulla superficie
+      const sx=CX-bowlHalf*0.4;
+      ctx.fillStyle='rgba(255,255,255,.16)';
+      ctx.beginPath(); ctx.ellipse(sx, surfaceY(sx)+3, bowlHalf*0.32, 3.5, 0, 0, 6.29); ctx.fill();
+      ctx.restore();
+    }
+    // LACRIME del vino (colano lentamente lungo la parete interna)
+    if(tears.length){
+      ctx.strokeStyle=`rgba(${WINE[0]+30},${WINE[1]+16},${WINE[2]+14},.5)`; ctx.lineWidth=1.6; ctx.lineCap='round';
+      for(let i=tears.length-1;i>=0;i--){ const tr=tears[i]; tr.v+=0.006; tr.y+=tr.v;
+        ctx.beginPath(); ctx.moveTo(tr.x,tr.y-6); ctx.lineTo(tr.x,tr.y); ctx.stroke();
+        ctx.fillStyle=`rgba(${WINE[0]+30},${WINE[1]+16},${WINE[2]+14},.6)`;
+        ctx.beginPath(); ctx.arc(tr.x,tr.y,1.4,0,6.29); ctx.fill();
+        if(tr.y>=surfaceY(tr.x)-1) tears.splice(i,1); }
+    }
+    // getto + gocce metaball
+    if(drops.length){
+      bx.clearRect(0,0,W,H);
+      for(const p of drops){ const g=bx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*2.6);
+        g.addColorStop(0,'rgba(255,255,255,1)'); g.addColorStop(1,'rgba(255,255,255,0)');
+        bx.fillStyle=g; bx.beginPath(); bx.arc(p.x,p.y,p.r*2.6,0,6.29); bx.fill(); }
+      if(pouring){ bx.fillStyle='rgba(255,255,255,1)';
+        for(let y=18;y<Math.min(level,bowlTop+30);y+=6){ const wob=Math.sin(y*0.15+t*0.4)*1.1; bx.beginPath(); bx.ellipse(CX+wob,y,3.2,4,0,0,6.29); bx.fill(); } }
+      const img=bx.getImageData(0,0,W,H); const d=img.data;
+      for(let i=0;i<d.length;i+=4){ const a=d[i+3];
+        if(a>150){d[i]=WINE[0];d[i+1]=WINE[1];d[i+2]=WINE[2];d[i+3]=240;}
+        else if(a>85){d[i]=WINE[0]+30;d[i+1]=WINE[1]+12;d[i+2]=WINE[2]+12;d[i+3]=140;}
+        else d[i+3]=0; }
+      bx.putImageData(img,0,0); ctx.drawImage(buf,0,0);
+    }
+    // vetro (colore adattivo al tema)
+    const isLight=document.body.classList.contains('light');
+    ctx.strokeStyle=isLight?'rgba(90,70,45,.5)':'rgba(233,220,195,.55)'; ctx.lineWidth=2.2; ctx.lineJoin='round'; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(CX-bowlHalf,bowlTop);
+    ctx.bezierCurveTo(CX-bowlHalf,bowlBot-4,CX-18,bowlBot,CX,bowlBot);
+    ctx.bezierCurveTo(CX+18,bowlBot,CX+bowlHalf,bowlBot-4,CX+bowlHalf,bowlTop); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(CX,bowlBot); ctx.lineTo(CX,bowlBot+70);
+    ctx.moveTo(CX-34,bowlBot+78); ctx.quadraticCurveTo(CX,bowlBot+69,CX+34,bowlBot+78); ctx.stroke();
+    ctx.save(); ctx.globalAlpha=isLight?.18:.13; ctx.strokeStyle=isLight?'#fff':'#fff'; ctx.lineWidth=3.5;
+    ctx.beginPath(); ctx.moveTo(CX-bowlHalf*0.62,bowlTop+12); ctx.quadraticCurveTo(CX-bowlHalf*0.8,bowlBot-30,CX-16,bowlBot-6); ctx.stroke(); ctx.restore();
+
+    pourAnim=requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+/* colore del vino a schermo in base al TIPO reale (colore) del vino */
+function wineColorRGB(w){
+  if(!w) return [110,40,44];
+  switch(w.colore){
+    case 'rosso':  return [122,20,40];    // granato
+    case 'bianco': return w.tipo==='Spumante'? [214,190,120] : [206,178,96]; // paglierino/dorato
+    case 'rosato': return [214,120,140];  // rosa
+    case 'orange': return [200,120,50];   // ambra
+    default:       return [140,70,60];
+  }
+}
+const REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function runSuspense(){
+  // IL MATCH: arriva all'improvviso (il cliente non sa dopo quale risposta).
+  // Bagliore dorato a schermo pieno + il bicchiere che si riempie in fretta (~1s).
+  setProgress(true);
+  document.getElementById('foot').style.opacity='0';
+  document.getElementById('quip').classList.remove('show');
+  const s=document.getElementById('suspense'), st=document.getElementById('stext');
+  const flash=document.getElementById('matchFlash');
+  const ranked=finalRanking(); const hero=ranked[0];
+  if(flash){ flash.classList.remove('go'); void flash.offsetWidth; flash.classList.add('go'); }
+  try{ navigator.vibrate && navigator.vibrate([12,40,18]); }catch(e){}   // piccolo "match" aptico
+  if(REDUCED_MOTION){
+    st.textContent='Ecco il tuo vino…';
+    s.classList.add('show');
+    setTimeout(()=>{s.classList.remove('show');showResult();},600);
+    return;
+  }
+  const wine=wineColorRGB(hero);
+  const bubbles=(hero && hero.tipo==='Spumante');   // bollicine se spumante
+  s.classList.add('show'); startPour(wine, bubbles);
+  st.textContent='Ecco il tuo vino…';
+  setTimeout(()=>{cancelAnimationFrame(pourAnim);s.classList.remove('show');showResult();},1250);
+}
+/* ===== RIEPILOGO LEGGIBILE delle scelte (per il riprova) ===== */
+function preferenceChips(){
+  // traduco le risposte in etichette brevi leggibili, usando labelYes/labelNo
+  const chips=[];
+  asked.forEach(a=>{
+    if(a.ans==='skip'||a.ignored)return;
+    const flip=a.variant&&a.variant.flip;
+    const yesLike=(a.ans==='yes'||a.ans==='super');
+    const wantYes = flip? !yesLike : yesLike;   // cosa ha VOLUTO davvero
+    let lab = wantYes ? a.q.labelYes : a.q.labelNo;
+    if(!lab) return;
+    if(a.ans==='super') lab='★ '+lab;
+    if(a.ans==='superno') lab='✕ '+a.q.labelYes;   // super-no: rifiuto forte di quella cosa
+    chips.push(lab);
+  });
+  // includo anche il prior (round precedenti) in forma tenue
+  // dedup: evito etichette ripetute o in conflitto sulla stessa dimensione
+  const seen=new Set(); const out=[];
+  for(const c of chips){ const key=c.replace(/^[★✕]\s*/,''); if(!seen.has(key)){seen.add(key);out.push(c);} }
+  return out;
+}
+
+/* ===== RITOCCHI sul risultato: step-back + tweak di gusto (max 3) =====
+   Priorità:
+   1) STEP-BACK sui vincoli "morbidi" che l'utente ha davvero applicato
+      (prezzo, territorio estero/italia, Sud). Rimuovo quel filtro, ricalcolo il
+      vino migliore sul pool allargato e lo propongo.
+   2) Se restano slot liberi, aggiungo i tweak di gusto (più corpo / più leggero /
+      più caro / più accessibile) come prima.
+   I chip step-back hanno un flag stepback:true e portano già il vino ricalcolato. */
+function bestFrom(list, excludeName){
+  if(!list.length) return null;
+  // riuso finalRanking ma su una lista arbitraria: rifaccio lo scoring inline
+  const prof=currentProfile();
+  const scored=list.map(w=>{let s=0;
+    asked.forEach(a=>{ if(a.ignored||a.ans==='skip')return;
+      const wgt=a.q.weight||1; const flip=a.variant&&a.variant.flip;
+      const yesLike=(a.ans==='yes'||a.ans==='super'); const wt=flip?!yesLike:yesLike;
+      const match=a.q.test(w);
+      if(a.ans==='super'){ if(wt===match) s+=3*wgt; else s-=1.5*wgt; }
+      else if(a.ans==='superno'){ if(match) s-=3*wgt; else s+=1.2*wgt; }
+      else if(a.ans==='yes'){ if(wt===match) s+=1*wgt; }
+      else if(a.ans==='no'){ if(!match) s+=0.5*wgt; } });
+    const wa=wineAxes(w); for(const k in prof)s+=Math.sign(prof[k])*Math.sign(wa[k])*Math.min(Math.abs(prof[k]),1)*0.6;
+    return {w,s}; });
+  scored.sort((a,b)=>b.s-a.s);
+  const top=scored.find(x=>x.w.name!==excludeName);
+  return top?top.w:null;
+}
+/* ricostruisce il pool applicando tutte le risposte TRANNE quelle su una certa dim */
+function poolWithout(skipDim){
+  let p=[...VINI];
+  asked.forEach(a=>{
+    if(a.ans==='skip'||a.ignored) return;
+    if(a.q.dim===skipDim) return;                 // salto il vincolo da rilassare
+    const yesLike=(a.ans==='yes'||a.ans==='super');
+    const flip=a.variant&&a.variant.flip;
+    const wantTest=flip?!yesLike:yesLike;
+    const next=wantTest? p.filter(w=>a.q.test(w)) : p.filter(w=>!a.q.test(w));
+    if(next.length>0) p=next;
+  });
+  return p;
+}
+function refineOptions(hero){
+  const out=[];
+  // --- 1) STEP-BACK sui vincoli morbidi applicati (in ordine di "elasticità") ---
+  // il testo del chip dipende da COSA ha scelto l'utente, non è fisso
+  const labelFor=(dim)=>{
+    const a=asked.find(x=>x.q.dim===dim && x.ans!=='skip' && !x.ignored);
+    if(!a) return null;
+    const yesLike=(a.ans==='yes'||a.ans==='super');
+    const flip=a.variant&&a.variant.flip;
+    const wantYes=flip?!yesLike:yesLike;   // ha voluto la cosa testata (es. estero) o il suo opposto?
+    if(dim==='prezzo') return wantYes? {label:'Anche qualcosa di più semplice', emoji:'💶'}
+                                     : {label:'Senza pensare al prezzo', emoji:'💫'};
+    if(dim==='luogo')  return wantYes? {label:'Tornando in Italia', emoji:'🇮🇹'}
+                                     : {label:'Aprendo anche all\'estero', emoji:'🌍'};
+    if(dim==='clima')  return wantYes? {label:'Anche qualcosa di più fresco', emoji:'🌡️'}
+                                     : {label:'Anche qualcosa di più caldo', emoji:'☀️'};
+    return null;
+  };
+  for(const dim of ['prezzo','luogo','clima']){
+    const applied=asked.some(a=>a.q.dim===dim && a.ans!=='skip' && !a.ignored);
+    if(!applied) continue;
+    const lab=labelFor(dim); if(!lab) continue;
+    const wider=poolWithout(dim);
+    const novel=wider.filter(w=>!pool.some(p=>p.name===w.name));
+    if(!novel.length) continue;
+    // scelgo il miglior vino tra quelli NUOVI (così il chip apre davvero qualcosa di diverso)
+    const pick=bestFrom(novel, hero.name) || bestFrom(wider, hero.name);
+    if(pick && pick.name!==hero.name) out.push({label:lab.label, emoji:lab.emoji, pick, stepback:true});
+    if(out.length>=3) return out;
+  }
+  // --- 2) TWEAK di gusto come riempitivo, solo se restano slot ---
+  const askedCorpo = asked.some(a=>a.q.dim==='corpo'||a.q.dim==='intensita_piatto');
+  const cheaper=[...pool].sort((a,b)=>a.price-b.price)[0];
+  const pricier=[...pool].sort((a,b)=>b.price-a.price)[0];
+  const bolder=[...pool].sort((a,b)=>wineAxes(b).corpo-wineAxes(a).corpo)[0];
+  const lighter=[...pool].sort((a,b)=>wineAxes(a).corpo-wineAxes(b).corpo)[0];
+  const tweaks=[];
+  if(!asked.some(a=>a.q.dim==='prezzo')){
+    if(pricier && pricier.price>hero.price+8) tweaks.push({label:'Qualcosa di più importante', emoji:'✨', pick:pricier});
+    // rimosso il chip "Qualcosa di più accessibile" (non vogliamo spingere verso il più economico)
+  }
+  if(!askedCorpo){
+    if(bolder && bolder!==hero && wineAxes(bolder).corpo>0.5) tweaks.push({label:'Con più corpo', emoji:'🍷', pick:bolder});
+    if(lighter && lighter!==hero && wineAxes(lighter).corpo<-0.5) tweaks.push({label:'Più leggero', emoji:'🪶', pick:lighter});
+  }
+  const seen=new Set([hero.name, ...out.map(o=>o.pick.name)]);
+  for(const t of tweaks){ if(out.length>=3) break; if(!seen.has(t.pick.name)){ seen.add(t.pick.name); out.push(t); } }
+  return out.slice(0,3);
+}
+
+/* ===== LETTURA DEL SOMMELIER (prosa fluida, non elenco) ===== */
+/* frammenti narrativi per ogni descrittore: aperture di frase variabili per non suonare meccanico */
+const READ={
+  agrumato:['sfoderando agrumi che rinfrescano','con uno slancio di cedro e limone','aperto da un tocco agrumato'],
+  fruttato:['generoso di frutta a polpa bianca','con la polpa dolce di mela e pesca','fruttato e immediato'],
+  esotico:['virando su ananas e frutto della passione','con un respiro tropicale','esotico nei profumi'],
+  floreale:['sfumato di fiori bianchi','con delicatezze floreali','profumato di petali'],
+  aromatico:['dal profumo esuberante e riconoscibile','intensamente aromatico','che si annuncia da lontano'],
+  erbe_aromatiche:['percorso da erbe di macchia mediterranea','con salvia e timo sul fondo','erbaceo e mediterraneo'],
+  speziato:['scaldato da pepe e spezie','con una scia speziata','pepato sul finale'],
+  mandorlato:['che chiude su una nota di mandorla','con la scia amaricante tipica','mandorlato in coda'],
+  frutta_rossa:['ricamato di ciliegia e piccoli frutti rossi','con la freschezza della frutta rossa','fragrante di lampone e melograno'],
+  crosta_di_pane:['con la complessità del lievito e della crosta di pane','che sa di pasticceria e nocciola','maturato sui lieviti'],
+  evoluto:['già evoluto, tra miele e frutta secca','con le sfumature terziarie della maturità','profondo e affinato'],
+  leggero:['di corpo lieve e beva facilissima','snello, che scivola via','leggero e agile'],
+  strutturato:['di struttura piena e presenza importante','ampio, da bicchiere generoso','corposo e materico'],
+  fresco:['sorretto da un\'acidità viva e dissetante','fresco e slanciato','con una freschezza che invita al sorso'],
+  teso:['dal nerbo acido verticale e nervoso','teso come una corda','affilato e minerale'],
+  vivace:['scattante e pieno di brio','vivace al palato','di beva scattante'],
+  morbido:['rotondo e avvolgente al palato','morbido e caldo','di trama vellutata'],
+  sapido:['con una sapidità che chiama il boccone','salino e gastronomico','di finale sapido'],
+  minerale:['con un\'anima minerale di pietra e roccia','che sa di pietra focaia','minerale e verticale'],
+  salmastro:['con un soffio salmastro di mare e iodio','iodato, quasi marino','salmastro sul finale'],
+  bollicine_fini:['sostenuto da un perlage fine e cremoso','con bollicine minute ed eleganti','di spuma finissima'],
+  bollicine_fresche:['dalla bollicina immediata e fruttata','frizzante e spensierato','con bolla vivace'],
+  velato:['torbido e vivo, rifermentato in bottiglia','ancestrale, col suo fondo','velato e artigianale'],
+  macerato:['dorato dal contatto con le bucce','macerato, fuori dagli schemi','di colore ambrato e piglio insolito'],
+  rosato:['di un rosa tenue, fresco e disinvolto','rosato e solare','leggero come un rosa di primavera'],
+  cerasuolo:['di un rosa intenso, quasi un rosso gentile','cerasuolo e materico','rosato ma con carattere'],
+  cremoso:['dalla bolla delicata e vellutata','cremoso e soffice','di spuma morbida'],
+  lieve_tannino:['con una lieve trama tannica da macerazione','appena tannico','di grana sottile'],
+  tannico:['con un tannino evidente che struttura il sorso','di trama tannica decisa','tannico e saldo'],
+  abboccato:['con un residuo zuccherino appena percettibile','morbidamente abboccato','di dolcezza trattenuta'],
+  dolce:['dolce e disteso, da fine pasto','di frutta candita e miele','avvolgente nella sua dolcezza'],
+};
+function pickFrag(id,seed){const a=READ[id];if(!a)return null;return a[seed%a.length];}
+/* compone la lettura come una frase unica e scorrevole */
+function _escRe(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+// dim domanda -> descrittori che quella scelta "attiva". Serve per evidenziare
+// nella lettura del sommelier le parole legate alle risposte del cliente.
+const DIM_SENS={
+  bolla:['bollicine_fini','bollicine_fresche','crosta_di_pane','cremoso'],
+  champagne:['bollicine_fini','crosta_di_pane'],
+  rosato:['rosato','cerasuolo','frutta_rossa'],
+  orange_esplicito:['macerato','lieve_tannino'],
+  strano:['macerato','velato','esotico'],
+  freschezza:['fresco','teso','agrumato','vivace'],
+  frutto:['fruttato','frutta_rossa','floreale'],
+  corpo:['strutturato','tannico'],
+  complessita:['evoluto'],
+  artigianale:['macerato','velato'],
+  piatto:['salmastro','minerale','sapido','teso'],
+  intensita_piatto:['strutturato','morbido','speziato','evoluto'],
+  momento:['leggero','fresco','vivace','bollicine_fresche'],
+  clima:['morbido','strutturato','evoluto','speziato']
+};
+function readingHighlights(w){
+  const hl=new Set(), S=new Set(w.sens||[]);
+  asked.forEach(a=>{
+    if((a.ans!=='yes'&&a.ans!=='super')||a.ignored) return;
+    const flip=a.variant&&a.variant.flip; if(flip) return;
+    (DIM_SENS[a.q.dim]||[]).forEach(id=>{ if(S.has(id)) hl.add(id); });
+  });
+  return hl;
+}
+// parole "chiave" con cui evidenziare (immerse nel testo) i descrittori voluti.
+// Cerco la prima che compare nella frase e la sottolineo — una sola parola, non tutta la frase.
+const HL_WORDS={
+  agrumato:/agrum\w*|cedro|limone|pompelmo/i, fruttato:/frutta\w*|mela|pesca|pera/i,
+  frutta_rossa:/ciliegia|lampone|melograno|fragola|frutt[ao] ross\w*/i, floreale:/fior\w*|petali|glicine/i,
+  aromatico:/aromatic\w*|profum\w*/i, erbe_aromatiche:/erb\w*|macchia|salvia|timo|mediterrane\w*/i,
+  speziato:/spezi\w*|pepe\w*/i, mandorlato:/mandorl\w*/i, esotico:/esotic\w*|ananas|tropical\w*|mango/i,
+  crosta_di_pane:/crosta di pane|lievit\w*|nocciola|pasticceria/i, evoluto:/evolut\w*|miele|terziar\w*|affinat\w*/i,
+  fresco:/fresc\w*/i, teso:/teso|verticale|nerbo|affilat\w*/i, vivace:/vivac\w*|scattant\w*|brio/i,
+  minerale:/mineral\w*|pietra|focaia|roccia/i, sapido:/sapid\w*|salin\w*/i, salmastro:/salmastr\w*|iodio|marin\w*/i,
+  strutturato:/struttur\w*|corpos\w*|pien\w*|materic\w*/i, morbido:/morbid\w*|rotond\w*|vellutat\w*/i,
+  leggero:/legger\w*|snell\w*|agile/i, tannico:/tannic\w*|tannino/i, lieve_tannino:/tannic\w*|tannin\w*/i,
+  bollicine_fini:/perlage|bollicin\w*|spuma/i, bollicine_fresche:/bollicin\w*|frizzant\w*|spuma/i,
+  cremoso:/cremos\w*|vellutat\w*/i, macerato:/macerat\w*|bucce|ambrat\w*|dorat\w*/i, velato:/velat\w*|torbid\w*|ancestral\w*/i
+};
+const _STOP=new Set(['con','che','una','uno','del','dal','dei','dell','della','delle','sul','sui','come','più','molto','tocco','anima','beva','sorso','finale','coda','naso','bocca','fondo','stavi','cercavi']);
+function _sig(text){ return (String(text).toLowerCase().match(/[a-zà-ÿ]{4,}/g)||[]).filter(x=>!_STOP.has(x)); }
+function sommelierReading(w, hl){
+  const S=new Set(w.sens||[]); const seed=(w.name||'').length;
+  let apertura;
+  if(w.tipo==='Spumante') apertura='Una bollicina';
+  else if(w.colore==='rosso') apertura='Un rosso';
+  else if(w.colore==='rosato'||w.colore==='cerasuolo') apertura='Un rosato';
+  else if(w.colore==='orange') apertura='Un orange';
+  else apertura='Un bianco';
+  // Scelgo i frammenti evitando di RIPETERE parole già usate (niente "minerale… minerale").
+  const usedWords=new Set(_sig(apertura));
+  const pickFragNR=(id,soff)=>{
+    const arr=READ[id]; if(!arr||!arr.length) return null;
+    let fallback=null;
+    for(let k=0;k<arr.length;k++){
+      const cand=arr[(seed+soff+k)%arr.length];
+      const ws=_sig(cand);
+      if(!ws.some(x=>usedWords.has(x))){ ws.forEach(x=>usedWords.add(x)); return cand; }
+      if(!fallback) fallback=cand;
+    }
+    _sig(fallback).forEach(x=>usedWords.add(x));
+    return fallback;
+  };
+  const pickList=(ids,soff,lim)=>{
+    const av=ids.filter(id=>S.has(id));
+    if(hl && hl.size) av.sort((a,b)=>((hl.has(b))?1:0)-((hl.has(a))?1:0)); // i voluti prima
+    const r=[]; for(const id of av){ const f=pickFragNR(id,soff); if(f){ r.push({id,text:f}); if(r.length>=lim)break; } } return r;
+  };
+  const AROMI=['agrumato','fruttato','esotico','floreale','aromatico','erbe_aromatiche','speziato','frutta_rossa','crosta_di_pane','evoluto','mandorlato'];
+  const BOCCA=['strutturato','leggero','teso','fresco','vivace','morbido','minerale','sapido','salmastro','tannico','lieve_tannino'];
+  const STILE=['bollicine_fini','bollicine_fresche','cremoso','macerato','velato','abboccato','dolce'];
+  const naso=pickList(AROMI,0,2), bocca=pickList(BOCCA,3,2), stile=pickList(STILE,5,1);
+  const capital=s=>s.charAt(0).toUpperCase()+s.slice(1);
+  const movimenti=[];
+  let m1=apertura;
+  const primaMeta=[...naso,...stile].map(x=>x.text).filter(Boolean);
+  if(primaMeta.length) m1+=' '+primaMeta.join(', ');
+  movimenti.push(m1);
+  if(bocca.length){
+    let seg=bocca.map(x=>x.text);
+    if(seg.length===2){ const a0=seg[0].split(' ')[0], a1=seg[1].split(' ')[0]; if(a0===a1) seg[1]=seg[1].replace(/^(con|di|dal)\s+/,''); }
+    movimenti.push(capital(seg.join(', ')));
+  }
+  let frase=movimenti.join('. ')+'.';
+  // EVIDENZIO singole parole (immerse nel testo) legate alle scelte del cliente.
+  if(hl && hl.size){
+    const ranges=[];
+    for(const id of hl){
+      const re=HL_WORDS[id]; if(!re) continue;
+      const m=frase.match(re); if(!m) continue;
+      const start=m.index, end=start+m[0].length;
+      if(ranges.some(r=>start<r.end && end>r.start)) continue;   // niente sovrapposizioni
+      ranges.push({start,end});
+    }
+    ranges.sort((a,b)=>a.start-b.start);
+    if(ranges.length){
+      let out='', last=0;
+      for(const r of ranges){ out+=frase.slice(last,r.start)+`<span class="rk">${frase.slice(r.start,r.end)}</span>`; last=r.end; }
+      frase=out+frase.slice(last);
+    }
+  }
+  return frase;
+}
+
+// ripulisce l'etichetta di una preferenza in un "argomento" breve
+// es. "dall'estero" -> "Estero", "con bollicine" -> "Bollicine"
+function cleanTopic(label){
+  if(!label) return '';
+  let t=String(label).replace(/^(dall'|dallo\s|dalla\s|dal\s|degli\s|della\s|delle\s|dei\s|del\s|di\s|con\s|per\s|da\s|un'|uno\s|una\s|un\s|in\s|a\s)/i,'').trim();
+  return t.charAt(0).toUpperCase()+t.slice(1);
+}
+// traduce le mie risposte in frasi semplici e dirette (per "L'ho scelto perché…")
+function capFirst(s){ s=String(s||'').trim(); return s ? s.charAt(0).toUpperCase()+s.slice(1) : ''; }
+function whyStatements(w){
+  const out=[]; const seen=new Set();
+  asked.forEach(a=>{
+    if(a.ans==='skip'||a.ignored) return;
+    const flip=a.variant&&a.variant.flip;
+    const yesLike=(a.ans==='yes'||a.ans==='super');
+    const wantYes=flip?!yesLike:yesLike;
+    // Mostro DIRETTAMENTE ciò che hai scelto: il polo della domanda verso cui sei
+    // andato (labelYes se "sì", labelNo se "no"). Niente "Occasione: meglio di no".
+    let lab = wantYes ? (a.q.labelYes || a.variant?.yes) : (a.q.labelNo || a.variant?.no);
+    if(!lab) return;
+    lab = capFirst(lab);
+    const key=lab.toLowerCase(); if(seen.has(key)) return; seen.add(key);
+    out.push({label:lab, strong:(a.ans==='super'||a.ans==='superno'), weight:a.q.weight||1});
+  });
+  out.sort((x,y)=>(y.strong-x.strong)||(y.weight-x.weight));   // super in testa, poi per peso
+  return out;
+}
+// "motore" della scelta: il super like soddisfatto, altrimenti la risposta più
+// importante (peso più alto) che il vino soddisfa
+function heroDriver(w){
+  let best=null;
+  asked.forEach(a=>{
+    if(a.ans==='skip'||a.ignored) return;
+    const flip=a.variant&&a.variant.flip; const yesLike=(a.ans==='yes'||a.ans==='super');
+    const wantYes=flip?!yesLike:yesLike;
+    if(a.q.test(w)!==wantYes) return;                        // il vino non rispetta questa preferenza
+    const superPos=(a.ans==='super');
+    const score=(superPos?100:0)+(a.q.weight||1)+(a.ans==='yes'?0.4:0);
+    if(!best||score>best.score) best={score,superPos,topic:cleanTopic(a.q.labelYes||a.variant?.yes||'')};
+  });
+  return best;
+}
+// per un'alternativa: quale caratteristica (tra quelle che hai scelto) la fa
+// preferire all'hero — così l'alternativa è "oppure, se punti su X".
+function altLean(alt, hero, used){
+  const wanted=[];
+  asked.forEach(a=>{
+    if((a.ans!=='yes'&&a.ans!=='super')||a.ignored) return;
+    const flip=a.variant&&a.variant.flip; if(flip) return;
+    const topic=cleanTopic(a.q.labelYes||a.variant?.yes||''); if(!topic) return;
+    wanted.push({topic, weight:a.q.weight||1, mAlt:a.q.test(alt), mHero:a.q.test(hero)});
+  });
+  const pref=[
+    ...wanted.filter(x=>x.mAlt&&!x.mHero),   // ciò che l'alt ha e l'hero no (differenzia)
+    ...wanted.filter(x=>x.mAlt)              // altrimenti una caratteristica voluta che l'alt ha
+  ];
+  const has=t=>used&&used.has(t);
+  // preferisco una caratteristica NON già usata da un'altra alternativa (varietà)
+  const fresh=pref.filter(x=>!has(x.topic)).sort((a,b)=>b.weight-a.weight)[0];
+  if(fresh) return fresh.topic;
+  const tags=(alt.sens||[]).map(s=>TAGMAP[s]?.label).filter(Boolean);   // ripiego: un tratto tipico
+  const t=tags.find(x=>!has(x))||tags[0];
+  if(t) return t;
+  return pref[0]?pref[0].topic:null;
+}
+// PROFILO -> CHIP FILTRO per la carta. Traduco i desideri "diretti" (like/super,
+// non invertiti) in pochi chip che la carta sa filtrare in modo affidabile
+// (descrittori sensoriali + "Estero"/"Bollicine"). Max 4, i super in testa.
+function profileChips(){
+  const out=[]; const seen=new Set();
+  const add=(id,label,type,value,pri)=>{ if(seen.has(id))return; seen.add(id); out.push({label,type,value,pri}); };
+  asked.forEach(a=>{
+    if((a.ans!=='yes'&&a.ans!=='super')||a.ignored) return;
+    const flip=a.variant&&a.variant.flip; if(flip) return;
+    const pri=(a.ans==='super'?100:0)+(a.q.weight||1);
+    switch(a.q.dim){
+      case 'bolla':            add('bolla','Bollicine','bolla',null,pri); break;
+      case 'champagne':        add('champagne','Champagne','champagne',null,pri); break;
+      case 'rosato':           add('rosato','Rosato','sens','rosato',pri); break;
+      case 'orange_esplicito':
+      case 'strano':           add('orange','Orange','sens','macerato',pri); break;
+      case 'luogo':            add('estero','Estero','estero',null,pri); break;
+      case 'freschezza':       add('fresco','Fresco','sens','fresco',pri); break;
+      case 'frutto':           add('fruttato','Fruttato','sens','fruttato',pri); break;
+      case 'corpo':            add('strutturato','Strutturato','sens','strutturato',pri); break;
+      case 'complessita':      add('evoluto','Evoluto','sens','evoluto',pri); break;
+      case 'artigianale':      add('macerato','Artigianale','sens','macerato',pri); break;
+    }
+  });
+  return out.sort((x,y)=>y.pri-x.pri).slice(0,4).map(({label,type,value})=>({label,type,value}));
+}
+function browseInCarta(){
+  const chips=profileChips();
+  try{
+    if(window.parent && window.parent!==window){
+      window.parent.postMessage({type:'solymar-profile', chips}, '*');
+    }
+  }catch(e){ console.warn('invio profilo alla carta non riuscito:', e.message); }
+}
+function showResult(){
+  const ranked=finalRanking();
+  // HERO: se c'è un super like, prediligo un vino che lo soddisfa; altrimenti il migliore.
+  let hero=ranked[0];
+  const superAns=asked.find(a=>a.ans==='super'&&!a.ignored);
+  if(superAns){
+    const flip=superAns.variant&&superAns.variant.flip; const want=flip?false:true;
+    const better=ranked.find(x=>superAns.q.test(x)===want);
+    if(better) hero=better;
+  }
+  // ALTERNATIVE: sempre 2-3 di riserva. Le pesco dall'intera carta (non solo dai
+  // superstiti della pool, che potrebbero essere pochissimi), escludendo però i
+  // super-dislike (quelli che hai detto di non volere per niente).
+  const superNo=asked.filter(a=>a.ans==='superno'&&!a.ignored);
+  const vetoed=w=>superNo.some(a=>{const flip=a.variant&&a.variant.flip; return flip?!a.q.test(w):a.q.test(w);});
+  const candidates=VINI.filter(w=>!vetoed(w));
+  if(!hero) hero=rankWines(candidates)[0];
+  const alts=rankWines(candidates).filter(x=>x&&x!==hero).slice(0,3);
+  const prof=currentProfile(); const res=document.getElementById('result');
+  deck.style.opacity='0';
+  const whyFor=w=>{const hits=[];asked.forEach(a=>{if(a.ignored||a.ans==='skip')return;
+    const yl=(a.ans==='yes'||a.ans==='super');
+    const flip=a.variant&&a.variant.flip; const wt=flip?!yl:yl;
+    if(wt&&a.q.test(w))hits.push((a.q.labelYes||a.variant?.yes||'sì').toLowerCase());});
+    if(hits.length) return 'Risponde a: '+hits.slice(0,3).join(', ')+'.';
+    // fallback concreto: descrivo il vino coi suoi tratti principali invece di un vago "equilibrio"
+    const tratti=(w.sens||[]).map(s=>TAGMAP[s]?.label).filter(Boolean).slice(0,3);
+    return tratti.length? 'Nel calice: '+tratti.join(', ').toLowerCase()+'.' : 'Un bell\'equilibrio.';};
+  const refine=refineOptions(hero);
+  const drv=heroDriver(hero);
+  const why=whyStatements(hero);
+  const eyebrow = 'Il tuo match';
+  const cheer = POSITIVE_CHEER[roundNo % POSITIVE_CHEER.length];
+  const den = [hero.denom, (hero.region && hero.region!==hero.denom ? hero.region : '')].filter(Boolean).join(' · ');
+  const caratChips = (hero.carat||[]).slice(0,4).map(c=>`<span class="mc-tag">${c}</span>`).join('');
+  res.innerHTML=`
+    <div class="r-cheer">${cheer}</div>
+    <h2>Ecco il tuo vino</h2>
+    <div class="hero">
+      <div class="hero-glow" style="background:${sensColor(hero.sens[0],58)}"></div>
+      <div class="hero-eyebrow">${eyebrow}</div>
+      <div class="mc-head">
+        <div class="mc-id">
+          <div class="hero-prod">${hero.prod}</div>
+          <div class="hero-name">${hero.name}</div>
+          ${den?`<div class="mc-den">${den}</div>`:''}
+        </div>
+        <div class="hero-price">${hero.price} €</div>
+      </div>
+      ${caratChips?`<div class="mc-carat">${caratChips}</div>`:''}
+      <div class="hero-sens">${hero.sens.map(s=>`<span class="e">${emo(s)}</span>`).join('')}</div>
+      <div class="hero-read"><span class="lead">La lettura del sommelier</span>${sommelierReading(hero, readingHighlights(hero))}</div>
+      <button class="why-btn" id="whyBtn" aria-expanded="false">L'ho scelto perché… <span class="why-caret">▾</span></button>
+    </div>
+    <div class="why-sheet" id="whySheet" hidden>
+      <div class="why-lead">L'ho scelto perché…</div>
+      ${why.map(x=>`<div class="why-row${x.strong?' strong':''}"><span class="why-topic">${x.label}</span></div>`).join('')||'<div class="why-row"><span class="why-topic">Un buon equilibrio per te</span></div>'}
+    </div>
+    ${refine.length?`<div class="refine-row" id="refineRow">${refine.map((o,i)=>
+      `<button class="refine-chip" data-i="${i}">${o.emoji} ${o.label}</button>`).join('')}</div>`:''}
+    ${alts.length?`<div class="alts-label">Oppure, se preferisci puntare su…</div>
+    <div class="alts">${(()=>{const used=new Set();return alts.map((w,i)=>{const lean=altLean(w,hero,used);if(lean)used.add(lean);return `
+      <div class="alt" style="animation-delay:${i*120+200}ms">
+        <div class="alt-glow" style="background:${sensColor(w.sens[0],55)}"></div>
+        <div>${lean?`<div class="alt-lean">${lean}</div>`:''}<div class="alt-prod">${w.prod}</div><div class="alt-name">${w.name}</div>
+          <div class="alt-sens">${w.sens.slice(0,5).map(s=>emo(s)).join(' ')}</div></div>
+        <div class="alt-price">${w.price} €</div>
+      </div>`;}).join('');})()}</div>`:''}
+    <button class="r-browse" id="browseCartaBtn">Continua con questi gusti →<small>li ritrovi tra i vini della carta</small></button>
+    <div class="r-actions">
+      <button class="r-btn primary" id="retryBtn">Ci siamo quasi<small>ritocco tenendo conto di ciò che hai detto</small></button>
+      <button class="r-btn" id="restartBtn">Non ci siamo proprio<small>ripartiamo da capo</small></button>
+    </div>`;
+  res.classList.add('show');
+  setProgress(true);
+  // "L'ho scelto perché…" apre/chiude la scheda con le risposte tradotte in chiaro
+  const whyBtn=document.getElementById('whyBtn'), whySheet=document.getElementById('whySheet');
+  if(whyBtn&&whySheet){
+    whyBtn.addEventListener('click',()=>{
+      const opening=whySheet.hasAttribute('hidden');
+      if(opening) whySheet.removeAttribute('hidden'); else whySheet.setAttribute('hidden','');
+      whyBtn.setAttribute('aria-expanded', opening?'true':'false');
+      whyBtn.classList.toggle('open', opening);
+    });
+  }
+  // filtri-ritocco: al clic sostituiscono l'hero mostrato
+  if(refine.length){
+    document.querySelectorAll('.refine-chip').forEach(ch=>ch.addEventListener('click',()=>{
+      const o=refine[+ch.dataset.i]; swapHero(o);
+    }));
+  }
+  const browseBtn=document.getElementById('browseCartaBtn');
+  if(browseBtn) browseBtn.addEventListener('click',browseInCarta);
+  document.getElementById('retryBtn').addEventListener('click',retry);
+  document.getElementById('restartBtn').addEventListener('click',fullRestart);
+}
+/* sostituisce il vino in evidenza; opt = {pick, stepback, label} */
+function swapHero(opt){
+  const w=opt.pick||opt;   // retrocompat: accetto anche il solo vino
+  const hero=document.querySelector('.hero'); if(!hero)return;
+  hero.querySelector('.hero-glow').style.background=sensColor(w.sens[0],58);
+  hero.querySelector('.hero-prod').textContent=w.prod;
+  hero.querySelector('.hero-name').textContent=w.name;
+  hero.querySelector('.hero-sens').innerHTML=w.sens.map(s=>`<span class="e">${emo(s)}</span>`).join('');
+  hero.querySelector('.hero-price').textContent=w.price+' €';
+  // badge: segnalo se è un allargamento della ricerca (step-back)
+  const badge=hero.querySelector('.hero-badge');
+  if(badge) badge.textContent=opt.stepback?'Allargando':'Il ritocco';
+  const read=hero.querySelector('.hero-read');
+  if(read){
+    let txt=sommelierReading(w);
+    if(opt.stepback) txt='<em>'+opt.label+', si apre questa.</em> '+txt.replace(/^<em>.*?<\/em>\s*/,'').replace(/\s*<em>.*?<\/em>$/,'');
+    read.innerHTML='<span class="lead">La lettura del sommelier</span>'+txt;
+  }
+  hero.style.animation='none'; hero.offsetHeight; hero.style.animation='heroIn .5s ease forwards';
+}
+/* RIPROVA: prior 40%, nuove dimensioni, MOSTRO il riepilogo delle preferenze */
+function retry(){
+  const chips=preferenceChips();
+  priorProfile=currentProfile();
+  pool=[...VINI]; asked=[]; history=[]; roundNo++;
+  const remaining=DOMANDE.filter(q=>!usedDims.has(q.dim)).length;
+  if(remaining<3){ usedDims=new Set(); }
+  const res=document.getElementById('result'); res.classList.remove('show'); res.innerHTML='';
+  deck.style.opacity='1'; document.getElementById('foot').style.opacity='1';
+  // mostro il riepilogo leggibile come "quip" persistente all'inizio del nuovo round
+  if(chips.length){
+    const q=document.getElementById('quip');
+    q.innerHTML='<span style="opacity:.7">Tengo conto di:</span> '+chips.slice(0,4).join(' · ');
+    q.classList.add('show');
+    setTimeout(()=>q.classList.remove('show'), 4200);
+  }
+  showQuestion();
+}
+function fullRestart(){ initFull();
+  const res=document.getElementById('result'); res.classList.remove('show'); res.innerHTML='';
+  deck.style.opacity='1'; document.getElementById('foot').style.opacity='1';
+  document.getElementById('quip').classList.remove('show'); showQuestion(); }
+
+/* ===== TOGGLE TEMA (dark/light) ===== */
+const themeBtn=document.getElementById('themeToggle');
+themeBtn.addEventListener('click',()=>{
+  const light=document.body.classList.toggle('light');
+  themeBtn.textContent=light?'☀️':'🌙';
+});
+
+/* =========================================================================
+   COLLEGAMENTO ALLA CARTA REALE (Supabase carta_vini)
+   Legge i vini veri e li trasforma nel formato dello swipe (colore, tipo,
+   zona, sens…). Nessun vino è hardcoded: i dati demo qui sopra restano solo
+   come ripiego se il database è irraggiungibile (così lo swipe non muore mai).
+   ========================================================================= */
+const SUPABASE_URL='https://demo.invalid';
+const SUPABASE_KEY='demo-anon-key';
+async function sbRows(){
+  const res=await fetch(`${SUPABASE_URL}/rest/v1/carta_vini?select=*&archiviato=is.false&order=producer,name`,
+    {headers:{apikey:SUPABASE_KEY, Authorization:'Bearer '+SUPABASE_KEY}});
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  const rows=await res.json();
+  if(!Array.isArray(rows)||!rows.length) throw new Error('carta_vini vuota');
+  return rows;
+}
+const _low=s=>(s==null?'':String(s)).toLowerCase();
+const _list=v=>Array.isArray(v)?v.filter(x=>x!=null&&String(x).trim()!=='')
+  :(typeof v==='string'&&v.trim()?v.split(/[,;]/).map(s=>s.trim()).filter(Boolean):[]);
+const _norm=s=>_low(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+
+/* --- classificazioni derivate dai campi reali --- */
+function isBubbly(r){
+  if(['bollicine','champagne'].includes(_low(r.cat)))return true;
+  const hay=[r.tipo,r.denom,r.classe,r.sub,r.name].map(_low).join(' | ')+' | '+_list(r.carat).map(_low).join(' ');
+  return /spumante|metodo classico|ancestrale|col fondo|pet.?nat|p[eé]tillant|frizzante|lambrusco|prosecco|franciacorta|champagne|trento|blanc de|sui lieviti|rifermentat|sat[eè]n|cap classique|mousseux|\bvsq\b/.test(hay);
+}
+function isChampagne(r){
+  return _low(r.cat)==='champagne' || /champagne/.test([r.denom,r.region,r.name].map(_low).join(' '));
+}
+function isOrange(r){
+  const hay=[r.tipo,r.denom,r.classe,r.name].map(_low).join(' | ')+' | '+_list(r.carat).map(_low).join(' ')+' | '+_list(r.descr_tags).map(_low).join(' ');
+  return /macerat|orange|ramato|sulle bucce|skin contact/.test(hay);
+}
+function isRosato(r){
+  if(_low(r.cat)==='rose')return true;
+  const hay=[r.tipo,r.denom,r.classe,r.name,r.sub].map(_low).join(' | ');
+  return /\brosato\b|\bros[eé]\b|cerasuolo|rosa dei|rosa di|de saignee|saign[eé]e|\brosa\b/.test(hay);
+}
+function coloreOf(r,bub){
+  if(isOrange(r))return 'orange';
+  if(isRosato(r))return 'rosato';
+  const hay=[r.tipo,r.denom,r.classe,r.name,r.cat].map(_low).join(' | ');
+  const explicitRed=/\brosso\b|\brossi\b|\bred\b|\btinto\b/.test(hay);
+  if(bub) return explicitRed?'rosso':'bianco';
+  if(explicitRed) return 'rosso';
+  const uv=_list(r.uvaggio).map(_low).join(' ');
+  if(/nebbiolo|sangiovese|aglianico|nero d.?avola|barbera|dolcetto|montepulciano|primitivo|negroamaro|merlot|cabernet|syrah|lagrein|nerello|frappato|cannonau|corvina|sagrantino|teroldego|refosco|fumin|pinot nero/.test(uv)
+     && !/blanc de blancs|blanc de noirs|bianco|spumante/.test(hay)) return 'rosso';
+  return 'bianco';
+}
+/* zona geografica: Nord/Centro/Sud per l'Italia, estero fuori */
+const IT_ZONE={valaosta:'nord',"valle d aosta":'nord',piemonte:'nord',liguria:'nord',lombardia:'nord',
+  trentino:'nord',"trentino alto adige":'nord',"alto adige":'nord',sudtirol:'nord',veneto:'nord',
+  friuli:'nord',"friuli venezia giulia":'nord',emilia:'nord',"emilia romagna":'nord',
+  toscana:'centro',umbria:'centro',marche:'centro',lazio:'centro',abruzzo:'centro',molise:'centro',
+  campania:'sud',puglia:'sud',basilicata:'sud',calabria:'sud',sicilia:'sud',sardegna:'sud'};
+function zoneOf(r){
+  const reg=_norm(r.region);
+  if(reg.includes('franciacorta')) return {zone:'nord', estero:false};   // Franciacorta = Lombardia
+  for(const k in IT_ZONE){ if(reg.includes(k)) return {zone:IT_ZONE[k], estero:false}; }
+  if(reg==='italia'||reg==='') return {zone:'centro', estero:false};     // italiano generico o ignoto
+  return {zone:'estero', estero:true};   // tutto il resto è estero (Champagne, Francia, Germania, Slovenia, Austria, Sud Africa…)
+}
+/* descrittori sensoriali: usa descr_tags reali; se assenti, li deduce dai campi */
+function sensOf(r,col,bub){
+  // i descr_tags nel DB sono etichette con spazi ("Bollicine fini"): le riporto
+  // agli id del vocabolario ("bollicine_fini") minuscolo+underscore.
+  const known=_list(r.descr_tags).map(id=>_low(id).replace(/\s+/g,'_')).filter(id=>TAGMAP[id]);
+  if(known.length) return known;
+  const s=new Set();
+  if(bub){
+    const hay=_low(r.denom)+' '+_list(r.carat).map(_low).join(' ')+' '+_low(r.name);
+    if(/metodo classico|champagne|franciacorta|trento|blanc de|dosaggio|pas dos|extra brut|brut nature|riserva|sat[eè]n|alta langa/.test(hay)){
+      s.add('crosta_di_pane');s.add('bollicine_fini');s.add('teso');
+    } else { s.add('bollicine_fresche');s.add('vivace');s.add('fresco'); }
+  }
+  if(col==='orange'){s.add('macerato');s.add('lieve_tannino');s.add('sapido');s.add('evoluto');}
+  else if(col==='rosato'){s.add('frutta_rossa');s.add('floreale');s.add('fresco');}
+  else if(col==='rosso'){s.add('frutta_rossa');s.add('strutturato');s.add('speziato');}
+  else if(col==='bianco'&&!bub){s.add('agrumato');s.add('floreale');s.add('fresco');s.add('minerale');}
+  const uv=_list(r.uvaggio).map(_low).join(' ');
+  if(/riesling/.test(uv)){s.add('agrumato');s.add('teso');s.add('minerale');}
+  if(/gew[uü]rz|moscato|malvasia|traminer/.test(uv)){s.add('aromatico');s.add('floreale');}
+  if(/verdicchio|vermentino|vernaccia|pigato/.test(uv)){s.add('mandorlato');s.add('sapido');}
+  if(/timorasso|fiano|greco|carricante|grillo/.test(uv)){s.add('minerale');s.add('sapido');s.add('strutturato');}
+  if(/nebbiolo|sangiovese|nerello|aglianico|montepulciano/.test(uv)){s.add('frutta_rossa');s.add('tannico');}
+  if(!s.size){s.add('fresco');s.add('fruttato');}
+  return [...s];
+}
+/* costruisce un vino nel formato swipe, già arricchito (carat/artigianale/sorprendente) */
+function rowToSwipe(r){
+  const bub=isBubbly(r);
+  const col=coloreOf(r,bub);
+  const zi=zoneOf(r);
+  const carat=_list(r.carat);
+  const caratLow=carat.map(_low).join(' ')+' '+_low(r.denom)+' '+_low(r.tipo);
+  const artigianale = col==='orange' || /\bbio\b|biodinam|triple a|naturale|natural|anfora|macerat|col fondo|ancestrale|pet.?nat|sui lieviti|rifermentat/.test(caratLow);
+  const sens=sensOf(r,col,bub);
+  return {
+    name:r.name||'', prod:r.producer||'', price:(r.price!=null&&r.price!==''?Number(r.price):0),
+    denom:r.denom||'', region:r.region||'',
+    tipo: bub?'Spumante':'Fermo', colore:col, zona:zi.zone, estero:zi.estero,
+    sens, carat, champagne:isChampagne(r),
+    artigianale,
+    sorprendente: col==='orange' || sens.includes('macerato') || sens.includes('velato') || sens.includes('esotico') || (artigianale && !bub)
+  };
+}
+function buildViniFromDB(rows){
+  const out=[];
+  for(const r of rows){
+    if(!r || !r.name) continue;
+    out.push(rowToSwipe(r));
+  }
+  return out.filter(w=>w.name);
+}
+
+/* bootstrap: prova il DB, altrimenti resta sui dati demo (già arricchiti sopra) */
+// Nome del LOCALE (configurabile da Index → Personalizza carta, tabella
+// carta_settings). "Cantera" è il nome del prodotto; qui si mostra solo il locale.
+async function applyLocaleBranding(){
+  try{
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/carta_settings?select=cover_pre,cover_name`, {headers:{apikey:SUPABASE_KEY, Authorization:'Bearer '+SUPABASE_KEY}});
+    const rows = await res.json();
+    const r = (Array.isArray(rows) && rows[0]) ? rows[0] : {};
+    const name = ((r.cover_name||'')+'').trim() || 'Osteria del Melograno';
+    const eb = document.querySelector('.eyebrow');
+    if (eb) eb.textContent = name;
+    document.title = name + ' — Trova il tuo vino';
+  }catch(e){}
+}
+(async function boot(){
+  applyLocaleBranding();
+  try{
+    const rows=await sbRows();
+    const v=buildViniFromDB(rows);
+    if(v.length){ VINI=v; console.log('swipe: carta_vini da Supabase →', VINI.length, 'vini'); }
+    else throw new Error('nessun vino valido');
+  }catch(e){
+    console.warn('swipe: database non disponibile, uso i dati demo:', e.message);
+  }
+  initFull();
+  showQuestion();
+})();
+</script>
+<script>
+/* Tema pilotato dal tasto globale della carta quando questa pagina è in un iframe.
+   Nasconde il tasto tema locale (evita il doppione) e segue il tema del genitore. */
+(function(){
+  var embedded = window.parent && window.parent !== window;
+  var tb = document.getElementById('themeToggle');
+  if (embedded && tb) tb.style.display = 'none';
+  function setTheme(dark){
+    document.body.classList.toggle('light', !dark);
+    if (tb) tb.textContent = dark ? '🌙' : '☀️';
+  }
+  window.addEventListener('message', function(ev){
+    var d = ev && ev.data;
+    if (d && d.type === 'solymar-theme') setTheme(!!d.dark);
+  });
+})();
+</script>
+</body>
+</html>
