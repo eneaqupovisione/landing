@@ -11565,5 +11565,143 @@ function regenFraseInEditor(){
 })();
 </script>
 
+<!-- ===== TOUR GUIDATO (coach-marks, self-contained, nessuna libreria) ===== -->
+<style id="cantera-tour-css">
+#ctMask{position:fixed;inset:0;z-index:2147483150;background:transparent}
+#ctHole{position:fixed;z-index:2147483200;border-radius:14px;pointer-events:none;
+  box-shadow:0 0 0 3px rgba(201,162,74,.95), 0 0 0 9999px rgba(18,14,10,.66);
+  transition:top .32s cubic-bezier(.4,0,.2,1),left .32s cubic-bezier(.4,0,.2,1),width .32s,height .32s}
+#ctHole.center{box-shadow:0 0 0 9999px rgba(18,14,10,.74)}
+#ctTip{position:fixed;z-index:2147483201;width:min(340px,90vw);background:#fff;color:#1a1714;
+  border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.42);padding:18px 18px 12px;
+  transition:top .3s ease,left .3s ease}
+#ctTip .ct-k{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:#9a7a50}
+#ctTip h4{font:600 19px/1.25 Georgia,serif;margin:8px 0 0}
+#ctTip .ct-b{font:14.5px/1.5 Georgia,serif;color:#3a332d;margin-top:8px}
+#ctTip .ct-y{margin-top:11px;padding:10px 12px;background:#f6e9e7;border-radius:10px;font:13.5px/1.45 Georgia,serif;color:#5f2320}
+#ctTip .ct-y b{color:#8a1f1a}
+#ctTip .ct-f{display:flex;align-items:center;gap:8px;margin-top:14px}
+#ctTip .ct-count{font:600 12px/1 ui-monospace,monospace;color:#b0a496;margin-right:auto}
+#ctTip button{font:13px/1 ui-monospace,monospace;border-radius:999px;border:1px solid #c8bfaf;background:#fff;color:#1a1714;padding:9px 15px;cursor:pointer}
+#ctTip button.ct-primary{background:#1a1714;color:#f6f2ea;border-color:#1a1714}
+#ctTip button.ct-prev:hover{border-color:#1a1714}
+#ctTip .ct-skip{border:0;background:none;color:#b0a496;padding:8px 2px 2px;text-decoration:underline;font:12px/1 ui-monospace,monospace;cursor:pointer;display:block}
+#ctBtn{position:fixed;z-index:2147483100;left:14px;bottom:78px;width:42px;height:42px;border-radius:50%;
+  background:#1a1714;color:#f4efe6;border:0;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.3);
+  font:600 19px/1 system-ui,-apple-system,sans-serif;display:grid;place-items:center}
+#ctBtn:hover{background:#322b25}
+@media print{#ctMask,#ctHole,#ctTip,#ctBtn{display:none!important}}
+</style>
+<script id="cantera-tour-js">
+(function(){
+  if(window.__ctInit) return; window.__ctInit=1;
+  var topLevel = (window.top === window.self);
+  var SEEN='cantera_tour_client_v1';
+  function clientMode(){ return document.body.classList.contains('client-mode'); }
+
+  var CLIENT_STEPS=[
+    { title:'Ecco cosa vedono i tuoi clienti', k:'Cantera · lato cliente',
+      body:'La carta che aprono col QR al tavolo, dal loro telefono. Ti mostro cosa possono fare — e cosa ci guadagni tu. Sette tappe, un minuto.' },
+    { tab:'swipe', sel:'#custBottomNav .bn-tab[data-tab="swipe"]', k:'Scopri',
+      title:'Trova il vino «a sensazione»',
+      body:'Il cliente che non sa cosa scegliere risponde a poche domande — niente vitigni o annate — e arriva a un vino.',
+      you:'vendi anche ai tavoli dove nessuno fa da sommelier, e accompagni verso l’alto lo scontrino.' },
+    { tab:'carta', sel:'#search', k:'Carta',
+      title:'Sfoglia, cerca, filtra — da solo',
+      body:'La carta completa: ricerca, sezioni e filtri per regione, uvaggio e stile.',
+      you:'meno domande al personale, e la carta è sempre aggiornata: mai più ristampe.' },
+    { tab:'carta', sel:'.wine-card', k:'Scheda vino',
+      title:'Ogni vino si racconta',
+      body:'Toccando un vino il cliente vede com’è fatto, come si presenta e il profilo del «sommelier».',
+      you:'percezione di competenza — il cliente sceglie con più sicurezza, e osa di più.' },
+    { tab:'carta', sel:'#custTopR', k:'Lettura su misura',
+      title:'Adatta la carta a sé',
+      body:'Divide la carta «per sensazioni» invece che per regione, cambia vista e passa al tema scuro.',
+      you:'un’esperienza curata che fa sembrare il locale più attento — senza alcuno sforzo tuo.' },
+    { tab:'scelte', sel:'#custBottomNav .bn-tab[data-tab="scelte"]', k:'Scelte rapide',
+      title:'Le proposte pronte… le decidi tu',
+      body:'Il cliente indeciso tocca una proposta e ordina: «Il più amato», «Per l’aperitivo», «La perla»…',
+      you:'<b>la tua leva più forte:</b> spingi le bottiglie che vuoi — a margine alto o da smaltire — e l’app le mette in vetrina. In automatico o scelte a mano.' },
+    { tab:'mappa', sel:'#custBottomNav .bn-tab[data-tab="mappa"]', k:'Mappa',
+      title:'La carta per territori',
+      body:'Il cliente esplora i vini su una mappa interattiva, per regione e per paese.',
+      you:'valorizzi l’ampiezza della cantina e fai scoprire le chicche che restano in fondo alla lista.' },
+    { title:'E questo è solo il lato cliente', k:'Fine giro',
+      body:'Aggiorni un prezzo o segni un vino esaurito → sparisce all’istante dalla carta, senza ristampare. Dietro le quinte c’è tutta la gestione: scorte, riordini, stampa, analisi.',
+      you:'rivedi questo giro quando vuoi col « ? » in basso a sinistra.' }
+  ];
+
+  var steps=[], idx=0, mask, hole, tip;
+  function build(){
+    mask=document.createElement('div'); mask.id='ctMask';
+    hole=document.createElement('div'); hole.id='ctHole';
+    tip=document.createElement('div'); tip.id='ctTip';
+    document.body.appendChild(mask); document.body.appendChild(hole); document.body.appendChild(tip);
+  }
+  function tgt(step){ return step.sel ? document.querySelector(step.sel) : null; }
+  function render(step){
+    var n=idx+1, tot=steps.length, last=(idx===tot-1);
+    tip.innerHTML =
+      (step.k?'<div class="ct-k">'+step.k+'</div>':'')+
+      '<h4>'+step.title+'</h4>'+
+      '<div class="ct-b">'+step.body+'</div>'+
+      (step.you?'<div class="ct-y"><b>Per te:</b> '+step.you+'</div>':'')+
+      '<div class="ct-f"><span class="ct-count">'+n+' / '+tot+'</span>'+
+      (idx>0?'<button class="ct-prev">Indietro</button>':'')+
+      '<button class="ct-next ct-primary">'+(last?'Fine':'Avanti →')+'</button></div>'+
+      (last?'':'<button class="ct-skip">Salta il giro</button>');
+    tip.querySelector('.ct-next').onclick=function(){ last?end(true):go(idx+1); };
+    var p=tip.querySelector('.ct-prev'); if(p) p.onclick=function(){ go(idx-1); };
+    var s=tip.querySelector('.ct-skip'); if(s) s.onclick=function(){ end(true); };
+  }
+  function place(step){
+    var t=tgt(step);
+    if(!t){ hole.className='center'; hole.style.width='0'; hole.style.height='0';
+      hole.style.top='50%'; hole.style.left='50%';
+      tip.style.transform='translate(-50%,-50%)'; tip.style.top='50%'; tip.style.left='50%'; return; }
+    hole.className='';
+    var r=t.getBoundingClientRect(), pad=8;
+    hole.style.top=(r.top-pad)+'px'; hole.style.left=(r.left-pad)+'px';
+    hole.style.width=(r.width+pad*2)+'px'; hole.style.height=(r.height+pad*2)+'px';
+    tip.style.transform='none';
+    var tw=Math.min(340, window.innerWidth*0.9), th=tip.offsetHeight||240;
+    var below=(r.bottom+16+th <= window.innerHeight);
+    var top=below ? r.bottom+14 : Math.max(12, r.top-14-th);
+    var left=Math.min(Math.max(12, r.left+r.width/2-tw/2), window.innerWidth-tw-12);
+    tip.style.top=top+'px'; tip.style.left=left+'px';
+  }
+  function go(i){
+    idx=i; var step=steps[i];
+    var finish=function(){
+      render(step);
+      var t=tgt(step); if(t && t.scrollIntoView) t.scrollIntoView({block:'center',inline:'nearest'});
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ place(step); }); });
+    };
+    if(step.tab && window.__solymarShowTab){ try{ window.__solymarShowTab(step.tab); }catch(e){} setTimeout(finish, 400); }
+    else finish();
+  }
+  function start(){ if(!mask) build(); mask.style.display=''; hole.style.display=''; tip.style.display='';
+    steps=CLIENT_STEPS; idx=0; go(0); }
+  function end(seen){ if(mask) mask.style.display='none'; if(hole) hole.style.display='none'; if(tip) tip.style.display='none';
+    if(seen){ try{ localStorage.setItem(SEEN,'1'); }catch(e){} } }
+  window.addEventListener('resize', function(){ if(hole && hole.style.display!=='none') place(steps[idx]); });
+  window.addEventListener('keydown', function(e){ if(!hole||hole.style.display==='none')return;
+    if(e.key==='Escape') end(true);
+    else if(e.key==='ArrowRight'||e.key==='Enter'){ idx===steps.length-1?end(true):go(idx+1); }
+    else if(e.key==='ArrowLeft' && idx>0) go(idx-1); });
+
+  function initUI(){
+    if(!topLevel || !clientMode()) return;
+    var b=document.createElement('button'); b.id='ctBtn'; b.textContent='?';
+    b.setAttribute('aria-label','Fai un giro guidato'); b.title='Fai un giro guidato';
+    b.onclick=function(){ start(); };
+    document.body.appendChild(b);
+    try{ if(!localStorage.getItem(SEEN)) setTimeout(start, 850); }catch(e){}
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', initUI);
+  else initUI();
+})();
+</script>
+
 </body>
 </html>
