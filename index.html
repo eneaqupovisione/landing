@@ -308,6 +308,8 @@
     @media (max-width: 560px) { .stage-view { max-width: none; height: min(76vh, 600px); border-radius: 14px; } .stage-view .demo-poster { border-radius: 14px; } }
     .stage-foot { display: flex; align-items: center; gap: 16px 20px; flex-wrap: wrap; justify-content: center; text-align: center; }
     .stage-hint { font-family: var(--mono); font-size: 12.5px; color: var(--muted); max-width: 34ch; }
+    .stage-dl { font-family: var(--mono); font-size: 12.5px; color: var(--muted); border-bottom: 1px solid var(--line-strong); padding-bottom: 2px; transition: color .2s ease, border-color .2s ease; }
+    .stage-dl:hover { color: var(--ink); border-color: var(--ink); }
 
     /* ---------- REVEAL ---------- */
     .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
@@ -480,6 +482,7 @@
         </div>
         <div class="stage-foot">
           <a class="btn btn-primary" data-demo-full href="demo/" target="_blank" rel="noopener">Apri la demo intera <span class="btn-arrow" aria-hidden="true">→</span></a>
+          <a class="stage-dl" href="demo/index.html" download="cantera-demo.html">↓ Scaricala come file unico</a>
           <span class="stage-hint">Nessuna registrazione, niente da installare — è l'app vera.</span>
         </div>
       </div>
