@@ -11565,185 +11565,225 @@ function regenFraseInEditor(){
 })();
 </script>
 
-<!-- ===== TOUR GUIDATO (coach-marks a due percorsi, self-contained) ===== -->
+<!-- ===== ONBOARDING (splash + tour a due percorsi + micro-hint al primo clic) ===== -->
 <style id="cantera-tour-css">
 #ctMask{position:fixed;inset:0;z-index:2147483150;background:transparent}
-#ctHole{position:fixed;z-index:2147483200;border-radius:14px;pointer-events:none;
-  box-shadow:0 0 0 3px rgba(201,162,74,.95), 0 0 0 9999px rgba(18,14,10,.66);
-  transition:top .32s cubic-bezier(.4,0,.2,1),left .32s cubic-bezier(.4,0,.2,1),width .32s,height .32s}
+#ctHole{position:fixed;z-index:2147483200;border-radius:14px;pointer-events:none;box-shadow:0 0 0 3px rgba(201,162,74,.95),0 0 0 9999px rgba(18,14,10,.66);transition:top .32s cubic-bezier(.4,0,.2,1),left .32s cubic-bezier(.4,0,.2,1),width .32s,height .32s}
 #ctHole.center{box-shadow:0 0 0 9999px rgba(18,14,10,.74)}
-#ctTip{position:fixed;z-index:2147483201;width:min(342px,90vw);background:#fff;color:#1a1714;
-  border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.42);padding:18px 18px 12px;transition:top .3s ease,left .3s ease}
+#ctTip{position:fixed;z-index:2147483201;width:min(342px,90vw);background:#fff;color:#1a1714;border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.42);padding:18px 18px 12px;transition:top .3s ease,left .3s ease}
 #ctTip .ct-k{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:#9a7a50}
 #ctTip h4{font:600 19px/1.25 Georgia,serif;margin:8px 0 0}
 #ctTip .ct-b{font:14.5px/1.5 Georgia,serif;color:#3a332d;margin-top:8px}
 #ctTip .ct-y{margin-top:11px;padding:10px 12px;background:#f6e9e7;border-radius:10px;font:13.5px/1.45 Georgia,serif;color:#5f2320}
 #ctTip .ct-y b{color:#8a1f1a}
-#ctTip .ct-choose{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
-#ctTip .ct-ch{flex:1 1 130px;justify-content:center;padding:13px 12px;font:600 13.5px/1.1 ui-monospace,monospace}
 #ctTip .ct-f{display:flex;align-items:center;gap:8px;margin-top:14px}
 #ctTip .ct-count{font:600 12px/1 ui-monospace,monospace;color:#b0a496;margin-right:auto}
 #ctTip button{font:13px/1 ui-monospace,monospace;border-radius:999px;border:1px solid #c8bfaf;background:#fff;color:#1a1714;padding:9px 15px;cursor:pointer}
 #ctTip button.ct-primary{background:#1a1714;color:#f6f2ea;border-color:#1a1714}
 #ctTip .ct-skip{border:0;background:none;color:#b0a496;padding:8px 2px 2px;text-decoration:underline;font:12px/1 ui-monospace,monospace;cursor:pointer;display:block}
-#ctBtn{position:fixed;z-index:2147483100;left:14px;bottom:80px;width:42px;height:42px;border-radius:50%;
-  background:#1a1714;color:#f4efe6;border:0;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.3);
-  font:600 19px/1 system-ui,-apple-system,sans-serif;display:grid;place-items:center}
+#ctTip .ct-choose{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+#ctTip .ct-ch{flex:1 1 130px;justify-content:center;padding:13px 12px;font:600 13.5px/1.1 ui-monospace,monospace}
+#ctBtn{position:fixed;z-index:2147483100;left:14px;bottom:80px;width:42px;height:42px;border-radius:50%;background:#1a1714;color:#f4efe6;border:0;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.3);font:600 19px/1 system-ui,-apple-system,sans-serif;display:grid;place-items:center}
 #ctBtn:hover{background:#322b25}
-@media print{#ctMask,#ctHole,#ctTip,#ctBtn{display:none!important}}
+/* splash */
+#ctSplash{position:fixed;inset:0;z-index:2147483300;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:radial-gradient(130% 90% at 50% 12%,#3a1120,#1c0a14 70%);color:#f4efe6}
+#ctSplash .cts-k{font:600 12px/1 ui-monospace,monospace;letter-spacing:.28em;color:#c9a24a;opacity:0;animation:ctsIn .6s .1s both}
+#ctSplash .cts-line{font-family:Georgia,'Times New Roman',serif;font-weight:600;font-size:clamp(26px,6.4vw,46px);line-height:1.12;margin-top:8px;opacity:0;transform:translateY(16px);animation:ctsIn .7s both}
+#ctSplash .cts-line em{font-style:italic;color:#e8b866}
+#ctSplash .l1{animation-delay:.35s}
+#ctSplash .l2{animation-delay:1.05s}
+#ctSplash .l3{animation-delay:1.75s}
+#ctSplash .cts-q{font-family:Georgia,serif;font-size:16px;color:#d8cbb8;margin-top:30px;opacity:0;animation:ctsIn .6s 2.5s both}
+#ctSplash .cts-cta{margin-top:14px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;opacity:0;animation:ctsIn .7s 2.7s both}
+#ctSplash button{font:600 14px/1 ui-monospace,monospace;border-radius:999px;padding:14px 20px;cursor:pointer;border:1px solid rgba(244,239,230,.35);background:transparent;color:#f4efe6}
+#ctSplash button.cts-go{background:#f4efe6;color:#1c0a14;border-color:#f4efe6}
+#ctSplash button:hover{transform:translateY(-1px)}
+#ctSplash .cts-skip{position:absolute;top:16px;right:18px;border:0;background:none;color:rgba(244,239,230,.55);text-decoration:underline;font:12px/1 ui-monospace,monospace;padding:6px;cursor:pointer}
+@keyframes ctsIn{to{opacity:1;transform:none}}
+/* micro-hint (non-modale) */
+#ctHint{position:fixed;z-index:2147483250;max-width:264px;background:#1a1714;color:#f4efe6;border-radius:12px;padding:11px 13px;font:13px/1.42 Georgia,serif;box-shadow:0 12px 30px rgba(0,0,0,.4);opacity:0;transform:translateY(6px);transition:opacity .2s ease,transform .2s ease;pointer-events:none}
+#ctHint b{color:#e8b866}
+#ctHint.on{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){#ctSplash .cts-k,#ctSplash .cts-line,#ctSplash .cts-q,#ctSplash .cts-cta{animation-duration:.01s;animation-delay:0s}}
+@media print{#ctMask,#ctHole,#ctTip,#ctBtn,#ctSplash,#ctHint{display:none!important}}
 </style>
 <script id="cantera-tour-js">
 (function(){
   if(window.__ctInit) return; window.__ctInit=1;
   var topLevel=(window.top===window.self);
-  var SEEN='cantera_tour_seen_v2', RESUME='ct_resume';
+  var INTRO='cantera_intro_seen_v3', HKEY='cantera_hints_v3';
   function isClient(){ return document.body.classList.contains('client-mode'); }
   function curTrack(){ return isClient()?'client':'admin'; }
 
   var CLIENT_STEPS=[
-    { tab:'swipe', sel:'#custBottomNav .bn-tab[data-tab="swipe"]', k:'Cliente · Scopri',
-      title:'Trova il vino «a sensazione»',
+    { tab:'swipe', sel:'#custBottomNav .bn-tab[data-tab="swipe"]', k:'Cliente · Scopri', title:'Trova il vino «a sensazione»',
       body:'Il cliente che non sa cosa scegliere risponde a poche domande — niente vitigni o annate — e arriva a un vino.',
       you:'vendi anche ai tavoli dove nessuno fa da sommelier, e accompagni verso l’alto lo scontrino.' },
-    { tab:'carta', sel:'#search', k:'Cliente · Carta',
-      title:'Sfoglia, cerca, filtra — da solo',
+    { tab:'carta', sel:'#search', k:'Cliente · Carta', title:'Sfoglia, cerca, filtra — da solo',
       body:'La carta completa: ricerca, sezioni e filtri per regione, uvaggio e stile.',
       you:'meno domande al personale, e la carta è sempre aggiornata: mai più ristampe.' },
-    { tab:'carta', sel:'.wine-card', k:'Cliente · Scheda vino',
-      title:'Ogni vino si racconta',
+    { tab:'carta', sel:'.wine-card', k:'Cliente · Scheda vino', title:'Ogni vino si racconta',
       body:'Toccando un vino il cliente vede com’è fatto, come si presenta e il profilo del «sommelier».',
       you:'percezione di competenza — il cliente sceglie con più sicurezza, e osa di più.' },
-    { tab:'carta', sel:'#custTopR', k:'Cliente · Lettura su misura',
-      title:'Adatta la carta a sé',
+    { tab:'carta', sel:'#custTopR', k:'Cliente · Lettura su misura', title:'Adatta la carta a sé',
       body:'Divide la carta «per sensazioni» invece che per regione, cambia vista e passa al tema scuro.',
       you:'un’esperienza curata che fa sembrare il locale più attento — senza sforzo tuo.' },
-    { tab:'scelte', sel:'#custBottomNav .bn-tab[data-tab="scelte"]', k:'Cliente · Scelte rapide',
-      title:'Le proposte pronte… le decidi tu',
+    { tab:'scelte', sel:'#custBottomNav .bn-tab[data-tab="scelte"]', k:'Cliente · Scelte rapide', title:'Le proposte pronte… le decidi tu',
       body:'Il cliente indeciso tocca una proposta e ordina: «Il più amato», «Per l’aperitivo», «La perla»…',
       you:'<b>la tua leva più forte:</b> spingi le bottiglie che vuoi — a margine alto o da smaltire — e l’app le mette in vetrina. In automatico o scelte a mano.' },
-    { tab:'mappa', sel:'#custBottomNav .bn-tab[data-tab="mappa"]', k:'Cliente · Mappa',
-      title:'La carta per territori',
+    { tab:'mappa', sel:'#custBottomNav .bn-tab[data-tab="mappa"]', k:'Cliente · Mappa', title:'La carta per territori',
       body:'Il cliente esplora i vini su una mappa interattiva, per regione e per paese.',
       you:'valorizzi l’ampiezza della cantina e fai scoprire le chicche che restano in fondo alla lista.' },
     { k:'Fine · lato cliente', title:'E questo è ciò che vede il cliente',
       body:'Aggiorni un prezzo o segni un vino esaurito → sparisce all’istante dalla sua carta, senza ristampare.',
       cross:'admin', crossLabel:'Vedi il lato gestione →' }
   ];
-
   var ADMIN_STEPS=[
-    { sel:'.wine-card', k:'Gestione · La tua lista',
-      title:'Tutta la cantina, a colpo d’occhio',
+    { sel:'.wine-card', k:'Gestione · La tua lista', title:'Tutta la cantina, a colpo d’occhio',
       body:'Per ogni vino vedi scorte in frigo ed esauriti; in un tocco apri la scheda e correggi qualsiasi cosa.',
       you:'lo stato reale della carta senza gestionali separati né fogli di calcolo.' },
-    { sel:'#staffBottomNav .bn-tab:nth-child(3)', k:'Gestione · Modifica',
-      title:'Il cuore gestionale',
+    { sel:'#staffBottomNav .bn-tab:nth-child(3)', k:'Gestione · Modifica', title:'Il cuore gestionale',
       body:'Aggiungi e modifichi vini e prezzi, fornitori e anagrafiche; segni gli esauriti, carichi il magazzino da una bolla incollata, e i riordini rientrano da soli a scadenza.',
       you:'tutto il locale in un posto, e la carta resta viva senza ristampare mai.' },
-    { sel:'#staffBottomNav .bn-tab:nth-child(2)', k:'Gestione · Personalizza & Stampa',
-      title:'Il tuo brand, digitale e su carta',
+    { sel:'#staffBottomNav .bn-tab:nth-child(2)', k:'Gestione · Personalizza & Stampa', title:'Il tuo brand, digitale e su carta',
       body:'Nome del locale, copertina, testi e citazioni delle sezioni. E la stampa PDF con QR, generata dallo stesso dato del digitale.',
       you:'carta cartacea e digitale sempre allineate, col tuo marchio.' },
-    { sel:'#staffBottomNav .bn-tab:nth-child(4)', k:'Gestione · Commerciale',
-      title:'Capisci la tua carta',
+    { sel:'#staffBottomNav .bn-tab:nth-child(4)', k:'Gestione · Commerciale', title:'Capisci la tua carta',
       body:'Analisi cantina: fasce di prezzo, composizione, squilibri e buchi di gamma. E qui configuri le Scelte che il cliente vede.',
       you:'una fotografia della tua offerta — e la leva per spingere i vini che vuoi.' },
     { k:'Fine · lato gestione', title:'Ogni modifica arriva subito al cliente',
       body:'Cambi qui, cambia nella carta del cliente — in tempo reale, senza ristampare nulla.',
       cross:'client', crossLabel:'Vedi il lato cliente →' }
   ];
-
   var TRACKS={client:CLIENT_STEPS, admin:ADMIN_STEPS};
-  var steps=[], idx=0, mask, hole, tip;
 
-  function build(){
-    mask=document.createElement('div'); mask.id='ctMask';
-    hole=document.createElement('div'); hole.id='ctHole';
-    tip=document.createElement('div'); tip.id='ctTip';
-    document.body.appendChild(mask); document.body.appendChild(hole); document.body.appendChild(tip);
+  // ---- micro-hint: spiegazione breve al primo clic su un bottone mai cliccato ----
+  var HINTS=[
+    {k:'c-scelte',m:'client',sel:'#custBottomNav .bn-tab[data-tab="scelte"]',t:'✨ <b>Scelte</b> — proposte rapide pronte. Le configuri tu: spingi i vini che vuoi.'},
+    {k:'c-swipe',m:'client',sel:'#custBottomNav .bn-tab[data-tab="swipe"]',t:'🍷 <b>Scopri</b> — il cliente trova il vino con poche domande, senza saperne di vini.'},
+    {k:'c-carta',m:'client',sel:'#custBottomNav .bn-tab[data-tab="carta"]',t:'📖 <b>Carta</b> — la lista completa, con ricerca e filtri.'},
+    {k:'c-mappa',m:'client',sel:'#custBottomNav .bn-tab[data-tab="mappa"]',t:'🗺️ <b>Mappa</b> — i vini per territorio.'},
+    {k:'c-search',m:'client',sel:'#search',t:'🔎 Cerca per vino, produttore o uvaggio.'},
+    {k:'a-cantina',m:'admin',sel:'#staffBottomNav .bn-tab:nth-child(1)',t:'🍷 <b>Cantina</b> — la tua lista: scorte a colpo d’occhio e strumenti.'},
+    {k:'a-personalizza',m:'admin',sel:'#staffBottomNav .bn-tab:nth-child(2)',t:'🎨 <b>Personalizza</b> — brand, copertina, testi; stampa PDF + QR.'},
+    {k:'a-modifica',m:'admin',sel:'#staffBottomNav .bn-tab:nth-child(3)',t:'🔧 <b>Modifica</b> — vini, prezzi, fornitori, esauriti, riordini.'},
+    {k:'a-commerciale',m:'admin',sel:'#staffBottomNav .bn-tab:nth-child(4)',t:'📊 <b>Commerciale</b> — analisi cantina + configura le Scelte del cliente.'}
+  ];
+  function hintsSeen(){ try{ return JSON.parse(localStorage.getItem(HKEY))||{}; }catch(e){ return {}; } }
+  function markHint(k){ try{ var s=hintsSeen(); s[k]=1; localStorage.setItem(HKEY,JSON.stringify(s)); }catch(e){} }
+  var hintEl;
+  function showHint(h, anchor){
+    if(!hintEl){ hintEl=document.createElement('div'); hintEl.id='ctHint'; document.body.appendChild(hintEl); }
+    hintEl.innerHTML=h.t; hintEl.classList.remove('on');
+    var r=anchor.getBoundingClientRect();
+    requestAnimationFrame(function(){
+      var hw=hintEl.offsetWidth, hh=hintEl.offsetHeight;
+      var left=Math.min(Math.max(10, r.left+r.width/2-hw/2), window.innerWidth-hw-10);
+      var top=r.top-hh-12; if(top<10) top=r.bottom+12;
+      hintEl.style.left=left+'px'; hintEl.style.top=top+'px'; hintEl.classList.add('on');
+    });
+    clearTimeout(hintEl._t); hintEl._t=setTimeout(function(){ if(hintEl) hintEl.classList.remove('on'); }, 5200);
   }
+  function armHints(){
+    document.addEventListener('click', function(e){
+      if((mask&&mask.style.display!=='none') || document.getElementById('ctSplash')) return;
+      var mode=curTrack(), seen=hintsSeen();
+      for(var i=0;i<HINTS.length;i++){ var h=HINTS[i];
+        if(h.m && h.m!==mode) continue;
+        var a=e.target.closest ? e.target.closest(h.sel) : null;
+        if(a && !seen[h.k]){ markHint(h.k); showHint(h,a); break; }
+      }
+    }, true);
+  }
+
+  // ---- tour ----
+  var steps=[], idx=0, mask, hole, tip;
+  function build(){ mask=document.createElement('div'); mask.id='ctMask'; hole=document.createElement('div'); hole.id='ctHole'; tip=document.createElement('div'); tip.id='ctTip'; document.body.appendChild(mask); document.body.appendChild(hole); document.body.appendChild(tip); }
   function show(){ if(!mask) build(); mask.style.display=''; hole.style.display=''; tip.style.display=''; }
-  function end(seen){ if(mask) mask.style.display='none'; if(hole) hole.style.display='none'; if(tip) tip.style.display='none';
-    if(seen){ try{ localStorage.setItem(SEEN,'1'); }catch(e){} } }
+  function end(){ if(mask) mask.style.display='none'; if(hole) hole.style.display='none'; if(tip) tip.style.display='none'; }
   function tgt(step){ return step.sel?document.querySelector(step.sel):null; }
-  function centerHole(){ hole.className='center'; hole.style.width='0'; hole.style.height='0'; hole.style.top='50%'; hole.style.left='50%';
-    tip.style.transform='translate(-50%,-50%)'; tip.style.top='50%'; tip.style.left='50%'; }
+  function centerHole(){ hole.className='center'; hole.style.width='0'; hole.style.height='0'; hole.style.top='50%'; hole.style.left='50%'; tip.style.transform='translate(-50%,-50%)'; tip.style.top='50%'; tip.style.left='50%'; }
 
   function chooser(){
-    steps=[]; show(); try{ localStorage.setItem(SEEN,'1'); }catch(e){}
-    centerHole();
-    tip.innerHTML='<div class="ct-k">Cantera · demo</div><h4>Da dove vuoi partire?</h4>'+
-      '<div class="ct-b">Guarda l’app dai due lati: quello che vive il cliente al tavolo, e quello con cui gestisci tutto tu. Alla fine passi all’altro.</div>'+
+    steps=[]; show(); centerHole();
+    tip.innerHTML='<div class="ct-k">Giro guidato</div><h4>Da dove vuoi partire?</h4>'+
+      '<div class="ct-b">Il complementare te lo ripropongo alla fine, quindi scegli senza pensarci.</div>'+
       '<div class="ct-choose"><button class="ct-ch ct-primary" data-t="client">🍷 Lato cliente</button>'+
       '<button class="ct-ch" data-t="admin">🛠️ Lato gestione</button></div>'+
       '<button class="ct-skip">Chiudi</button>';
     [].forEach.call(tip.querySelectorAll('.ct-ch'),function(b){ b.onclick=function(){ pick(b.dataset.t); }; });
-    tip.querySelector('.ct-skip').onclick=function(){ end(true); };
+    tip.querySelector('.ct-skip').onclick=function(){ end(); };
   }
   function pick(track){
     if(track===curTrack()){ runTrack(track); return; }
-    try{ sessionStorage.setItem(RESUME, track); }catch(e){}
-    var __b=location.href.split('#')[0].split('?')[0]; location.href=__b+'?ctr='+track+'&ct='+(new Date().getTime())+(track==='client'?'#scopri':'');
+    var __b=location.href.split('#')[0].split('?')[0];
+    location.href=__b+'?ctr='+track+'&ct='+(new Date().getTime())+(track==='client'?'#scopri':'');
   }
   function runTrack(track){ steps=TRACKS[track]||[]; idx=0; show(); go(0); }
 
   function render(step){
     var n=idx+1, tot=steps.length, last=(idx===tot-1), foot;
     if(step.cross){
-      foot='<div class="ct-f"><span class="ct-count">'+n+' / '+tot+'</span>'+
-        (idx>0?'<button class="ct-prev">Indietro</button>':'')+
-        '<button class="ct-next ct-primary">'+step.crossLabel+'</button></div>'+
-        '<button class="ct-skip">Chiudi il giro</button>';
+      foot='<div class="ct-f"><span class="ct-count">'+n+' / '+tot+'</span>'+(idx>0?'<button class="ct-prev">Indietro</button>':'')+'<button class="ct-next ct-primary">'+step.crossLabel+'</button></div><button class="ct-skip">Chiudi il giro</button>';
     } else {
-      foot='<div class="ct-f"><span class="ct-count">'+n+' / '+tot+'</span>'+
-        (idx>0?'<button class="ct-prev">Indietro</button>':'')+
-        '<button class="ct-next ct-primary">'+(last?'Fine':'Avanti →')+'</button></div>'+
-        (last?'':'<button class="ct-skip">Salta il giro</button>');
+      foot='<div class="ct-f"><span class="ct-count">'+n+' / '+tot+'</span>'+(idx>0?'<button class="ct-prev">Indietro</button>':'')+'<button class="ct-next ct-primary">'+(last?'Fine':'Avanti →')+'</button></div>'+(last?'':'<button class="ct-skip">Salta il giro</button>');
     }
-    tip.innerHTML=(step.k?'<div class="ct-k">'+step.k+'</div>':'')+'<h4>'+step.title+'</h4>'+
-      '<div class="ct-b">'+step.body+'</div>'+(step.you?'<div class="ct-y"><b>Per te:</b> '+step.you+'</div>':'')+foot;
-    tip.querySelector('.ct-next').onclick=function(){ if(step.cross){ pick(step.cross); } else if(last){ end(true); } else go(idx+1); };
+    tip.innerHTML=(step.k?'<div class="ct-k">'+step.k+'</div>':'')+'<h4>'+step.title+'</h4><div class="ct-b">'+step.body+'</div>'+(step.you?'<div class="ct-y"><b>Per te:</b> '+step.you+'</div>':'')+foot;
+    tip.querySelector('.ct-next').onclick=function(){ if(step.cross){ pick(step.cross); } else if(last){ end(); } else go(idx+1); };
     var pv=tip.querySelector('.ct-prev'); if(pv) pv.onclick=function(){ go(idx-1); };
-    var sk=tip.querySelector('.ct-skip'); if(sk) sk.onclick=function(){ end(true); };
+    var sk=tip.querySelector('.ct-skip'); if(sk) sk.onclick=function(){ end(); };
   }
   function place(step){
     var t=tgt(step);
     if(!t){ centerHole(); return; }
     hole.className='';
     var r=t.getBoundingClientRect(), pad=8;
-    hole.style.top=(r.top-pad)+'px'; hole.style.left=(r.left-pad)+'px';
-    hole.style.width=(r.width+pad*2)+'px'; hole.style.height=(r.height+pad*2)+'px';
+    hole.style.top=(r.top-pad)+'px'; hole.style.left=(r.left-pad)+'px'; hole.style.width=(r.width+pad*2)+'px'; hole.style.height=(r.height+pad*2)+'px';
     tip.style.transform='none';
-    var tw=Math.min(342, window.innerWidth*0.9), th=tip.offsetHeight||240;
+    var tw=Math.min(342,window.innerWidth*0.9), th=tip.offsetHeight||240;
     var below=(r.bottom+16+th<=window.innerHeight);
-    var top=below?r.bottom+14:Math.max(12, r.top-14-th);
-    var left=Math.min(Math.max(12, r.left+r.width/2-tw/2), window.innerWidth-tw-12);
+    var top=below?r.bottom+14:Math.max(12,r.top-14-th);
+    var left=Math.min(Math.max(12,r.left+r.width/2-tw/2), window.innerWidth-tw-12);
     tip.style.top=top+'px'; tip.style.left=left+'px';
   }
   function go(i){
     idx=i; var step=steps[i];
-    var finish=function(){ render(step); var t=tgt(step); if(t&&t.scrollIntoView) t.scrollIntoView({block:'center',inline:'nearest'});
-      requestAnimationFrame(function(){ requestAnimationFrame(function(){ place(step); }); }); };
-    if(step.tab && window.__solymarShowTab){ try{ window.__solymarShowTab(step.tab); }catch(e){} setTimeout(finish,400); }
-    else finish();
+    var finish=function(){ render(step); var t=tgt(step); if(t&&t.scrollIntoView) t.scrollIntoView({block:'center',inline:'nearest'}); requestAnimationFrame(function(){ requestAnimationFrame(function(){ place(step); }); }); };
+    if(step.tab && window.__solymarShowTab){ try{ window.__solymarShowTab(step.tab); }catch(e){} setTimeout(finish,400); } else finish();
   }
   window.addEventListener('resize', function(){ if(hole && hole.style.display!=='none' && steps.length) place(steps[idx]); });
-  window.addEventListener('keydown', function(e){ if(!hole||hole.style.display==='none'||!steps.length) return;
-    if(e.key==='Escape') end(true);
-    else if((e.key==='ArrowRight'||e.key==='Enter') && idx<steps.length-1) go(idx+1);
-    else if(e.key==='ArrowLeft' && idx>0) go(idx-1); });
+  window.addEventListener('keydown', function(e){ if(!hole||hole.style.display==='none'||!steps.length) return; if(e.key==='Escape') end(); else if((e.key==='ArrowRight'||e.key==='Enter') && idx<steps.length-1) go(idx+1); else if(e.key==='ArrowLeft' && idx>0) go(idx-1); });
+
+  // ---- splash iniziale ----
+  function splash(){
+    try{ localStorage.setItem(INTRO,'1'); }catch(e){}
+    var s=document.createElement('div'); s.id='ctSplash';
+    s.innerHTML='<button class="cts-skip">salta</button>'+
+      '<div class="cts-k">CANTERA · DEMO</div>'+
+      '<div class="cts-line l1">La tua carta dei vini.</div>'+
+      '<div class="cts-line l2">Il cliente sceglie <em>da solo</em>.</div>'+
+      '<div class="cts-line l3">Tu governi <em>tutto</em>.</div>'+
+      '<div class="cts-q">Vuoi che ti faccia da guida?</div>'+
+      '<div class="cts-cta"><button class="cts-go">Sì, fammi fare un giro</button><button class="cts-solo">Esploro da solo</button></div>';
+    document.body.appendChild(s);
+    function close(){ if(s.parentNode) s.parentNode.removeChild(s); }
+    s.querySelector('.cts-skip').onclick=close;
+    s.querySelector('.cts-go').onclick=function(){ close(); chooser(); };
+    s.querySelector('.cts-solo').onclick=close;
+  }
 
   function initUI(){
     if(!topLevel) return;
-    var b=document.createElement('button'); b.id='ctBtn'; b.textContent='?';
-    b.setAttribute('aria-label','Fai un giro guidato'); b.title='Fai un giro guidato';
-    b.onclick=function(){ chooser(); }; document.body.appendChild(b);
+    armHints();
+    var b=document.createElement('button'); b.id='ctBtn'; b.textContent='?'; b.setAttribute('aria-label','Giro guidato'); b.title='Giro guidato'; b.onclick=function(){ chooser(); }; document.body.appendChild(b);
     var resume=(location.search.match(/[?&]ctr=(client|admin)/)||[])[1]||null;
     if(resume==='client'||resume==='admin'){ setTimeout(function(){ runTrack(resume); }, 700); }
-    else { try{ if(!localStorage.getItem(SEEN)) setTimeout(chooser, 850); }catch(e){} }
+    else { try{ if(!localStorage.getItem(INTRO)) setTimeout(splash, 500); }catch(e){} }
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', initUI); else initUI();
 })();
 </script>
+
 
 
 </body>
