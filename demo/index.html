@@ -11777,8 +11777,8 @@ function regenFraseInEditor(){
     armHints();
     var b=document.createElement('button'); b.id='ctBtn'; b.textContent='?'; b.setAttribute('aria-label','Giro guidato'); b.title='Giro guidato'; b.onclick=function(){ chooser(); }; document.body.appendChild(b);
     var resume=(location.search.match(/[?&]ctr=(client|admin)/)||[])[1]||null;
-    if(resume==='client'||resume==='admin'){ setTimeout(function(){ runTrack(resume); }, 700); }
-    else { try{ if(!localStorage.getItem(INTRO)) setTimeout(splash, 500); }catch(e){} }
+    if(resume==='client'||resume==='admin'){ setTimeout(function(){ runTrack(resume); }, 650); }
+    else { setTimeout(splash, 120); }
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', initUI); else initUI();
 })();

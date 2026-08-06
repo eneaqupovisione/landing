@@ -632,7 +632,7 @@
       var ready = false;
       var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      Array.prototype.forEach.call(document.querySelectorAll('[data-demo-full]'), function(a){ a.setAttribute('href', DEMO_URL); });
+      Array.prototype.forEach.call(document.querySelectorAll('[data-demo-full]'), function(a){ a.setAttribute('href', DEMO_URL + '#scopri'); });
 
       function sync(sec){
         chips.forEach(function(c){ var on = c.dataset.sec === sec; c.classList.toggle('is-on', on); c.setAttribute('aria-selected', on ? 'true' : 'false'); });
