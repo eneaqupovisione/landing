@@ -311,6 +311,40 @@
     .stage-dl { font-family: var(--mono); font-size: 12.5px; color: var(--muted); border-bottom: 1px solid var(--line-strong); padding-bottom: 2px; transition: color .2s ease, border-color .2s ease; }
     .stage-dl:hover { color: var(--ink); border-color: var(--ink); }
 
+    /* ---------- SHOWCASE (screenshot reali) ---------- */
+    .showcase { display: flex; flex-direction: column; gap: clamp(56px, 9vw, 108px); }
+    .sc-row { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(28px, 5vw, 60px); align-items: center; }
+    .sc-row.sc-wide { grid-template-columns: 1.35fr .85fr; }
+    .sc-row.reverse .sc-media { order: 2; }
+    .sc-media { display: flex; justify-content: center; }
+    .sc-media img { width: 100%; height: auto; border: 1px solid var(--line); box-shadow: var(--shadow-lg); background: var(--surface); border-radius: 16px; }
+    .sc-phone img { max-width: 286px; border-radius: 26px; border-color: var(--line-strong); }
+    .sc-copy .sc-side { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+    .sc-copy .sc-c { color: var(--accent); }
+    .sc-copy .sc-a { color: var(--wine); }
+    .sc-copy h3 { font-family: var(--serif); font-weight: 600; font-size: clamp(24px, 3.4vw, 34px); line-height: 1.14; margin-top: 10px; }
+    .sc-copy p { color: var(--muted); font-size: 16.5px; margin-top: 12px; max-width: 46ch; }
+    .sc-copy .sc-you { margin-top: 16px; padding: 12px 15px; background: var(--bg-warm); border-left: 3px solid var(--brand); border-radius: 0 10px 10px 0; color: #3a332d; font-size: 15px; }
+    .sc-copy .sc-you b { color: var(--brand); }
+    .sc-cta { margin-top: clamp(48px, 7vw, 82px); display: flex; align-items: center; gap: 14px 24px; flex-wrap: wrap; justify-content: center; text-align: center; }
+    @media (max-width: 820px) {
+      .sc-row, .sc-row.sc-wide { grid-template-columns: 1fr; gap: 22px; }
+      .sc-row.reverse .sc-media { order: 0; }
+      .sc-copy p { max-width: none; }
+    }
+
+    /* ---------- MODALE "dopo 2 esempi" ---------- */
+    #scModal { position: fixed; inset: 0; z-index: 2000; display: grid; place-items: center; padding: 20px; background: rgba(26,23,20,.5); opacity: 0; transition: opacity .25s ease; }
+    #scModal.on { opacity: 1; }
+    #scModal .scm-card { position: relative; width: 100%; max-width: 440px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 22px; box-shadow: var(--shadow-lg); padding: clamp(28px, 5vw, 40px); text-align: center; transform: translateY(12px); transition: transform .25s ease; }
+    #scModal.on .scm-card { transform: none; }
+    #scModal .scm-x { position: absolute; top: 12px; right: 15px; border: 0; background: none; font-size: 15px; color: var(--faint); cursor: pointer; padding: 4px; }
+    #scModal .scm-x:hover { color: var(--ink); }
+    #scModal .scm-k { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--brand); }
+    #scModal h3 { font-family: var(--serif); font-weight: 600; font-size: 27px; margin-top: 8px; }
+    #scModal p { color: var(--muted); margin-top: 10px; font-size: 16px; }
+    #scModal .scm-row { margin-top: 22px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
     /* ---------- REVEAL ---------- */
     .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
     .reveal.in { opacity: 1; transform: none; }
@@ -387,107 +421,75 @@
     </div>
   </section>
 
-  <!-- DUE MONDI: CLIENTE vs ADMIN -->
+  <!-- SHOWCASE: guarda cosa fa (screenshot reali) -->
   <section class="section-pad" id="prodotto">
     <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">Un prodotto, due lati</span>
-        <h2>Il lato del cliente e il lato di chi gestisce.</h2>
-        <p>La stessa app, due esperienze distinte. Al tavolo il cliente vive una carta elegante e interattiva, dal suo telefono. Nel retro tu governi tutto — vini, scorte, prezzi, stampe — e ogni modifica arriva subito, senza ristampare nulla.</p>
+      <div class="section-head center reveal">
+        <span class="eyebrow">Guarda cosa fa</span>
+        <h2>Una carta che lavora — per il cliente e per te.</h2>
+        <p>Ogni schermata qui sotto è l'app vera, con una cantina di esempio. Guarda, poi provala sulla tua carta.</p>
       </div>
 
-      <div class="worlds">
-        <article class="world cliente reveal">
-          <div class="w-side"><span class="wdot"></span>Per il tuo cliente<span class="live-tag">· tocca per provare</span></div>
-          <h3>Sceglie il vino, come si sente.</h3>
-          <p>Non deve conoscere le etichette. Si lascia guidare, dal suo telefono, senza scaricare niente.</p>
-          <ul class="w-list">
-            <li class="w-item live" data-sec="lista" role="button" tabindex="0" aria-label="Prova la sezione Carta nella demo">
-              <span class="wi" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM4 9h16"/></svg></span>
-              <div><b>Carta</b><span>Sfoglia per categoria, con schede vino chiare.</span></div>
-              <span class="go" aria-hidden="true">prova →</span>
-            </li>
-            <li class="w-item live" data-sec="scopri" role="button" tabindex="0" aria-label="Prova la sezione Scopri nella demo">
-              <span class="wi" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
-              <div><b>Scopri</b><span>Trova il vino a sensazione: fresco, minerale, strutturato…</span></div>
-              <span class="go" aria-hidden="true">prova →</span>
-            </li>
-            <li class="w-item live" data-sec="scopri" role="button" tabindex="0" aria-label="Prova lo Swipe nella demo">
-              <span class="wi" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="3"/><path d="M15 7l3-2M15 12l4-1"/></svg></span>
-              <div><b>Swipe</b><span>Scegli col pollice, come su un'app di scoperta.</span></div>
-              <span class="go" aria-hidden="true">prova →</span>
-            </li>
-            <li class="w-item live" data-sec="mappa" role="button" tabindex="0" aria-label="Prova la Mappa dei vini nella demo">
-              <span class="wi" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3l6 3 6-3v15l-6 3-6-3-6 3V6z"/><path d="M9 3v15M15 6v15"/></svg></span>
-              <div><b>Mappa dei vini</b><span>Esplora la carta per territorio e per stile.</span></div>
-              <span class="go" aria-hidden="true">prova →</span>
-            </li>
-            <li class="w-item live" data-sec="lista" role="button" tabindex="0" aria-label="Vedi il profilo sensoriale nella demo">
-              <span class="wi" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polygon points="12,3 21,9 18,20 6,20 3,9"/></svg></span>
-              <div><b>Profilo sensoriale</b><span>Ogni vino letto su 10 assi, calcolati dal motore.</span></div>
-              <span class="go" aria-hidden="true">prova →</span>
-            </li>
-          </ul>
-        </article>
-
-        <article class="world admin reveal" data-d="1">
-          <div class="w-side"><span class="wdot"></span>Per te che gestisci</div>
-          <h3>Due modalità: Manager e Tracker.</h3>
-          <p>Tutto il locale in un posto solo. Aggiorni, segui, stampi — e la carta resta viva senza ristampare.</p>
-          <ul class="w-list">
-            <li class="w-item">
-              <span class="wi" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M4 20l7-14 7 14M4 20H3"/><path d="M8 14h6"/></svg></span>
-              <div><b>Manager</b><span>Aggiungi e modifica vini, prezzi, fornitori, anagrafiche, esauriti.</span></div>
-            </li>
-            <li class="w-item">
-              <span class="wi" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="2.4"/></svg></span>
-              <div><b>Tracker</b><span>Giacenze e disponibilità sempre allineate al servizio.</span></div>
-            </li>
-            <li class="w-item">
-              <span class="wi" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6M6 18H4v-6h16v6h-2M8 14h8v7H8z"/></svg></span>
-              <div><b>Personalizza &amp; stampa</b><span>Nome del locale, PDF da stampare, QR, etichette.</span></div>
-            </li>
-            <li class="w-item">
-              <span class="wi" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>
-              <div><b>Analisi della cantina</b><span>Fasce di prezzo, composizione, stili, buchi di gamma.</span></div>
-            </li>
-          </ul>
-        </article>
-      </div>
-
-      <!-- STAGE INTERATTIVO: l'anteprima dal vivo, pilotata dalla lista cliente -->
-      <div class="stage reveal" id="demo" style="margin-top: clamp(40px, 6vw, 68px);">
-        <div class="section-head center" style="margin-bottom: 4px;">
-          <span class="eyebrow">Provala, non solo leggerla</span>
-          <h2 style="font-size: clamp(26px, 3.6vw, 38px);">Tocca una funzione, vedila dal vivo.</h2>
-          <p style="max-width: 52ch;">Le voci qui sopra non sono una lista: sono l'app vera. Scegline una — o usa i tasti qui sotto — e l'anteprima ci salta dentro, con una cantina di esempio.</p>
-        </div>
-        <div class="stage-chips" role="tablist" aria-label="Sezioni della demo">
-          <button class="chip" data-sec="lista"  role="tab" aria-selected="false"><span aria-hidden="true">📖</span> Carta</button>
-          <button class="chip is-on" data-sec="scopri" role="tab" aria-selected="true"><span aria-hidden="true">🍷</span> Scopri</button>
-          <button class="chip" data-sec="mappa"  role="tab" aria-selected="false"><span aria-hidden="true">🗺️</span> Mappa</button>
-          <button class="chip" data-sec="scelte" role="tab" aria-selected="false"><span aria-hidden="true">✨</span> Scelte</button>
-        </div>
-        <div class="stage-view">
-          <div class="demo-poster" aria-hidden="true">
-            <div>
-              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8M12 15v7M6 3h12l-1 6a5 5 0 0 1-10 0L6 3z"/></svg>
-              <div class="dp-name">Osteria del Melograno</div>
-              <div class="dp-sub">Carta dei vini · demo</div>
-              <div class="dp-open">Caricamento…</div>
-            </div>
+      <div class="showcase" id="demo">
+        <article class="sc-row reveal" data-shot>
+          <div class="sc-media sc-phone"><img src="img/scopri.png" width="430" height="880" loading="lazy" alt="La sezione Scopri: il cliente risponde a una domanda e trova il vino"></div>
+          <div class="sc-copy">
+            <span class="sc-side sc-c">Per il cliente</span>
+            <h3>Non sa che vino scegliere? Ci pensa l'app.</h3>
+            <p>Risponde a due domande — niente etichette, niente imbarazzo — e arriva al vino giusto per il suo momento.</p>
+            <p class="sc-you"><b>Per te:</b> vendi anche ai tavoli dove nessuno fa da sommelier, e accompagni verso l'alto lo scontrino.</p>
           </div>
-          <iframe id="demoFrame" title="Anteprima dal vivo della carta Cantera" loading="lazy" tabindex="-1" scrolling="no"></iframe>
-          <a class="screen-link" data-demo-full href="demo/" target="_blank" rel="noopener" aria-label="Apri la demo completa in una nuova scheda"></a>
-        </div>
-        <div class="stage-foot">
-          <a class="btn btn-primary" data-demo-full href="demo/" target="_blank" rel="noopener">Apri la demo intera <span class="btn-arrow" aria-hidden="true">→</span></a>
-          <a class="stage-dl" href="demo/index.html" download="cantera-demo.html">↓ Scaricala come file unico</a>
-          <span class="stage-hint">Nessuna registrazione, niente da installare — è l'app vera.</span>
-        </div>
+        </article>
+
+        <article class="sc-row sc-wide reverse reveal" data-shot>
+          <div class="sc-media"><img src="img/cantina.png" width="1040" height="820" loading="lazy" alt="La gestione della cantina: lista con scorte, prezzi ed esauriti"></div>
+          <div class="sc-copy">
+            <span class="sc-side sc-a">Per te che gestisci</span>
+            <h3>Governi tutta la cantina dal telefono.</h3>
+            <p>Scorte in frigo, esauriti, prezzi, riordini e fornitori: tutto in un posto, senza gestionali separati.</p>
+            <p class="sc-you"><b>Il bello:</b> ogni modifica arriva subito nella carta del cliente. Mai più ristampe.</p>
+          </div>
+        </article>
+
+        <article class="sc-row reveal" data-shot>
+          <div class="sc-media sc-phone"><img src="img/scelte.png" width="430" height="880" loading="lazy" alt="Le Scelte: proposte rapide pronte per il cliente"></div>
+          <div class="sc-copy">
+            <span class="sc-side sc-c">Cliente + gestione</span>
+            <h3>Le proposte che vede il cliente, le decidi tu.</h3>
+            <p>Il cliente indeciso tocca una proposta pronta e ordina. Tu scegli cosa mettere in vetrina.</p>
+            <p class="sc-you"><b>La tua leva:</b> spingi i vini che vuoi — a margine alto o da smaltire — in automatico o a mano.</p>
+          </div>
+        </article>
+
+        <article class="sc-row sc-wide reverse reveal" data-shot>
+          <div class="sc-media"><img src="img/analisi.png" width="1040" height="820" loading="lazy" alt="Analisi cantina: prezzo medio, fasce di prezzo, composizione"></div>
+          <div class="sc-copy">
+            <span class="sc-side sc-a">Per te che gestisci</span>
+            <h3>Capisci la tua carta a colpo d'occhio.</h3>
+            <p>Prezzo medio e mediano, fasce di prezzo, composizione per stile: una fotografia della tua offerta.</p>
+            <p class="sc-you"><b>Per te:</b> scopri squilibri e buchi di gamma da colmare — senza fogli di calcolo.</p>
+          </div>
+        </article>
+
+        <article class="sc-row reveal" data-shot>
+          <div class="sc-media sc-phone"><img src="img/mappa.png" width="430" height="880" loading="lazy" alt="La Mappa dei vini per territori"></div>
+          <div class="sc-copy">
+            <span class="sc-side sc-c">Per il cliente</span>
+            <h3>La tua cantina, esplorabile come una mappa.</h3>
+            <p>Il cliente gira per territori e scopre da dove viene ogni vino, con un colpo d'occhio sull'ampiezza della carta.</p>
+            <p class="sc-you"><b>Per te:</b> valorizzi la profondità della cantina e fai scoprire le chicche.</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="sc-cta reveal">
+        <a class="btn btn-primary" href="demo/#scopri" target="_blank" rel="noopener">Provala dal vivo <span class="btn-arrow" aria-hidden="true">→</span></a>
+        <a class="stage-dl" href="demo/index.html" download="cantera-demo.html">↓ o scaricala come file unico</a>
+        <span class="stage-hint">Nessuna registrazione, niente da installare — è l'app vera.</span>
       </div>
     </div>
   </section>
+
 
   <!-- PILASTRI -->
   <section class="section-pad" id="valore" style="background:var(--bg-warm); border-block:1px solid var(--line);">
@@ -617,57 +619,33 @@
   </footer>
 
   <script>
-    // ---------- DEMO INTERATTIVA (stessa origine: /demo/) ----------
-    // La lista "Per il tuo cliente" e i chip pilotano un unico telefono-anteprima.
-    // Essendo stessa origine, cambio solo l'hash dell'iframe: il demo reagisce dal
-    // vivo (listener hashchange) senza ricaricare, così lo switch è istantaneo.
-    var DEMO_URL = 'demo/';
-    (function wireDemo(){
-      var frame = document.getElementById('demoFrame');
-      if(!frame) return;
-      var barLabel = document.getElementById('demoBarLabel');
-      var chips = Array.prototype.slice.call(document.querySelectorAll('.chip[data-sec]'));
-      var items = Array.prototype.slice.call(document.querySelectorAll('.w-item.live[data-sec]'));
-      var LABELS = { lista:'carta', scopri:'scopri', mappa:'mappa', scelte:'scelte' };
-      var ready = false;
-      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      Array.prototype.forEach.call(document.querySelectorAll('[data-demo-full]'), function(a){ a.setAttribute('href', DEMO_URL + '#scopri'); });
-
-      function sync(sec){
-        chips.forEach(function(c){ var on = c.dataset.sec === sec; c.classList.toggle('is-on', on); c.setAttribute('aria-selected', on ? 'true' : 'false'); });
-        items.forEach(function(it){ it.classList.toggle('is-on', it.dataset.sec === sec); });
-        if(barLabel) barLabel.textContent = 'osteria del melograno · ' + (LABELS[sec] || sec);
+    // ---------- SHOWCASE: dopo 2 esempi visti, invito ad aprire la demo ----------
+    (function showcaseNudge(){
+      var rows = document.querySelectorAll('.sc-row[data-shot]');
+      if(!rows.length || !('IntersectionObserver' in window)) return;
+      var seen = 0, fired = false;
+      function fire(){
+        if(fired) return; fired = true;
+        var ov = document.createElement('div'); ov.id = 'scModal';
+        ov.innerHTML = '<div class="scm-card"><button class="scm-x" aria-label="Chiudi">✕</button>'+
+          '<div class="scm-k">Cantera</div><h3>Ti piace quello che vedi?</h3>'+
+          '<p>Provala dal vivo con una cantina di esempio — o chiedici di vederla sulla tua carta reale.</p>'+
+          '<div class="scm-row"><a class="btn btn-primary" href="demo/#scopri" target="_blank" rel="noopener">Apri la demo <span class="btn-arrow" aria-hidden="true">→</span></a>'+
+          '<a class="btn btn-ghost" href="#contatto">Richiedi una demo</a></div></div>';
+        document.body.appendChild(ov);
+        requestAnimationFrame(function(){ ov.classList.add('on'); });
+        function close(){ ov.classList.remove('on'); setTimeout(function(){ if(ov.parentNode) ov.parentNode.removeChild(ov); }, 260); }
+        ov.querySelector('.scm-x').addEventListener('click', close);
+        ov.addEventListener('click', function(e){ if(e.target === ov) close(); });
+        var contatto = ov.querySelector('a[href="#contatto"]'); if(contatto) contatto.addEventListener('click', close);
+        window.addEventListener('keydown', function esc(e){ if(e.key==='Escape'){ close(); window.removeEventListener('keydown', esc); } });
       }
-      function setSection(sec){
-        if(!sec) return;
-        if(ready){
-          try { frame.contentWindow.location.hash = sec; }
-          catch(e){ frame.setAttribute('src', DEMO_URL + '#' + sec); }
-        } else {
-          frame.setAttribute('src', DEMO_URL + '#' + sec);
-        }
-        sync(sec);
-      }
-      function scrollStageIntoView(){
-        var stage = document.getElementById('demo');
-        if(!stage) return;
-        var r = stage.getBoundingClientRect();
-        if(r.top < 60 || r.bottom > window.innerHeight){
-          stage.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'center' });
-        }
-      }
-
-      frame.addEventListener('load', function(){ ready = true; });
-      frame.setAttribute('src', DEMO_URL + '#scopri');
-
-      chips.forEach(function(c){ c.addEventListener('click', function(){ setSection(c.dataset.sec); }); });
-      items.forEach(function(it){
-        function go(){ setSection(it.dataset.sec); scrollStageIntoView(); }
-        it.addEventListener('click', go);
-        it.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); go(); } });
-      });
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ seen++; io.unobserve(e.target); if(seen >= 2) setTimeout(fire, 400); } });
+      }, { threshold: 0.55 });
+      rows.forEach(function(r){ io.observe(r); });
     })();
+
 
     // ---------- PERSONA (scelta non bloccante: personalizza benefici + CTA) ----------
     var PERSONA = {
