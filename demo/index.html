@@ -11565,6 +11565,32 @@ function regenFraseInEditor(){
 })();
 </script>
 
+<script id="staff-deeplink">
+/* Deep-link gestione (per finestre live nella landing): apre la demo staff
+   direttamente su una vista. Non attivo in modalità cliente. */
+(function(){
+  function apply(){
+    if(document.body.classList.contains('client-mode')) return;
+    var h=(location.hash||'').toLowerCase();
+    try{
+      if(h==='#g-cantina'){
+        if(window.staffTab) staffTab('cantina');
+        if(typeof viewMode!=='undefined' && viewMode!=='gallery'){ var b=document.getElementById('viewModeBtn'); if(b) b.click(); }
+      } else if(h==='#g-analisi'){
+        if(window.openAnalisiCantina) window.openAnalisiCantina();
+      } else if(h==='#g-modifica'){
+        if(window.staffTab) staffTab('modifica');
+      } else if(h==='#g-personalizza'){
+        if(window.staffTab) staffTab('personalizza');
+      }
+    }catch(e){}
+  }
+  function boot(){ setTimeout(apply, 350); }
+  if(document.readyState==='complete') boot(); else window.addEventListener('load', boot);
+  window.addEventListener('hashchange', apply);
+})();
+</script>
+
 <!-- ===== ONBOARDING (splash + tour a due percorsi + micro-hint al primo clic) ===== -->
 <style id="cantera-tour-css">
 #ctMask{position:fixed;inset:0;z-index:2147483150;background:transparent}

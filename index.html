@@ -311,26 +311,35 @@
     .stage-dl { font-family: var(--mono); font-size: 12.5px; color: var(--muted); border-bottom: 1px solid var(--line-strong); padding-bottom: 2px; transition: color .2s ease, border-color .2s ease; }
     .stage-dl:hover { color: var(--ink); border-color: var(--ink); }
 
-    /* ---------- SHOWCASE (screenshot reali) ---------- */
-    .showcase { display: flex; flex-direction: column; gap: clamp(56px, 9vw, 108px); }
-    .sc-row { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(28px, 5vw, 60px); align-items: center; }
-    .sc-row.sc-wide { grid-template-columns: 1.35fr .85fr; }
-    .sc-row.reverse .sc-media { order: 2; }
-    .sc-media { display: flex; justify-content: center; }
-    .sc-media img { width: 100%; height: auto; border: 1px solid var(--line); box-shadow: var(--shadow-lg); background: var(--surface); border-radius: 16px; }
-    .sc-phone img { max-width: 286px; border-radius: 26px; border-color: var(--line-strong); }
-    .sc-copy .sc-side { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
-    .sc-copy .sc-c { color: var(--accent); }
-    .sc-copy .sc-a { color: var(--wine); }
-    .sc-copy h3 { font-family: var(--serif); font-weight: 600; font-size: clamp(24px, 3.4vw, 34px); line-height: 1.14; margin-top: 10px; }
-    .sc-copy p { color: var(--muted); font-size: 16.5px; margin-top: 12px; max-width: 46ch; }
-    .sc-copy .sc-you { margin-top: 16px; padding: 12px 15px; background: var(--bg-warm); border-left: 3px solid var(--brand); border-radius: 0 10px 10px 0; color: #3a332d; font-size: 15px; }
-    .sc-copy .sc-you b { color: var(--brand); }
+    /* ---------- FUNNEL (finestre live-on-click) ---------- */
+    .fn-toggle { display: flex; width: max-content; max-width: 100%; margin: 0 auto clamp(44px, 6vw, 64px); gap: 4px; padding: 5px; background: var(--bg-warm); border: 1px solid var(--line); border-radius: 999px; }
+    .fn-tab { font-family: var(--mono); font-size: 13.5px; padding: 11px 20px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); cursor: pointer; transition: background .2s ease, color .2s ease; white-space: nowrap; }
+    .fn-tab:hover { color: var(--ink); }
+    .fn-tab.is-on { background: var(--ink); color: #f6f2ea; }
+    .funnel { display: flex; flex-direction: column; gap: clamp(52px, 8vw, 96px); }
+    .funnel[hidden] { display: none; }
+    .fn-row { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 60px); align-items: center; }
+    .fn-row.reverse .fn-win { order: 2; }
+    .fn-win { position: relative; width: 100%; max-width: 338px; margin-inline: auto; aspect-ratio: 390 / 850; border-radius: 30px; overflow: hidden; border: 1px solid var(--line-strong); box-shadow: var(--shadow-lg); background: var(--bg); cursor: pointer; transition: transform .2s ease; }
+    .fn-win:hover { transform: translateY(-3px); }
+    .fn-win img, .fn-win iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .fn-win img { object-fit: cover; object-position: top; }
+    .fn-win .fn-play { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); background: rgba(26,23,20,.86); color: #f4efe6; font-family: var(--mono); font-size: 12px; padding: 8px 15px; border-radius: 999px; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); pointer-events: none; white-space: nowrap; transition: background .2s ease; }
+    .fn-win:hover .fn-play { background: var(--brand); }
+    .fn-win.live { cursor: default; }
+    .fn-win.live .fn-play, .fn-win.live img { display: none; }
+    .fn-copy .sc-side { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+    .sc-c { color: var(--accent); }
+    .sc-a { color: var(--wine); }
+    .fn-copy h3 { font-family: var(--serif); font-weight: 600; font-size: clamp(23px, 3.2vw, 32px); line-height: 1.14; margin-top: 10px; }
+    .fn-copy p { color: var(--muted); font-size: 16.5px; margin-top: 12px; max-width: 42ch; }
+    .fn-copy .sc-you { margin-top: 16px; padding: 12px 15px; background: var(--bg-warm); border-left: 3px solid var(--brand); border-radius: 0 10px 10px 0; color: #3a332d; font-size: 15px; }
+    .fn-copy .sc-you b { color: var(--brand); }
     .sc-cta { margin-top: clamp(48px, 7vw, 82px); display: flex; align-items: center; gap: 14px 24px; flex-wrap: wrap; justify-content: center; text-align: center; }
     @media (max-width: 820px) {
-      .sc-row, .sc-row.sc-wide { grid-template-columns: 1fr; gap: 22px; }
-      .sc-row.reverse .sc-media { order: 0; }
-      .sc-copy p { max-width: none; }
+      .fn-row { grid-template-columns: 1fr; gap: 20px; }
+      .fn-row.reverse .fn-win { order: 0; }
+      .fn-copy p { max-width: none; }
     }
 
     /* ---------- MODALE "dopo 2 esempi" ---------- */
@@ -421,74 +430,67 @@
     </div>
   </section>
 
-  <!-- SHOWCASE: guarda cosa fa (screenshot reali) -->
+  <!-- FUNNEL: due schede (cliente/gestione), finestre live-on-click -->
   <section class="section-pad" id="prodotto">
     <div class="wrap">
       <div class="section-head center reveal">
         <span class="eyebrow">Guarda cosa fa</span>
-        <h2>Una carta che lavora — per il cliente e per te.</h2>
-        <p>Ogni schermata qui sotto è l'app vera, con una cantina di esempio. Guarda, poi provala sulla tua carta.</p>
+        <h2>Provala, non solo leggerla.</h2>
+        <p>Ogni schermata è l'app vera. Lasciala com'è, o <b>toccala per renderla viva</b>.</p>
       </div>
 
-      <div class="showcase" id="demo">
-        <article class="sc-row reveal" data-shot>
-          <div class="sc-media sc-phone"><img src="img/scopri.png" width="430" height="880" loading="lazy" alt="La sezione Scopri: il cliente risponde a una domanda e trova il vino"></div>
-          <div class="sc-copy">
-            <span class="sc-side sc-c">Per il cliente</span>
-            <h3>Non sa che vino scegliere? Ci pensa l'app.</h3>
-            <p>Risponde a due domande — niente etichette, niente imbarazzo — e arriva al vino giusto per il suo momento.</p>
-            <p class="sc-you"><b>Per te:</b> vendi anche ai tavoli dove nessuno fa da sommelier, e accompagni verso l'alto lo scontrino.</p>
-          </div>
-        </article>
+      <div class="fn-toggle reveal" id="demo" role="tablist" aria-label="Scegli il lato">
+        <button class="fn-tab is-on" data-fn="cliente" role="tab" aria-selected="true">🍷 Lato cliente</button>
+        <button class="fn-tab" data-fn="gestione" role="tab" aria-selected="false">🛠️ Lato gestione</button>
+      </div>
 
-        <article class="sc-row sc-wide reverse reveal" data-shot>
-          <div class="sc-media"><img src="img/cantina.png" width="1040" height="820" loading="lazy" alt="La gestione della cantina: lista con scorte, prezzi ed esauriti"></div>
-          <div class="sc-copy">
-            <span class="sc-side sc-a">Per te che gestisci</span>
-            <h3>Governi tutta la cantina dal telefono.</h3>
-            <p>Scorte in frigo, esauriti, prezzi, riordini e fornitori: tutto in un posto, senza gestionali separati.</p>
-            <p class="sc-you"><b>Il bello:</b> ogni modifica arriva subito nella carta del cliente. Mai più ristampe.</p>
-          </div>
+      <!-- CLIENTE -->
+      <div class="funnel" id="fn-cliente" data-group>
+        <article class="fn-row reveal">
+          <div class="fn-win" data-demo="#scopri" role="button" tabindex="0" aria-label="Prova la sezione Scopri"><img src="img/f-scopri.png" loading="lazy" alt="Scopri: il cliente risponde a una domanda"><span class="fn-play">▶ Tocca per provarla</span></div>
+          <div class="fn-copy"><span class="sc-side sc-c">Per il cliente</span><h3>Non sa che vino scegliere? Ci pensa l'app.</h3><p>Risponde a due domande — niente etichette, niente imbarazzo — e arriva al vino giusto.</p><p class="sc-you"><b>Per te:</b> vendi anche dove nessuno fa da sommelier.</p></div>
         </article>
-
-        <article class="sc-row reveal" data-shot>
-          <div class="sc-media sc-phone"><img src="img/scelte.png" width="430" height="880" loading="lazy" alt="Le Scelte: proposte rapide pronte per il cliente"></div>
-          <div class="sc-copy">
-            <span class="sc-side sc-c">Cliente + gestione</span>
-            <h3>Le proposte che vede il cliente, le decidi tu.</h3>
-            <p>Il cliente indeciso tocca una proposta pronta e ordina. Tu scegli cosa mettere in vetrina.</p>
-            <p class="sc-you"><b>La tua leva:</b> spingi i vini che vuoi — a margine alto o da smaltire — in automatico o a mano.</p>
-          </div>
+        <article class="fn-row reverse reveal">
+          <div class="fn-win" data-demo="#lista" role="button" tabindex="0" aria-label="Prova la Carta"><img src="img/f-carta.png" loading="lazy" alt="La carta dei vini per il cliente"><span class="fn-play">▶ Tocca per provarla</span></div>
+          <div class="fn-copy"><span class="sc-side sc-c">Per il cliente</span><h3>Una carta che si sfoglia con piacere.</h3><p>Schede chiare, ricerca istantanea e filtri per regione, uvaggio e stile.</p><p class="sc-you"><b>Per te:</b> sempre aggiornata, mai ristampata.</p></div>
         </article>
-
-        <article class="sc-row sc-wide reverse reveal" data-shot>
-          <div class="sc-media"><img src="img/analisi.png" width="1040" height="820" loading="lazy" alt="Analisi cantina: prezzo medio, fasce di prezzo, composizione"></div>
-          <div class="sc-copy">
-            <span class="sc-side sc-a">Per te che gestisci</span>
-            <h3>Capisci la tua carta a colpo d'occhio.</h3>
-            <p>Prezzo medio e mediano, fasce di prezzo, composizione per stile: una fotografia della tua offerta.</p>
-            <p class="sc-you"><b>Per te:</b> scopri squilibri e buchi di gamma da colmare — senza fogli di calcolo.</p>
-          </div>
+        <article class="fn-row reveal">
+          <div class="fn-win" data-demo="#scelte" role="button" tabindex="0" aria-label="Prova le Scelte"><img src="img/f-scelte.png" loading="lazy" alt="Le proposte rapide"><span class="fn-play">▶ Tocca per provarla</span></div>
+          <div class="fn-copy"><span class="sc-side sc-c">Cliente + gestione</span><h3>Proposte pronte, per chi non vuole scegliere.</h3><p>Un tocco su una proposta e il cliente ordina.</p><p class="sc-you"><b>La tua leva:</b> le decidi tu — spingi i vini che vuoi.</p></div>
         </article>
+        <article class="fn-row reverse reveal">
+          <div class="fn-win" data-demo="#mappa" role="button" tabindex="0" aria-label="Prova la Mappa"><img src="img/f-mappa.png" loading="lazy" alt="La mappa dei vini per territori"><span class="fn-play">▶ Tocca per provarla</span></div>
+          <div class="fn-copy"><span class="sc-side sc-c">Per il cliente</span><h3>La cantina, esplorabile come una mappa.</h3><p>Il cliente gira per territori e scopre da dove viene ogni vino.</p><p class="sc-you"><b>Per te:</b> valorizzi l'ampiezza della cantina.</p></div>
+        </article>
+      </div>
 
-        <article class="sc-row reveal" data-shot>
-          <div class="sc-media sc-phone"><img src="img/mappa.png" width="430" height="880" loading="lazy" alt="La Mappa dei vini per territori"></div>
-          <div class="sc-copy">
-            <span class="sc-side sc-c">Per il cliente</span>
-            <h3>La tua cantina, esplorabile come una mappa.</h3>
-            <p>Il cliente gira per territori e scopre da dove viene ogni vino, con un colpo d'occhio sull'ampiezza della carta.</p>
-            <p class="sc-you"><b>Per te:</b> valorizzi la profondità della cantina e fai scoprire le chicche.</p>
-          </div>
+      <!-- GESTIONE -->
+      <div class="funnel" id="fn-gestione" data-group hidden>
+        <article class="fn-row reveal">
+          <div class="fn-win" data-demo="#g-cantina" role="button" tabindex="0" aria-label="Prova la Cantina"><img src="img/f-cantina.png" loading="lazy" alt="La cantina a celle: scorte, esauriti, prezzi"><span class="fn-play">▶ Tocca per provarla</span></div>
+          <div class="fn-copy"><span class="sc-side sc-a">Per te che gestisci</span><h3>Tutta la cantina in un colpo d'occhio.</h3><p>Scorte in frigo, esauriti, prezzi — direttamente nelle celle.</p><p class="sc-you"><b>Il bello:</b> aggiorni qui, cambia subito nella carta del cliente.</p></div>
+        </article>
+        <article class="fn-row reverse reveal">
+          <div class="fn-win" data-demo="#g-modifica" role="button" tabindex="0" aria-label="Prova Modifica"><img src="img/f-modifica.png" loading="lazy" alt="Gli strumenti di modifica"><span class="fn-play">▶ Tocca per provarla</span></div>
+          <div class="fn-copy"><span class="sc-side sc-a">Per te che gestisci</span><h3>Aggiungi, correggi, segna gli esauriti.</h3><p>Vini, prezzi, fornitori, carico magazzino e riordini automatici.</p><p class="sc-you"><b>Per te:</b> tutto il locale in un posto, senza gestionali.</p></div>
+        </article>
+        <article class="fn-row reveal">
+          <div class="fn-win" data-demo="#g-analisi" role="button" tabindex="0" aria-label="Prova l'Analisi cantina"><img src="img/f-analisi.png" loading="lazy" alt="Analisi cantina: prezzi e composizione"><span class="fn-play">▶ Tocca per provarla</span></div>
+          <div class="fn-copy"><span class="sc-side sc-a">Per te che gestisci</span><h3>Capisci la tua carta.</h3><p>Prezzo medio e mediano, fasce di prezzo, composizione per stile.</p><p class="sc-you"><b>Per te:</b> scopri squilibri e buchi di gamma — senza fogli di calcolo.</p></div>
+        </article>
+        <article class="fn-row reverse reveal">
+          <div class="fn-win" data-demo="#g-personalizza" role="button" tabindex="0" aria-label="Prova Personalizza"><img src="img/f-personalizza.png" loading="lazy" alt="Personalizza e stampa"><span class="fn-play">▶ Tocca per provarla</span></div>
+          <div class="fn-copy"><span class="sc-side sc-a">Per te che gestisci</span><h3>Il tuo brand — e la stampa.</h3><p>Nome, copertina e testi delle sezioni; PDF da stampare con QR.</p><p class="sc-you"><b>Per te:</b> carta digitale e cartacea sempre allineate.</p></div>
         </article>
       </div>
 
       <div class="sc-cta reveal">
-        <a class="btn btn-primary" href="demo/#scopri" target="_blank" rel="noopener">Provala dal vivo <span class="btn-arrow" aria-hidden="true">→</span></a>
+        <a class="btn btn-primary" href="demo/#scopri" target="_blank" rel="noopener">Apri la demo intera <span class="btn-arrow" aria-hidden="true">→</span></a>
         <a class="stage-dl" href="demo/index.html" download="cantera-demo.html">↓ o scaricala come file unico</a>
-        <span class="stage-hint">Nessuna registrazione, niente da installare — è l'app vera.</span>
       </div>
     </div>
   </section>
+
 
 
   <!-- PILASTRI -->
@@ -619,17 +621,39 @@
   </footer>
 
   <script>
-    // ---------- SHOWCASE: dopo 2 esempi visti, invito ad aprire la demo ----------
-    (function showcaseNudge(){
-      var rows = document.querySelectorAll('.sc-row[data-shot]');
-      if(!rows.length || !('IntersectionObserver' in window)) return;
-      var seen = 0, fired = false;
-      function fire(){
-        if(fired) return; fired = true;
+    // ---------- FUNNEL: schede + finestre live-on-click + modale su interazione ----------
+    (function funnel(){
+      var tabs = document.querySelectorAll('.fn-tab[data-fn]');
+      var groups = { cliente: document.getElementById('fn-cliente'), gestione: document.getElementById('fn-gestione') };
+      tabs.forEach(function(t){ t.addEventListener('click', function(){
+        var fn = t.dataset.fn;
+        tabs.forEach(function(x){ var on = x===t; x.classList.toggle('is-on', on); x.setAttribute('aria-selected', on?'true':'false'); });
+        Object.keys(groups).forEach(function(k){ if(groups[k]) groups[k].hidden = (k!==fn); });
+      }); });
+
+      var activated = 0, modalShown = false;
+      var wins = document.querySelectorAll('.fn-win[data-demo]');
+      function activate(w){
+        if(w.classList.contains('live')) return;
+        w.classList.add('live');
+        var f = document.createElement('iframe');
+        f.setAttribute('title', 'Demo interattiva');
+        f.setAttribute('loading', 'lazy');
+        f.setAttribute('src', 'demo/' + w.dataset.demo);
+        w.appendChild(f);
+        activated++;
+        if(activated >= 2 && !modalShown){ modalShown = true; setTimeout(nudge, 900); }
+      }
+      wins.forEach(function(w){
+        w.addEventListener('click', function(){ activate(w); });
+        w.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); activate(w); } });
+      });
+
+      function nudge(){
         var ov = document.createElement('div'); ov.id = 'scModal';
         ov.innerHTML = '<div class="scm-card"><button class="scm-x" aria-label="Chiudi">✕</button>'+
-          '<div class="scm-k">Cantera</div><h3>Ti piace quello che vedi?</h3>'+
-          '<p>Provala dal vivo con una cantina di esempio — o chiedici di vederla sulla tua carta reale.</p>'+
+          '<div class="scm-k">Cantera</div><h3>Ti sta piacendo?</h3>'+
+          '<p>Aprila a schermo intero e provala per bene — o chiedici di vederla sulla tua carta reale.</p>'+
           '<div class="scm-row"><a class="btn btn-primary" href="demo/#scopri" target="_blank" rel="noopener">Apri la demo <span class="btn-arrow" aria-hidden="true">→</span></a>'+
           '<a class="btn btn-ghost" href="#contatto">Richiedi una demo</a></div></div>';
         document.body.appendChild(ov);
@@ -637,14 +661,11 @@
         function close(){ ov.classList.remove('on'); setTimeout(function(){ if(ov.parentNode) ov.parentNode.removeChild(ov); }, 260); }
         ov.querySelector('.scm-x').addEventListener('click', close);
         ov.addEventListener('click', function(e){ if(e.target === ov) close(); });
-        var contatto = ov.querySelector('a[href="#contatto"]'); if(contatto) contatto.addEventListener('click', close);
+        var c = ov.querySelector('a[href="#contatto"]'); if(c) c.addEventListener('click', close);
         window.addEventListener('keydown', function esc(e){ if(e.key==='Escape'){ close(); window.removeEventListener('keydown', esc); } });
       }
-      var io = new IntersectionObserver(function(entries){
-        entries.forEach(function(e){ if(e.isIntersecting){ seen++; io.unobserve(e.target); if(seen >= 2) setTimeout(fire, 400); } });
-      }, { threshold: 0.55 });
-      rows.forEach(function(r){ io.observe(r); });
     })();
+
 
 
     // ---------- PERSONA (scelta non bloccante: personalizza benefici + CTA) ----------
